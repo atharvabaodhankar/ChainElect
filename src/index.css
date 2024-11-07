@@ -1,0 +1,32 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    color:#fff;
+}
+html{
+    font-size: 62.5%;
+}
+
+p{
+font-size: 1.6rem;
+line-height: 2.5rem;
+}
+
+#homepage{
+    background:  url("./images/Finalbg.jpg");
+    width:100%;
+    min-height: 100vh;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+h1{
+    font-size: 5rem;
+    text-align: center;
+    padding-top: 28rem;
+    font-family: 'Poppins', sans-serif;
+    color:#fff;
+}
