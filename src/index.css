@@ -1,5 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400..800&display=swap');
 
+::selection{
+    background-color: transparent
+}
 *{
     margin: 0;
     padding: 0;
@@ -21,11 +24,14 @@ html{
     flex-direction: column;
 }
 p{
-font-size: 1.6rem;
+font-size: 1.5rem;
 line-height: 2.5rem;
 }
 .h1{
     font-size: 5rem;
+}
+.h2{
+    font-size: 2rem;
 }
 #hero{
     /* background:  url("./images/Finalbg.png"); */
@@ -135,6 +141,48 @@ video{
 }
 /* Navbar End */
 
+.features{
+    width: 100%;
+    height: 100vh;
+    padding:4rem 4vw;
+    .h1{
+        color:#545454;
+    }
+}
+.boxes{
+    display:flex;
+    align-items:center;
+    justify-content:center;flex-wrap: wrap;
+    gap: 2rem;
+}
+.box{
+    width: 30%;
+    height: 20rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; 
+    background-color: #5250507c;
+    border-radius: 0 15rem;
+    padding:1rem;
+    text-align: center;
+    margin-top: 5rem;
+   
+}
+.box img{
+    width: 10rem;
+    height: 10rem;
+    border-radius: 50%;
+    transform:translate(-180%,-50%); 
+    border: 5px solid #fff;
+}
+.box-desc{
+    transform:translateY(-4rem); 
+}
+
+.features p,h2 {
+    color:#100d0dcc;
+}
 
 @media screen and (max-width:1024px) {
     

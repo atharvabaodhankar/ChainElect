@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import Button from '../components/button';
+import Features from './Features';
 
 const Homepage = () => {
   const [navbarState, setNavbarState] = useState(false);
@@ -30,6 +31,9 @@ const Homepage = () => {
         <Button name='Get Started' link='/' />
       </div>
       
+    </section>
+    <section>
+      <Features />
     </section>
     </>
   )
