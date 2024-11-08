@@ -1,5 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400..800&display=swap');
 
+::selection{
+    background-color: transparent
+}
 *{
     margin: 0;
     padding: 0;
@@ -26,7 +29,7 @@ html{
     flex-direction: column;
 }
 p{
-font-size: 1.6rem;
+font-size: 1.5rem;
 line-height: 2.5rem;
 }
 .h1{
