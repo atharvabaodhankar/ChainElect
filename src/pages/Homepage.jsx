@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import Button from '../components/button';
+import Sample from './Sample';
+import Aboutus from './Aboutus';
 
 const Homepage = () => {
   const [navbarState, setNavbarState] = useState(false);
@@ -25,12 +27,15 @@ const Homepage = () => {
         </div>
       </nav>
       <div className="hero">
-        <h1>Secure Voting</h1>
+        <h1>In-Cognito Voting</h1>
         <p>Lorem ipsum dolor sit a natus nemo consectetur numquam impedit autem, aut debitis animi accusantium. Debitis nobis fugiat quo illo numquam recusandae libero doloribus dignissimos ipsam, beatae sequi culpa omnis accusantium inventore sint eius atque exercitationem. Dolores expedita dolorum dicta fuga.</p>
         <Button name='Get Started' link='/' />
       </div>
       
-    </section>
+      </section>
+      
+      <Aboutus />
+      <Sample />
     </>
   )
 }
