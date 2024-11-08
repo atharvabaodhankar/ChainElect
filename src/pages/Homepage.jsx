@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import Button from '../components/button';
 import Sample from './Sample';
 import Aboutus from './Aboutus';
+import Features from './Features';
 
 const Homepage = () => {
   const [navbarState, setNavbarState] = useState(false);
@@ -33,7 +34,7 @@ const Homepage = () => {
       </div>
       
       </section>
-      
+      <Features /> 
       <Aboutus />
       <Sample />
     </>
