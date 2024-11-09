@@ -208,6 +208,10 @@ line-height: 2.5rem;
     align-items: center; 
     justify-content: center;  
     background-color: #5250507c; 
+    border-radius: 50px;
+    background: #d2d0d0;
+    box-shadow:  -25px 25px 51px #b3b1b1,
+             25px -25px 51px #f2efef;
     border-radius: 0 15rem; 
     padding:1rem; 
     text-align: center; 
