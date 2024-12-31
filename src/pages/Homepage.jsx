@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import Button from '../components/button';
 import Sample from './Sample';
 import Aboutus from './Aboutus';
-import Features from './Features';
+import Features from './Features';  
+import Footer from './Footer';
 
 const Homepage = () => {
   const [navbarState, setNavbarState] = useState(false);
@@ -16,10 +17,10 @@ const Homepage = () => {
           <h1>ChainElect</h1>
         </div>
         <ul className={navbarState ? 'nav active' : 'nav'}>
-          <li>Home</li>
-          <li>Features</li>
-          <li>About Us</li>
-          <li>Contact Us</li>
+          <li><a href="#">Home</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#aboutus">About Us</a></li>
+          <li><a href="#contactus">Contact Us</a></li>
         </ul>
         <div className="hamburger" onClick={() => setNavbarState(!navbarState)}>
           <div className="line"></div>
@@ -34,9 +35,11 @@ const Homepage = () => {
       </div>
       
       </section>
-      <Features /> 
-      <Aboutus />
-      <Sample />
+      {/* <Features /> 
+      <Aboutus /> */}
+      <Footer />
+    
+
     </>
   )
 }
