@@ -35,8 +35,8 @@ const Homepage = () => {
       </div>
       
       </section>
-      {/* <Features /> 
-      <Aboutus /> */}
+      <Features /> 
+      <Aboutus />
       <Footer />
     
 
