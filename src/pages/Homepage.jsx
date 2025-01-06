@@ -1,47 +1,38 @@
-import React, { useState } from 'react'
-import Button from '../components/button';
-import Sample from './Sample';
-import Aboutus from './Aboutus';
-import Features from './Features';  
-import Footer from './Footer';
+import React, { useState } from "react";
+import Button from "../components/button";
+import Sample from "../components/Sample";
+import Aboutus from "./Aboutus";
+import Features from "./Features";
+import Footer from "../components/Footer";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Register from "./Register";
+import Navbar from "../components/Navbar";
 
 const Homepage = () => {
-  const [navbarState, setNavbarState] = useState(false);
-  
+
   return (
     <>
-    <section id='hero'>
-      <video src="src\images\hero.mp4" autoPlay loop muted></video>
-      <nav id='navbar'>
-        <div className='logo'>
-          <h1>ChainElect</h1>
+      <section id="hero">
+        <video src="src/images/hero.mp4" autoPlay loop muted></video>
+        <Navbar home="/" features="/#features" aboutus="/#aboutus" contactus="/#contactus" />
+
+        <div className="hero">
+          <h1>In-Cognito Voting</h1>
+          <p>
+            Lorem ipsum dolor sit a natus nemo consectetur numquam impedit
+            autem, aut debitis animi accusantium. Debitis nobis fugiat quo illo
+            numquam recusandae libero doloribus dignissimos ipsam, beatae sequi
+            culpa omnis accusantium inventore sint eius atque exercitationem.
+            Dolores expedita dolorum dicta fuga.
+          </p>
+          <Button name="Get Started" link="/register" />
         </div>
-        <ul className={navbarState ? 'nav active' : 'nav'}>
-          <li><a href="#">Home</a></li>
-          <li><a href="#features">Features</a></li>
-          <li><a href="#aboutus">About Us</a></li>
-          <li><a href="#contactus">Contact Us</a></li>
-        </ul>
-        <div className="hamburger" onClick={() => setNavbarState(!navbarState)}>
-          <div className="line"></div>
-          <div className="line"></div>
-          <div className="line"></div>
-        </div>
-      </nav>
-      <div className="hero">
-        <h1>In-Cognito Voting</h1>
-        <p>Lorem ipsum dolor sit a natus nemo consectetur numquam impedit autem, aut debitis animi accusantium. Debitis nobis fugiat quo illo numquam recusandae libero doloribus dignissimos ipsam, beatae sequi culpa omnis accusantium inventore sint eius atque exercitationem. Dolores expedita dolorum dicta fuga.</p>
-        <Button name='Get Started' link='/' />
-      </div>
-      
       </section>
-      <Features /> 
+      <Features />
       <Aboutus />
       <Footer />
-    
-
     </>
-  )
-}
+  );
+};
 
-export default Homepage
+export default Homepage;

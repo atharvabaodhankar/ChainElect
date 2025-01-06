@@ -30,6 +30,9 @@ html{
 .flex-d{
     flex-direction: column;
 }
+.grey-nav{
+    background-color: #3D3D3D !important;
+}
 .scroll-down #navbar {
     transform: translate3d(0, -100%, 0);
 }
@@ -180,6 +183,9 @@ line-height: 2.5rem;
 }
 #aboutus .h1{
     color: var(--graphite);
+}
+.aboutus-box-inner{
+    margin: 1rem 0;
 }
 .aboutus-box-inner p{
     color: var(--black);
@@ -356,6 +362,70 @@ line-height: 2.5rem;
     }
 }
 /* Footer End */
+/* Resiger */
+.register-section {
+    padding: 8rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+.register-container label{
+    color: var(--graphite);
+}
+.register-container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+}
+
+.register-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    color: var(--graphite);
+}
+
+.register-button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    background-color: var(--graphite);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.register-container h2{
+    color: var(--graphite);
+    margin-bottom: 2rem;
+    font-size: 3rem;
+}
+.register-button:hover {
+    background-color: #6d6d6d;
+}
+
+/* Resiger End */
 
 @media screen and (max-width:1024px) {
     
@@ -404,6 +474,15 @@ line-height: 2.5rem;
     .hero h1 {
         font-size: 10vw;
     }
+    .aboutus {
+        flex-direction: column;
+    }
+    .aboutus-desc {
+        width: 90%;
+    }
+    .h1 {
+        font-size: 7vw;
+    }
 }
 
 
@@ -413,5 +492,18 @@ line-height: 2.5rem;
         li{
             font-size: 2.5rem;
         }
+    }
+    .h1 {
+        font-size: 12vw;
+    }
+    .aboutus-box {
+        width: 90%;
+        height: 300px;
+    }
+    .aboutus-box-inner{
+        margin: 2rem 0;
+    }
+    .register-container{
+        width: 90%;
     }
 }

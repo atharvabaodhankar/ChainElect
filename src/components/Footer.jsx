@@ -1,14 +1,14 @@
 import React from "react";
-import Button from "../components/button";
+import Button from "./button";
 
 const Footer = () => {
   return (
     <section className="footer" id="footer">
-      <div class="waves">
-        <div class="wave" id="wave1"></div>
-        <div class="wave" id="wave2"></div>
-        <div class="wave" id="wave3"></div>
-        <div class="wave" id="wave4"></div>
+      <div className="waves">
+        <div className="wave" id="wave1"></div>
+        <div className="wave" id="wave2"></div>
+        <div className="wave" id="wave3"></div>
+        <div className="wave" id="wave4"></div>
       </div>
       <div className="footer-main">
         <div className="footer-content">
