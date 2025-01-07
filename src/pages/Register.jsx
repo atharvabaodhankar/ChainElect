@@ -28,7 +28,7 @@ const handleSubmit = async (e) => {
     formData.append('image', image);
 
     try {
-        const response = await fetch('http://localhost/save_voter.php', {
+        const response = await fetch('http://localhost/ChainElect/save_voter.php', {
             method: 'POST',
             body: formData,
         });
