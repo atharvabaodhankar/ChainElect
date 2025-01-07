@@ -11,23 +11,47 @@ const Register = () => {
     const [metamaskId, setMetamaskId] = useState('');
 
     // Handle form submission
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    // Handle form submission
+const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        if (password !== confirmPassword) {
-            alert('Passwords do not match!');
-            return;
+    if (password !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+    }
+
+    // Create FormData to send file and other form data
+    const formData = new FormData();
+    formData.append('voter_id', voterId);
+    formData.append('metamask_id', metamaskId);
+    formData.append('password', password);
+    formData.append('image', image);
+
+    try {
+        const response = await fetch('http://localhost/save_voter.php', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert('Registration Successful!');
+        } else {
+            alert('Registration Failed: ' + result.message);
         }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    }
+};
 
-        // You can handle form data here, e.g., sending to an API
-        alert('Registration Successful!');
-    };
 
     // Handle file input change
     const handleImageChange = (e) => {
         setImage(e.target.files[0]);
     };
-
+    
     return (
         <>
             <Navbar home="/" features="/#features" aboutus="/#aboutus" contactus="/#contactus" />
