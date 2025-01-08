@@ -7,6 +7,8 @@ import Footer from "../components/Footer";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Register from "./Register";
 import Navbar from "../components/Navbar";
+import Web3 from "web3";
+import Conn_web from "../components/conn_web";
 
 const Homepage = () => {
 
@@ -31,7 +33,8 @@ const Homepage = () => {
       <Features />
       <Aboutus />
       <Footer />
-    </>
+      <Conn_web />    
+      </>
   );
 };
 
