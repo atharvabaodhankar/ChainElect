@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
-    import Footer from '../components/Footer';
+import Footer from '../components/Footer';
 
 const Register = () => {
     // State to handle form inputs
@@ -9,55 +9,68 @@ const Register = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [image, setImage] = useState(null);
     const [metamaskId, setMetamaskId] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
     // Handle form submission
-    // Handle form submission
-const handleSubmit = async (e) => {
-    e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    if (password !== confirmPassword) {
-        alert('Passwords do not match!');
-        return;
-    }
-
-    // Create FormData to send file and other form data
-    const formData = new FormData();
-    formData.append('voter_id', voterId);
-    formData.append('metamask_id', metamaskId);
-    formData.append('password', password);
-    formData.append('image', image);
-
-    try {
-        const response = await fetch('http://localhost/ChainElect/save_voter.php', {
-            method: 'POST',
-            body: formData,
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            alert('Registration Successful!');
-        } else {
-            alert('Registration Failed: ' + result.message);
+        // Basic validation
+        if (!voterId || !metamaskId || !password || !confirmPassword || !image) {
+            setError('All fields are required!');
+            return;
         }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred. Please try again.');
-    }
-};
 
+        if (password !== confirmPassword) {
+            setError('Passwords do not match!');
+            return;
+        }
+
+        setError('');
+        setLoading(true); // Show loading state
+
+        // Create FormData to send file and other form data
+        const formData = new FormData();
+        formData.append('voter_id', voterId);
+        formData.append('metamask_id', metamaskId);
+        formData.append('password', password);
+        formData.append('image', image);
+
+        try {
+            const response = await fetch('http://localhost:3000/auth/register', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include', // Include cookies for session handling if needed
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert('Registration Successful!');
+            } else {
+                setError(result.message || 'Registration failed. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            setError('An error occurred. Please try again.');
+        } finally {
+            setLoading(false); // Hide loading state
+        }
+    };
 
     // Handle file input change
     const handleImageChange = (e) => {
         setImage(e.target.files[0]);
     };
-    
+
     return (
         <>
             <Navbar home="/" features="/#features" aboutus="/#aboutus" contactus="/#contactus" />
             <section className="register-section">
                 <div className="register-container">
                     <h2>Register to Vote</h2>
+                    {error && <p className="error-message">{error}</p>}
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
                             <label htmlFor="voterId">Voter ID</label>
@@ -111,9 +124,10 @@ const handleSubmit = async (e) => {
                                 onChange={handleImageChange}
                                 accept="image/*"
                             />
-                         
                         </div>
-                        <button type="submit" className="register-button">Register</button>
+                        <button type="submit" className="register-button" disabled={loading}>
+                            {loading ? 'Registering...' : 'Register'}
+                        </button>
                     </form>
                 </div>
             </section>
