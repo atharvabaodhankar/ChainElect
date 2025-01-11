@@ -2,7 +2,7 @@ const db = require('../models/db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const secretKey = 'your_secret_key';
+const secretKey = 'GxF4B9xKpN7dJ8fL6eI4cF8aS5dR6gT7yH8iJ9kL0pM1nO2qP3rS4tU5vW6xY7zA8bC9dE';
 
 exports.login = (req, res) => {
     const { voter_id, password } = req.body;

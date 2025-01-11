@@ -8,7 +8,7 @@ const authRoutes = require('./routes/auth');
 
 const app = express();
 
-app.use(cors({ origin: 'http://localhost:5174', credentials: true }));
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(session({
