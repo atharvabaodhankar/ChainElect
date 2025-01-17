@@ -427,6 +427,88 @@ line-height: 2.5rem;
 
 /* Resiger End */
 
+/* Voters Page  */
+/* General Page Styles */
+.voters-page {
+    display: flex; /* Use flexbox for centering */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    flex-direction: column; /* Stack header and content vertically */
+    padding: 50px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    min-height: 100vh;
+    font-family: "Arial", sans-serif;
+    text-align: center;
+  }
+  
+  /* Header */
+  .voters-page h1 {
+    font-size: 2.5rem;
+    color: #495057;
+    margin-bottom: 30px;
+  }
+  
+  /* Candidate Container */
+  .candidates-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px; /* Space between boxes */
+  }
+  
+  /* Individual Candidate Box */
+  .candidate-box {
+    width: 280px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 20px;
+  }
+
+  .candidate-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Candidate Info */
+  .candidate-box h2 {
+    font-size: 1.5rem;
+    color: #343a40;
+    margin: 0;
+    text-transform: capitalize;
+  }
+  
+  .candidate-box p {
+    font-size: 1rem;
+    color: #6c757d;
+    margin: 5px 0;
+  }
+  
+  /* Vote Button */
+  .candidate-box button {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .candidate-box button:hover {
+    background-color: #0056b3;
+  }
+  
+/*Voters End */
 @media screen and (max-width:1024px) {
     
 }
