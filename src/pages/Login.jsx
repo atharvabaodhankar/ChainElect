@@ -20,7 +20,7 @@ const Login = () => {
     setErrorMessage('');
 
     try {
-      const response = await fetch('http://localhost:3000/login', {
+      const response = await fetch('http://localhost:3000/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -34,6 +34,7 @@ const Login = () => {
       const result = await response.json();
 
       if (response.ok) {
+        document.cookie = `authToken=${result.token}; path=/`;
         alert('Login Successful!');
         navigate('/voters');  // Redirect to Voters.jsx on successful login
       } else {
