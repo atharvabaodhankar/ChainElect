@@ -2,7 +2,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 
 const PrivateRoute = ({ children }) => {
-  const isAuthenticated = document.cookie.split(';').some((item) => item.trim().startsWith('authToken='));
+  const isAuthenticated = !!localStorage.getItem('voter_id'); // Check if voter_id exists
 
   return isAuthenticated ? children : <Navigate to="/login" />;
 };

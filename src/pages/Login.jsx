@@ -1,22 +1,16 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';  // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 const Login = () => {
-  // State for login inputs
   const [voterId, setVoterId] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-
-  // Initialize useNavigate
   const navigate = useNavigate();
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Reset error message
     setErrorMessage('');
 
     try {
@@ -25,18 +19,15 @@ const Login = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          voter_id: voterId,
-          password,
-        }),
+        body: JSON.stringify({ voter_id: voterId, password }),
       });
 
       const result = await response.json();
 
       if (response.ok) {
-        document.cookie = `authToken=${result.token}; path=/`;
+        localStorage.setItem('voter_id', voterId);
         alert('Login Successful!');
-        navigate('/voters');  // Redirect to Voters.jsx on successful login
+        navigate('/voters');
       } else {
         setErrorMessage(result.message || 'Login failed. Please try again.');
       }

@@ -4,7 +4,6 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const mysql = require('mysql');
 
 const app = express();
@@ -67,42 +66,53 @@ app.post('/auth/register', async (req, res) => {
 app.post('/auth/login', (req, res) => {
     const { voter_id, password } = req.body;
 
+    if (!voter_id || !password) {
+        return res.status(400).json({ success: false, message: 'All fields are required' });
+    }
+
     db.query('SELECT * FROM voters WHERE voter_id = ?', [voter_id], async (err, results) => {
-        if (err) return res.status(500).json({ success: false, message: 'Database error' });
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ success: false, message: 'Database error' });
+        }
+
+        if (results.length === 0) {
+            return res.status(401).json({ success: false, message: 'Invalid credentials' });
+        }
+
+        const voter = results[0];
+        const isMatch = await bcrypt.compare(password, voter.password);
+
+        if (!isMatch) {
+            return res.status(401).json({ success: false, message: 'Invalid credentials' });
+        }
+
+        req.session.voter_id = voter.voter_id;
+        res.json({ success: true, message: 'Login successful' });
+    });
+});
+
+app.post('/auth/logout', (req, res) => {
+    req.session.destroy();
+    res.json({ success: true, message: 'Logged out successfully' });
+});
+
+// New route to fetch user information
+app.get('/voters/:voter_id', (req, res) => {
+    const { voter_id } = req.params;
+
+    db.query('SELECT voter_id, metamask_id FROM voters WHERE voter_id = ?', [voter_id], (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ success: false, message: 'Database error' });
+        }
 
         if (results.length === 0) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        const user = results[0];
-        const isMatch = await bcrypt.compare(password, user.password);
-
-        if (!isMatch) {
-            return res.status(401).json({ success: false, message: 'Invalid password' });
-        }
-
-        const token = jwt.sign({ voter_id: user.voter_id }, secretKey, { expiresIn: '1h' });
-        res.cookie('authToken', token, { httpOnly: true }).json({ success: true, message: 'Login successful' });
+        res.json(results[0]);
     });
-});
-
-app.get('/auth/check-session', (req, res) => {
-    const token = req.cookies.authToken;
-
-    if (!token) {
-        return res.status(401).json({ success: false, message: 'Not authenticated' });
-    }
-
-    try {
-        const decoded = jwt.verify(token, secretKey);
-        res.json({ success: true, message: 'Authenticated', voter_id: decoded.voter_id });
-    } catch (err) {
-        res.status(401).json({ success: false, message: 'Invalid token' });
-    }
-});
-
-app.post('/auth/logout', (req, res) => {
-    res.clearCookie('authToken').json({ success: true, message: 'Logout successful' });
 });
 
 // Start server
