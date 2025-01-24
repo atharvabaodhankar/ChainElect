@@ -5,13 +5,15 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Voters from './pages/Voters';
 import PrivateRoute from './components/PrivateRoute';
+import VotersPage from './pages/VotersPage';
 
 const App = () => {
   return (
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/voterspage" element={<VotersPage />} />
         <Route
           path="/voters"
           element={
