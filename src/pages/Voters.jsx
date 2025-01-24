@@ -12,6 +12,7 @@ const Voters = () => {
     { id: 4, name: "Diana Prince", votes: 0 },
   ]);
   const [userInfo, setUserInfo] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   // Function to handle voting
@@ -24,61 +25,8 @@ const Voters = () => {
       )
     );
   };
-  useEffect(() => {
-    if (window.ethereum) {
-      window.ethereum.on("accountsChanged", handleLogout);
-    }
 
-    return () => {
-      if (window.ethereum) {
-        window.ethereum.removeListener("accountsChanged", handleLogout);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      const voterId = localStorage.getItem("voter_id");
-      try {
-        const response = await fetch(`http://localhost:3000/voters/${voterId}`);
-        const data = await response.json();
-        setUserInfo(data);
-      } catch (error) {
-        console.error("Error fetching user info:", error);
-      }
-    };
-
-    fetchUserInfo();
-  }, []);
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      const voterId = localStorage.getItem("voter_id");
-      try {
-        const response = await fetch(`http://localhost:3000/voters/${voterId}`);
-        const data = await response.json();
-        setUserInfo(data);
-
-        // Fetch current Metamask ID
-        if (window.ethereum) {
-          const accounts = await window.ethereum.request({
-            method: "eth_accounts",
-          });
-          const currentMetamaskId = accounts[0];
-
-          // Compare Metamask IDs
-          if (currentMetamaskId !== data.metamask_id) {
-            setErrorMessage("Metamask ID does not match");
-            handleLogout();
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching user info:", error);
-      }
-    };
-
-    fetchUserInfo();
-  }, []);
-
+  // Function to handle logout
   const handleLogout = async () => {
     try {
       const response = await fetch("http://localhost:3000/auth/logout", {
@@ -97,6 +45,53 @@ const Voters = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const voterId = localStorage.getItem("voter_id");
+      try {
+        const response = await fetch(`http://localhost:3000/voters/${voterId}`);
+        const data = await response.json();
+        setUserInfo(data);
+
+        // Fetch current Metamask ID
+        if (window.ethereum) {
+          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+          const currentMetamaskId = accounts[0].toLowerCase();
+
+          // Compare Metamask IDs
+          if (currentMetamaskId !== data.metamask_id.toLowerCase()) {
+            alert('Metamask ID does not match');
+            handleLogout();
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
+  useEffect(() => {
+    if (window.ethereum) {
+      window.ethereum.on('accountsChanged', handleLogout);
+    }
+
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener('accountsChanged', handleLogout);
+      }
+    };
+  }, []);
+
+  // Callback function to update userInfo with the latest Metamask ID
+  const updateMetamaskId = (newMetamaskId) => {
+    setUserInfo((prevUserInfo) => ({
+      ...prevUserInfo,
+      metamask_id: newMetamaskId,
+    }));
+  };
+
   return (
     <div>
       <Navbar
@@ -108,6 +103,7 @@ const Voters = () => {
       <div className="voters-page">
         <h1>Voters Page</h1>
         <p>Welcome to the Voters page.</p>
+        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         {userInfo && (
           <div>
             <h2>User Information</h2>
@@ -115,7 +111,7 @@ const Voters = () => {
             <p>Metamask ID: {userInfo.metamask_id}</p>
           </div>
         )}
-        <Conn_web />
+        <Conn_web updateMetamaskId={updateMetamaskId} />
         <button onClick={handleLogout} className="logout-btn">
           Logout
         </button>

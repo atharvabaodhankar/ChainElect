@@ -588,7 +588,15 @@ line-height: 2.5rem;
 .logout-btn:hover {
     background-color: #c82333;
 }
-
+.error-message {
+    color: red;
+    background-color: #ffe6e6;
+    border: 1px solid red;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    text-align: center;
+  }
   
 /*Voters End */
 @media screen and (max-width:1024px) {
