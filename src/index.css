@@ -541,14 +541,14 @@ line-height: 2.5rem;
   
   /* Candidate Info */
   .candidate-box h2 {
-    font-size: 1.5rem;
+    font-size: 2rem;
     color: #343a40;
     margin: 0;
     text-transform: capitalize;
   }
   
   .candidate-box p {
-    font-size: 1rem;
+    font-size: 1.6rem;
     color: #6c757d;
     margin: 5px 0;
   }
@@ -562,13 +562,33 @@ line-height: 2.5rem;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1.6rem;
     transition: background-color 0.3s ease;
   }
   
   .candidate-box button:hover {
     background-color: #0056b3;
   }
+  .voters-page p{
+    color: #000;
+    font-size: 2rem;
+  }
+.logout-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.7rem;
+    transition: background-color 0.3s ease;
+}
+
+.logout-btn:hover {
+    background-color: #c82333;
+}
+
   
 /*Voters End */
 @media screen and (max-width:1024px) {
