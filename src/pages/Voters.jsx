@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import Conn_web from "../components/conn_web";
+import Conn_web from "../components/Conn_web";
 import Web3 from "web3";
 
 const Voters = () => {
