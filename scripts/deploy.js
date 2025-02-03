@@ -20,10 +20,28 @@ async function main() {
   const myContract = await MyContract.deploy({
     data: contractJson.bytecode,
   }).send({
-    from: owner
+    from: owner,
+    gas: 5000000, // Set a gas limit
+    gasPrice: '30000000000' // Set a gas price
   });
 
   console.log("MyContract deployed to:", myContract.options.address);
+
+  // Add candidates
+  await myContract.methods.addCandidate("Alice Johnson").send({ from: owner });
+  await myContract.methods.addCandidate("Bob Smith").send({ from: owner });
+  await myContract.methods.addCandidate("Charlie Brown").send({ from: owner });
+  await myContract.methods.addCandidate("Diana Prince").send({ from: owner });
+
+  console.log("Candidates added successfully!");
+
+  // Save the deployed address to MyContract.json
+  contractJson.networks = {
+    "31337": {
+      "address": myContract.options.address
+    }
+  };
+  fs.writeFileSync(contractPath, JSON.stringify(contractJson, null, 2));
 }
 
 main()

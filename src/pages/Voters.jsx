@@ -3,27 +3,76 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Conn_web from "../components/Conn_web";
 import Web3 from "web3";
+import MyContract from "../../artifacts/contracts/MyContract.sol/MyContract.json";
 
 const Voters = () => {
-  const [candidates, setCandidates] = useState([
-    { id: 1, name: "Alice Johnson", votes: 0 },
-    { id: 2, name: "Bob Smith", votes: 0 },
-    { id: 3, name: "Charlie Brown", votes: 0 },
-    { id: 4, name: "Diana Prince", votes: 0 },
-  ]);
+  const [candidates, setCandidates] = useState([]);
   const [userInfo, setUserInfo] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
+  const [contract, setContract] = useState(null);
+  const [accounts, setAccounts] = useState([]);
+
+  useEffect(() => {
+    const fetchCandidates = async () => {
+      try {
+        const web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
+        const networkId = await web3.eth.net.getId();
+        console.log("Network ID:", networkId); // Log the network ID
+        const deployedNetwork = MyContract.networks[networkId];
+        if (!deployedNetwork) {
+          console.error("Contract not deployed on the current network");
+          return;
+        }
+        const contract = new web3.eth.Contract(
+          MyContract.abi,
+          deployedNetwork && deployedNetwork.address
+        );
+
+        const candidatesCount = await contract.methods.getCandidatesCount().call();
+        console.log("Candidates Count:", candidatesCount); // Logging candidates count
+        const candidatesArray = [];
+
+        for (let i = 0; i < candidatesCount; i++) {
+          const candidate = await contract.methods.getCandidate(i + 1).call();
+          console.log("Fetched Candidate:", candidate); // Logging each candidate
+          candidatesArray.push({ id: i + 1, name: candidate[0], votes: candidate[1] });
+        }
+
+        setCandidates(candidatesArray);
+        setContract(contract);
+        const accounts = await web3.eth.getAccounts();
+        setAccounts(accounts);
+      } catch (error) {
+        console.error("Error fetching candidates: ", error);
+        setErrorMessage("Failed to fetch candidates.");
+      }
+    };
+
+    fetchCandidates();
+  }, []);
 
   // Function to handle voting
-  const handleVote = (id) => {
-    setCandidates((prevCandidates) =>
-      prevCandidates.map((candidate) =>
-        candidate.id === id
-          ? { ...candidate, votes: candidate.votes + 1 }
-          : candidate
-      )
-    );
+  const handleVote = async (id) => {
+    if (!id) {
+      setMessage("Please enter a candidate ID.");
+      return;
+    }
+
+    try {
+      await contract.methods.vote(id).send({ from: accounts[0] });
+      setMessage("Vote cast successfully!");
+      setCandidates((prevCandidates) =>
+        prevCandidates.map((candidate) =>
+          candidate.id === id
+            ? { ...candidate, votes: candidate.votes + 1 }
+            : candidate
+        )
+      );
+    } catch (error) {
+      setMessage("Error casting vote.");
+    }
   };
 
   // Function to handle logout
@@ -122,10 +171,11 @@ const Voters = () => {
               <h2>{candidate.name}</h2>
               <p>Index: {candidate.id}</p>
               <p>Votes: {candidate.votes}</p>
-              <button onClick={() => handleVote(candidate.id)}>Add Vote</button>
+              <button onClick={() => handleVote(candidate.id)}>Vote Now</button>
             </div>
           ))}
         </div>
+        <p>{message}</p>
       </div>
     </div>
   );

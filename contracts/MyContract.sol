@@ -9,11 +9,12 @@ contract MyContract {
     struct Voter {
         bool isRegistered;
         bool hasVoted;
-        uint256 votedTo;
+        uint256 votedFor;
     }
 
     // Candidate structure
     struct Candidate {
+        uint256 id;
         string name;
         uint256 voteCount;
     }
@@ -21,8 +22,9 @@ contract MyContract {
     // Mapping of voter addresses
     mapping(address => Voter) public voters;
 
-    // Array of candidates
-    Candidate[] public candidates;
+    // Mapping of candidates
+    mapping(uint256 => Candidate) public candidates;
+    uint256 public candidatesCount;
 
     // Voting status
     bool public votingStarted;
@@ -53,15 +55,16 @@ contract MyContract {
     }
 
     // Function to add a candidate
-    function addCandidate(string memory _name) public onlyOwner {
-        candidates.push(Candidate({ name: _name, voteCount: 0 }));
-        emit CandidateAdded(_name);
+    function addCandidate(string memory name) public onlyOwner {
+        candidatesCount++;
+        candidates[candidatesCount] = Candidate(candidatesCount, name, 0);
+        emit CandidateAdded(name);
     }
 
     // Function to register a voter
     function registerVoter(address _voter) public onlyOwner {
         require(!voters[_voter].isRegistered, "Voter is already registered.");
-        voters[_voter] = Voter({ isRegistered: true, hasVoted: false, votedTo: 0 });
+        voters[_voter] = Voter({ isRegistered: true, hasVoted: false, votedFor: 0 });
         emit VoterRegistered(_voter);
     }
 
@@ -82,19 +85,19 @@ contract MyContract {
     }
 
     // Function to cast a vote
-    function vote(uint256 _candidateId) public votingActive {
+    function vote(uint256 candidateId) public votingActive {
         require(voters[msg.sender].isRegistered, "You are not a registered voter.");
         require(!voters[msg.sender].hasVoted, "You have already voted.");
-        require(_candidateId < candidates.length, "Invalid candidate ID.");
+        require(candidateId > 0 && candidateId <= candidatesCount, "Invalid candidate.");
 
         // Record the vote
         voters[msg.sender].hasVoted = true;
-        voters[msg.sender].votedTo = _candidateId;
+        voters[msg.sender].votedFor = candidateId;
 
         // Increment the candidate's vote count
-        candidates[_candidateId].voteCount++;
+        candidates[candidateId].voteCount++;
 
-        emit Voted(msg.sender, _candidateId);
+        emit Voted(msg.sender, candidateId);
     }
 
     // Function to get the winner(s)
@@ -104,7 +107,7 @@ contract MyContract {
         uint256 highestVotes = 0;
         string memory name;
 
-        for (uint256 i = 0; i < candidates.length; i++) {
+        for (uint256 i = 1; i <= candidatesCount; i++) {
             if (candidates[i].voteCount > highestVotes) {
                 highestVotes = candidates[i].voteCount;
                 name = candidates[i].name;
@@ -116,6 +119,13 @@ contract MyContract {
 
     // Get total number of candidates
     function getCandidatesCount() public view returns (uint256) {
-        return candidates.length;
+        return candidatesCount;
+    }
+
+    // Function to get candidate details
+    function getCandidate(uint256 candidateId) public view returns (string memory, uint256) {
+        require(candidateId > 0 && candidateId <= candidatesCount, "Invalid candidate ID.");
+        Candidate memory candidate = candidates[candidateId];
+        return (candidate.name, candidate.voteCount);
     }
 }
