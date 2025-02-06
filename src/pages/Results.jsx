@@ -67,15 +67,28 @@ const Results = () => {
     <div className="results-container">
       <h1>Election Results</h1>
       
-      {candidates.length > 0 ? (
+      {candidates.length > 0 && (
         <div className="winner-section">
-          <h2>Current Leader</h2>
-          <div className="winner-card">
-            <h3>{candidates[0].name}</h3>
-            <p>Total Votes: {candidates[0].voteCount.toString()}</p>
-          </div>
+          <h2>Current Leader{candidates.length > 1 && candidates[0].voteCount === candidates[1].voteCount ? 's (Tie)' : ''}</h2>
+          {candidates.length > 1 && candidates[0].voteCount === candidates[1].voteCount ? (
+            // Show tied candidates
+            <div className="tied-leaders">
+              {candidates.filter(c => c.voteCount === candidates[0].voteCount).map(leader => (
+                <div key={leader.id} className="winner-card">
+                  <h3>{leader.name}</h3>
+                  <p>Total Votes: {leader.voteCount.toString()}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            // Show single leader
+            <div className="winner-card">
+              <h3>{candidates[0].name}</h3>
+              <p>Total Votes: {candidates[0].voteCount.toString()}</p>
+            </div>
+          )}
         </div>
-      ) : null}
+      )}
 
       <div className="all-results">
         <h2>All Candidates</h2>
