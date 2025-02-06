@@ -116,20 +116,22 @@ const Voters = () => {
     const fetchUserInfo = async () => {
       const voterId = localStorage.getItem("voter_id");
       try {
+        // Get current Metamask accounts first
+        let currentMetamaskId = '';
+        if (window.ethereum) {
+          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+          currentMetamaskId = accounts[0].toLowerCase();
+        }
+
+        // Then fetch user info and compare with current Metamask ID
         const response = await fetch(`http://localhost:3000/voters/${voterId}`);
         const data = await response.json();
         setUserInfo(data);
 
-        // Fetch current Metamask ID
-        if (window.ethereum) {
-          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-          const currentMetamaskId = accounts[0].toLowerCase();
-
-          // Compare Metamask IDs
-          if (currentMetamaskId !== data.metamask_id.toLowerCase()) {
-            alert('Metamask ID does not match');
-            handleLogout();
-          }
+        // Compare with current Metamask ID
+        if (currentMetamaskId && currentMetamaskId !== data.metamask_id.toLowerCase()) {
+          alert('Metamask ID does not match');
+          handleLogout();
         }
       } catch (error) {
         console.error("Error fetching user info:", error);
