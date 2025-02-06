@@ -44,7 +44,7 @@ contract MyContract {
 
     // Modifier to allow only owner to perform certain actions
     modifier onlyOwner() {
-        require(msg.sender == owner, "Only the owner can perform this action.");
+        assert(msg.sender == owner);
         _;
     }
 
@@ -55,7 +55,7 @@ contract MyContract {
     }
 
     // Function to add a candidate
-    function addCandidate(string memory name) public onlyOwner {
+    function addCandidate(string calldata name) public onlyOwner {
         candidatesCount++;
         candidates[candidatesCount] = Candidate(candidatesCount, name, 0);
         emit CandidateAdded(name);
@@ -86,7 +86,6 @@ contract MyContract {
 
     // Function to cast a vote
     function vote(uint256 candidateId) public votingActive {
-        require(voters[msg.sender].isRegistered, "You are not a registered voter.");
         require(!voters[msg.sender].hasVoted, "You have already voted.");
         require(candidateId > 0 && candidateId <= candidatesCount, "Invalid candidate.");
 

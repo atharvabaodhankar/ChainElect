@@ -61,17 +61,35 @@ const Voters = () => {
     }
 
     try {
+      // Check if user has already voted before attempting to vote
+      const voter = await contract.methods.voters(accounts[0]).call();
+      if (voter.hasVoted) {
+        alert("You have already cast your vote!");
+        return;
+      }
+
       await contract.methods.vote(id).send({ from: accounts[0] });
       setMessage("Vote cast successfully!");
       setCandidates((prevCandidates) =>
         prevCandidates.map((candidate) =>
           candidate.id === id
-            ? { ...candidate, votes: candidate.votes + 1 }
+            ? { ...candidate, votes: BigInt(candidate.votes) + BigInt(1) }
             : candidate
         )
       );
     } catch (error) {
-      setMessage("Error casting vote.");
+      // Extract the revert reason from the error
+      if (error.message.includes('You have already voted')) {
+        alert("You have already cast your vote!");
+        setMessage("Error: You have already cast your vote.");
+      } else if (error.message.includes('Voting is not active')) {
+        setMessage("Error: Voting is not currently active.");
+      } else if (error.message.includes('Invalid candidate')) {
+        setMessage("Error: Invalid candidate selection.");
+      } else {
+        setMessage("Error: Failed to cast vote. Please try again.");
+      }
+      console.error("Error casting vote:", error);
     }
   };
 
@@ -170,7 +188,7 @@ const Voters = () => {
             <div key={candidate.id} className="candidate-box">
               <h2>{candidate.name}</h2>
               <p>Index: {candidate.id}</p>
-              <p>Votes: {candidate.votes}</p>
+              <p>Votes: {candidate.votes.toString()}</p>
               <button onClick={() => handleVote(candidate.id)}>Vote Now</button>
             </div>
           ))}

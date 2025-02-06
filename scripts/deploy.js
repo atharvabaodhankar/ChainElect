@@ -35,6 +35,11 @@ async function main() {
 
   console.log("Candidates added successfully!");
 
+  // Start voting
+  await myContract.methods.startVoting().send({ from: owner });
+  console.log("Voting started successfully!");
+
+
   // Save the deployed address to MyContract.json
   contractJson.networks = {
     "31337": {

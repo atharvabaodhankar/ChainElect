@@ -4,7 +4,7 @@ import Sample from "../components/Sample";
 import Aboutus from "./Aboutus";
 import Features from "./Features";
 import Footer from "../components/Footer";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
 import Register from "./Register";
 import Navbar from "../components/Navbar";
 import Web3 from "web3";
@@ -18,15 +18,17 @@ const Homepage = () => {
         <Navbar home="/" features="/#features" aboutus="/#aboutus" contactus="/#contactus" />
 
         <div className="hero">
-          <h1>In-Cognito Voting</h1>
+          <h1>Chain Elect <br /><span>Secure Voting System</span></h1>
           <p>
-            Lorem ipsum dolor sit a natus nemo consectetur numquam impedit
-            autem, aut debitis animi accusantium. Debitis nobis fugiat quo illo
-            numquam recusandae libero doloribus dignissimos ipsam, beatae sequi
-            culpa omnis accusantium inventore sint eius atque exercitationem.
-            Dolores expedita dolorum dicta fuga.
+            Welcome to Chain Elect, a blockchain-based voting system that ensures
+            secure, transparent, and tamper-proof elections. Your vote matters, and
+            we make sure it counts.
           </p>
-          <Button name="Get Started" link="/register" />
+          <div className="hero-buttons">
+            <Link to="/login" className="button">Login to Vote</Link>
+            <Link to="/register" className="button">Register Now</Link>
+            <Link to="/results" className="button">View Results</Link>
+          </div>
         </div>
       </section>
       <Features />
