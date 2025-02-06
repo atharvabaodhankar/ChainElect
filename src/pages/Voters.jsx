@@ -61,14 +61,37 @@ const Voters = () => {
     }
 
     try {
+      // Request account access and reinitialize Web3
+      const currentAccounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      if (!currentAccounts || currentAccounts.length === 0) {
+        setMessage("Error: No Metamask account connected.");
+        return;
+      }
+      const currentAccount = currentAccounts[0];
+
+      // Reinitialize Web3 and contract
+      const web3 = new Web3(window.ethereum);
+      const networkId = await web3.eth.net.getId();
+      const deployedNetwork = MyContract.networks[networkId];
+      
+      if (!deployedNetwork) {
+        setMessage("Error: Contract not deployed on the current network");
+        return;
+      }
+
+      const contractInstance = new web3.eth.Contract(
+        MyContract.abi,
+        deployedNetwork.address
+      );
+
       // Check if user has already voted before attempting to vote
-      const voter = await contract.methods.voters(accounts[0]).call();
+      const voter = await contractInstance.methods.voters(currentAccount).call();
       if (voter.hasVoted) {
         alert("You have already cast your vote!");
         return;
       }
 
-      await contract.methods.vote(id).send({ from: accounts[0] });
+      await contractInstance.methods.vote(id).send({ from: currentAccount });
       setMessage("Vote cast successfully!");
       setCandidates((prevCandidates) =>
         prevCandidates.map((candidate) =>
