@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Web3 from "web3";
 import MyContract from "../../artifacts/contracts/MyContract.sol/MyContract.json";
+import Navbar from "../components/Navbar";
 
 const Results = () => {
   const [candidates, setCandidates] = useState([]);
@@ -64,50 +65,84 @@ const Results = () => {
   }
 
   return (
-    <div className="results-container">
-      <h1>Election Results</h1>
-      
-      {candidates.length > 0 && (
-        <div className="winner-section">
-          <h2>Current Leader{candidates.length > 1 && candidates[0].voteCount === candidates[1].voteCount ? 's (Tie)' : ''}</h2>
-          {candidates.length > 1 && candidates[0].voteCount === candidates[1].voteCount ? (
-            // Show tied candidates
-            <div className="tied-leaders">
-              {candidates.filter(c => c.voteCount === candidates[0].voteCount).map(leader => (
-                <div key={leader.id} className="winner-card">
-                  <h3>{leader.name}</h3>
-                  <p>Total Votes: {leader.voteCount.toString()}</p>
+    <>
+      <Navbar
+        home="/"
+        features="/#features"
+        aboutus="/#aboutus"
+        contactus="/#contactus"
+      />
+      <div className="results-container">
+        <h1 className="results-title">Election Results</h1>
+        
+        {candidates.length > 0 && (
+          <div className="winner-section">
+            <h2 className="section-title">
+              Current Leader{candidates.length > 1 && candidates[0].voteCount === candidates[1].voteCount ? 's (Tie)' : ''}
+            </h2>
+            {candidates.length > 1 && candidates[0].voteCount === candidates[1].voteCount ? (
+              <div className="tied-leaders">
+                {candidates.filter(c => c.voteCount === candidates[0].voteCount).map(leader => (
+                  <div key={leader.id} className="winner-card">
+                    <div className="winner-badge">🏆</div>
+                    <h3 className="candidate-name">{leader.name}</h3>
+                    <div className="vote-count">
+                      <span className="vote-number">{leader.voteCount.toString()}</span>
+                      <span className="vote-label">Votes</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="winner-card">
+                <div className="winner-badge">🏆</div>
+                <h3 className="candidate-name">{candidates[0].name}</h3>
+                <div className="vote-count">
+                  <span className="vote-number">{candidates[0].voteCount.toString()}</span>
+                  <span className="vote-label">Votes</span>
                 </div>
-              ))}
-            </div>
-          ) : (
-            // Show single leader
-            <div className="winner-card">
-              <h3>{candidates[0].name}</h3>
-              <p>Total Votes: {candidates[0].voteCount.toString()}</p>
-            </div>
-          )}
-        </div>
-      )}
+              </div>
+            )}
+          </div>
+        )}
 
-      <div className="all-results">
-        <h2>All Candidates</h2>
-        <div className="candidates-grid">
-          {candidates.map((candidate) => (
-            <div key={candidate.id} className="candidate-card">
-              <h3>{candidate.name}</h3>
-              <p>Position: #{candidate.id}</p>
-              <p>Total Votes: {candidate.voteCount.toString()}</p>
-              <p>Percentage: {
-                candidates.reduce((sum, c) => sum + Number(c.voteCount), 0) > 0
-                  ? ((Number(candidate.voteCount) / candidates.reduce((sum, c) => sum + Number(c.voteCount), 0)) * 100).toFixed(2)
-                  : "0"
-              }%</p>
-            </div>
-          ))}
+        <div className="all-results">
+          <h2 className="section-title">All Candidates</h2>
+          <div className="candidates-grid">
+            {candidates.map((candidate, index) => (
+              <div key={candidate.id} className="candidate-card">
+                <div className="position-badge">#{index + 1}</div>
+                <h3 className="candidate-name">{candidate.name}</h3>
+                <div className="candidate-stats">
+                  <div className="stat-item">
+                    <span className="stat-label">Total Votes:</span>
+                    <span className="stat-value">{candidate.voteCount.toString()}</span>
+                  </div>
+                  <div className="stat-item">
+                    <span className="stat-label">Percentage:</span>
+                    <span className="stat-value">
+                      {candidates.reduce((sum, c) => sum + Number(c.voteCount), 0) > 0
+                        ? ((Number(candidate.voteCount) / candidates.reduce((sum, c) => sum + Number(c.voteCount), 0)) * 100).toFixed(2)
+                        : "0"}%
+                    </span>
+                  </div>
+                  <div className="vote-bar">
+                    <div 
+                      className="vote-bar-fill"
+                      style={{
+                        width: `${candidates.reduce((sum, c) => sum + Number(c.voteCount), 0) > 0
+                          ? ((Number(candidate.voteCount) / candidates.reduce((sum, c) => sum + Number(c.voteCount), 0)) * 100)
+                          : 0}%`
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
