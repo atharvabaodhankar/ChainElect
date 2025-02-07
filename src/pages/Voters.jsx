@@ -19,7 +19,7 @@ const Voters = () => {
       try {
         const web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
         const networkId = await web3.eth.net.getId();
-        console.log("Network ID:", networkId); // Log the network ID
+        console.log("Network ID:", networkId);
         const deployedNetwork = MyContract.networks[networkId];
         if (!deployedNetwork) {
           console.error("Contract not deployed on the current network");
@@ -30,13 +30,39 @@ const Voters = () => {
           deployedNetwork && deployedNetwork.address
         );
 
+        // Check voting status
+        const votingStarted = await contract.methods.votingStarted().call();
+        const votingEnded = await contract.methods.votingEnded().call();
+        const remainingTime = await contract.methods.getRemainingTime().call();
+
+        if (!votingStarted) {
+          setMessage("Voting has not started yet. Please wait for the admin to start the voting.");
+          return;
+        }
+
+        if (votingEnded || remainingTime === "0") {
+          setMessage("Voting has ended. Please check the results page.");
+          navigate("/results");
+          return;
+        }
+
+        // Set up timer to check remaining time
+        const timer = setInterval(async () => {
+          const timeLeft = await contract.methods.getRemainingTime().call();
+          if (timeLeft === "0") {
+            setMessage("Voting has ended. Please check the results page.");
+            navigate("/results");
+            clearInterval(timer);
+          }
+        }, 60000); // Check every minute
+
         const candidatesCount = await contract.methods.getCandidatesCount().call();
-        console.log("Candidates Count:", candidatesCount); // Logging candidates count
+        console.log("Candidates Count:", candidatesCount);
         const candidatesArray = [];
 
         for (let i = 0; i < candidatesCount; i++) {
           const candidate = await contract.methods.getCandidate(i + 1).call();
-          console.log("Fetched Candidate:", candidate); // Logging each candidate
+          console.log("Fetched Candidate:", candidate);
           candidatesArray.push({ id: i + 1, name: candidate[0], votes: candidate[1] });
         }
 
@@ -44,6 +70,9 @@ const Voters = () => {
         setContract(contract);
         const accounts = await web3.eth.getAccounts();
         setAccounts(accounts);
+
+        // Clean up timer on unmount
+        return () => clearInterval(timer);
       } catch (error) {
         console.error("Error fetching candidates: ", error);
         setErrorMessage("Failed to fetch candidates.");
@@ -51,7 +80,7 @@ const Voters = () => {
     };
 
     fetchCandidates();
-  }, []);
+  }, [navigate]);
 
   // Function to handle voting
   const handleVote = async (id) => {
@@ -61,15 +90,6 @@ const Voters = () => {
     }
 
     try {
-      // Request account access and reinitialize Web3
-      const currentAccounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      if (!currentAccounts || currentAccounts.length === 0) {
-        setMessage("Error: No Metamask account connected.");
-        return;
-      }
-      const currentAccount = currentAccounts[0];
-
-      // Reinitialize Web3 and contract
       const web3 = new Web3(window.ethereum);
       const networkId = await web3.eth.net.getId();
       const deployedNetwork = MyContract.networks[networkId];
@@ -84,35 +104,48 @@ const Voters = () => {
         deployedNetwork.address
       );
 
-      // Check if user has already voted before attempting to vote
+      // Check if voting is still active
+      const remainingTime = await contractInstance.methods.getRemainingTime().call();
+      if (remainingTime === "0") {
+        setMessage("Voting has ended. Please check the results page.");
+        navigate("/results");
+        return;
+      }
+
+      const currentAccounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      if (!currentAccounts || currentAccounts.length === 0) {
+        setMessage("Error: No MetaMask account connected.");
+        return;
+      }
+      const currentAccount = currentAccounts[0];
+
+      // Check if user is registered
       const voter = await contractInstance.methods.voters(currentAccount).call();
+      if (!voter.isRegistered) {
+        setMessage("Error: You are not registered to vote. Please contact an admin to register.");
+        return;
+      }
+
       if (voter.hasVoted) {
-        alert("You have already cast your vote!");
+        setMessage("You have already cast your vote!");
         return;
       }
 
       await contractInstance.methods.vote(id).send({ from: currentAccount });
       setMessage("Vote cast successfully!");
-      setCandidates((prevCandidates) =>
-        prevCandidates.map((candidate) =>
-          candidate.id === id
-            ? { ...candidate, votes: BigInt(candidate.votes) + BigInt(1) }
-            : candidate
-        )
-      );
+      window.location.reload();
     } catch (error) {
-      // Extract the revert reason from the error
-      if (error.message.includes('You have already voted')) {
-        alert("You have already cast your vote!");
-        setMessage("Error: You have already cast your vote.");
-      } else if (error.message.includes('Voting is not active')) {
-        setMessage("Error: Voting is not currently active.");
-      } else if (error.message.includes('Invalid candidate')) {
-        setMessage("Error: Invalid candidate selection.");
+      console.error("Error casting vote:", error);
+      if (error.message.includes('Voting period has ended')) {
+        setMessage("Voting period has ended. Please check the results page.");
+        navigate("/results");
+      } else if (error.message.includes('Voter is not registered')) {
+        setMessage("You are not registered to vote. Please contact an admin.");
+      } else if (error.message.includes('You have already voted')) {
+        setMessage("You have already cast your vote!");
       } else {
         setMessage("Error: Failed to cast vote. Please try again.");
       }
-      console.error("Error casting vote:", error);
     }
   };
 

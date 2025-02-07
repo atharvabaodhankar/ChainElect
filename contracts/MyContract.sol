@@ -4,6 +4,13 @@ pragma solidity ^0.8.0;
 contract MyContract {
     // Owner of the contract
     address public owner;
+    
+    // Admin addresses mapping
+    mapping(address => bool) public admins;
+    
+    // Voting time limit (1 hour in seconds)
+    uint256 public constant VOTING_DURATION = 1 hours;
+    uint256 public votingEndTime;
 
     // Voter structure
     struct Voter {
@@ -33,75 +40,111 @@ contract MyContract {
     // Events
     event VoterRegistered(address voter);
     event CandidateAdded(string name);
-    event VotingStarted();
+    event VotingStarted(uint256 endTime);
     event VotingEnded();
     event Voted(address voter, uint256 candidateId);
+    event AdminAdded(address admin);
+    event AdminRemoved(address admin);
 
-    // Constructor: Initialize contract owner
+    // Modifiers
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+
+    modifier onlyAdmin() {
+        require(admins[msg.sender] || msg.sender == owner, "Only admin can call this function");
+        _;
+    }
+
+    modifier votingActive() {
+        require(votingStarted && !votingEnded, "Voting is not active");
+        require(block.timestamp < votingEndTime, "Voting period has ended");
+        _;
+    }
+
+    // Constructor: Initialize contract owner and add them as admin
     constructor() {
         owner = msg.sender;
+        admins[msg.sender] = true;
+        emit AdminAdded(msg.sender);
     }
 
-    // Modifier to allow only owner to perform certain actions
-    modifier onlyOwner() {
-        assert(msg.sender == owner);
-        _;
+    // Function to add an admin
+    function addAdmin(address _admin) public onlyOwner {
+        require(!admins[_admin], "Address is already an admin");
+        admins[_admin] = true;
+        emit AdminAdded(_admin);
     }
 
-    // Modifier to ensure voting is active
-    modifier votingActive() {
-        require(votingStarted && !votingEnded, "Voting is not active.");
-        _;
+    // Function to remove an admin
+    function removeAdmin(address _admin) public onlyOwner {
+        require(_admin != owner, "Cannot remove owner from admins");
+        require(admins[_admin], "Address is not an admin");
+        admins[_admin] = false;
+        emit AdminRemoved(_admin);
+    }
+
+    // Function to check if an address is an admin
+    function isAdmin(address _address) public view returns (bool) {
+        return admins[_address] || _address == owner;
     }
 
     // Function to add a candidate
-    function addCandidate(string calldata name) public onlyOwner {
+    function addCandidate(string calldata name) public onlyAdmin {
+        require(!votingStarted, "Cannot add candidate after voting has started");
         candidatesCount++;
         candidates[candidatesCount] = Candidate(candidatesCount, name, 0);
         emit CandidateAdded(name);
     }
 
     // Function to register a voter
-    function registerVoter(address _voter) public onlyOwner {
-        require(!voters[_voter].isRegistered, "Voter is already registered.");
+    function registerVoter(address _voter) public onlyAdmin {
+        require(!voters[_voter].isRegistered, "Voter is already registered");
         voters[_voter] = Voter({ isRegistered: true, hasVoted: false, votedFor: 0 });
         emit VoterRegistered(_voter);
     }
 
     // Function to start voting
-    function startVoting() public onlyOwner {
-        require(!votingStarted, "Voting has already started.");
+    function startVoting() public onlyAdmin {
+        require(!votingStarted, "Voting has already started");
+        require(candidatesCount > 0, "No candidates registered");
         votingStarted = true;
         votingEnded = false;
-        emit VotingStarted();
+        votingEndTime = block.timestamp + VOTING_DURATION;
+        emit VotingStarted(votingEndTime);
     }
 
     // Function to end voting
-    function endVoting() public onlyOwner {
-        require(votingStarted, "Voting has not started yet.");
-        require(!votingEnded, "Voting has already ended.");
+    function endVoting() public {
+        require(votingStarted, "Voting has not started yet");
+        require(!votingEnded, "Voting has already ended");
+        require(
+            msg.sender == owner || 
+            admins[msg.sender] || 
+            block.timestamp >= votingEndTime, 
+            "Only admin can end voting before time limit"
+        );
         votingEnded = true;
         emit VotingEnded();
     }
 
     // Function to cast a vote
     function vote(uint256 candidateId) public votingActive {
-        require(!voters[msg.sender].hasVoted, "You have already voted.");
-        require(candidateId > 0 && candidateId <= candidatesCount, "Invalid candidate.");
+        require(voters[msg.sender].isRegistered, "Voter is not registered");
+        require(!voters[msg.sender].hasVoted, "You have already voted");
+        require(candidateId > 0 && candidateId <= candidatesCount, "Invalid candidate");
 
-        // Record the vote
         voters[msg.sender].hasVoted = true;
         voters[msg.sender].votedFor = candidateId;
-
-        // Increment the candidate's vote count
         candidates[candidateId].voteCount++;
 
         emit Voted(msg.sender, candidateId);
     }
 
-    // Function to get the winner(s)
+    // Function to get the winner
     function getWinner() public view returns (string memory winnerName, uint256 winnerVoteCount) {
-        require(votingEnded, "Voting has not ended yet.");
+        require(votingEnded || block.timestamp >= votingEndTime, "Voting has not ended yet");
 
         uint256 highestVotes = 0;
         string memory name;
@@ -123,8 +166,16 @@ contract MyContract {
 
     // Function to get candidate details
     function getCandidate(uint256 candidateId) public view returns (string memory, uint256) {
-        require(candidateId > 0 && candidateId <= candidatesCount, "Invalid candidate ID.");
+        require(candidateId > 0 && candidateId <= candidatesCount, "Invalid candidate ID");
         Candidate memory candidate = candidates[candidateId];
         return (candidate.name, candidate.voteCount);
+    }
+
+    // Function to get remaining voting time
+    function getRemainingTime() public view returns (uint256) {
+        if (!votingStarted || votingEnded || block.timestamp >= votingEndTime) {
+            return 0;
+        }
+        return votingEndTime - block.timestamp;
     }
 }

@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Voters from './pages/Voters';
 import PrivateRoute from './components/PrivateRoute';
 import Results from './pages/Results';
+import Admin from './pages/Admin';
 import VotersPage from './pages/VotersPage';
 
 const App = () => {
@@ -16,6 +17,7 @@ const App = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/voterspage" element={<VotersPage />} />
       <Route path="/results" element={<Results />} />
+      <Route path="/admin" element={<Admin />} />
         <Route
           path="/voters"
           element={
