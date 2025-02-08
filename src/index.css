@@ -1424,3 +1424,73 @@ line-height: 2.5rem;
   color: rgba(255, 255, 255, 0.9) !important;
   font-weight: 400;
 }
+
+/* Remaining Time Styles */
+.remaining-time {
+  font-size: 2.2rem !important;
+  margin-top: 1.5rem !important;
+  padding: 1rem;
+  background: rgba(52, 152, 219, 0.1);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #2c3e50 !important;
+}
+
+.time-label {
+  font-weight: 600;
+  color: #34495e;
+}
+
+.time-value {
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 700;
+  color: #e74c3c;
+  background: rgba(231, 76, 60, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  min-width: 100px;
+  text-align: center;
+}
+
+/* Update voting status banner subtitle for time */
+.voting-status-banner.active .voting-status-subtitle {
+  font-size: 2.2rem !important;
+  font-weight: 600 !important;
+  margin-top: 1.5rem !important;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .remaining-time {
+    font-size: 1.8rem !important;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .time-value {
+    min-width: 80px;
+  }
+
+  .voting-status-banner.active .voting-status-subtitle {
+    font-size: 1.8rem !important;
+    padding: 0.8rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .remaining-time {
+    font-size: 1.6rem !important;
+  }
+
+  .voting-status-banner.active .voting-status-subtitle {
+    font-size: 1.6rem !important;
+    padding: 0.6rem 1rem;
+  }
+}

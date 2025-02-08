@@ -11,6 +11,7 @@ const Admin = () => {
     started: false,
     ended: false
   });
+  const [remainingTime, setRemainingTime] = useState(0);
   const [contract, setContract] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -63,6 +64,12 @@ const Admin = () => {
         const votingEnded = await contractInstance.methods.votingEnded().call();
         setVotingStatus({ started: votingStarted, ended: votingEnded });
 
+        // Fetch remaining time if voting is active
+        if (votingStarted && !votingEnded) {
+          const remaining = await contractInstance.methods.getRemainingTime().call();
+          setRemainingTime(Number(remaining));
+        }
+
       } catch (error) {
         console.error("Initialization error:", error);
         setMessage("Failed to initialize: " + error.message);
@@ -71,6 +78,65 @@ const Admin = () => {
 
     initializeContract();
   }, []);
+
+  // Function to periodically update remaining time
+  useEffect(() => {
+    let interval;
+    if (contract) {
+      // Function to fetch and update voting status and time from contract
+      const updateVotingStatus = async () => {
+        try {
+          const votingStarted = await contract.methods.votingStarted().call();
+          const votingEnded = await contract.methods.votingEnded().call();
+          const votingEndTime = await contract.methods.votingEndTime().call();
+          const currentTime = Math.floor(Date.now() / 1000);
+          const remainingSeconds = Number(votingEndTime) - currentTime;
+          
+          // Check if voting has ended either by time or by contract state
+          const isEnded = votingEnded || remainingSeconds <= 0;
+          
+          setVotingStatus({ 
+            started: votingStarted, 
+            ended: isEnded 
+          });
+          
+          // If voting has ended, ensure timer shows 0
+          setRemainingTime(isEnded ? 0 : Math.max(0, remainingSeconds));
+
+          // If voting has ended, clear the interval
+          if (isEnded) {
+            clearInterval(interval);
+          }
+        } catch (error) {
+          console.error("Error updating voting status:", error);
+        }
+      };
+
+      // Initial update
+      updateVotingStatus();
+      
+      // Only start countdown if voting is active
+      if (votingStatus.started && !votingStatus.ended) {
+        interval = setInterval(() => {
+          updateVotingStatus();
+        }, 1000);
+      }
+
+      return () => {
+        if (interval) {
+          clearInterval(interval);
+        }
+      };
+    }
+  }, [contract, votingStatus.started, votingStatus.ended]);
+
+  // Function to format time
+  const formatTime = (seconds) => {
+    if (seconds <= 0) return "0:00";
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
 
   const startVoting = async () => {
     try {
@@ -150,7 +216,7 @@ const Admin = () => {
           </h2>
           <p className="voting-status-subtitle">
             {votingStatus.ended ? 'The voting period has concluded' :
-             votingStatus.started ? 'Voters can cast their votes now' :
+             votingStatus.started ? `Time Remaining: ${formatTime(remainingTime)}` :
              'Waiting to start the voting period'}
           </p>
         </div>
@@ -165,6 +231,12 @@ const Admin = () => {
             <span className={votingStatus.ended ? 'active' : 'inactive'}></span>
             Voting Ended: {votingStatus.ended ? "Yes" : "No"}
           </p>
+          {votingStatus.started && !votingStatus.ended && (
+            <p className="remaining-time">
+              <span className="time-label">Time Remaining:</span>
+              <span className="time-value">{formatTime(remainingTime)}</span>
+            </p>
+          )}
         </div>
 
         <div className="actions-section">

@@ -10,9 +10,18 @@ const Voters = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [message, setMessage] = useState("");
+  const [remainingTime, setRemainingTime] = useState(0);
   const navigate = useNavigate();
   const [contract, setContract] = useState(null);
   const [accounts, setAccounts] = useState([]);
+
+  // Function to format time
+  const formatTime = (seconds) => {
+    if (seconds <= 0) return "0:00";
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
 
   useEffect(() => {
     const fetchCandidates = async () => {
@@ -33,28 +42,28 @@ const Voters = () => {
         // Check voting status
         const votingStarted = await contract.methods.votingStarted().call();
         const votingEnded = await contract.methods.votingEnded().call();
-        const remainingTime = await contract.methods.getRemainingTime().call();
+        
+        // Get both the end time and current remaining time
+        const votingEndTime = await contract.methods.votingEndTime().call();
+        const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+        const remainingSeconds = Number(votingEndTime) - currentTime;
+        
+        console.log("Voting end time:", votingEndTime);
+        console.log("Current time:", currentTime);
+        console.log("Calculated remaining time:", remainingSeconds);
+        
+        setRemainingTime(remainingSeconds);
 
         if (!votingStarted) {
           setMessage("Voting has not started yet. Please wait for the admin to start the voting.");
           return;
         }
 
-        if (votingEnded || remainingTime === "0") {
+        if (votingEnded || remainingSeconds <= 0) {
           setMessage("Voting has ended. Please check the results page.");
           navigate("/results");
           return;
         }
-
-        // Set up timer to check remaining time
-        const timer = setInterval(async () => {
-          const timeLeft = await contract.methods.getRemainingTime().call();
-          if (timeLeft === "0") {
-            setMessage("Voting has ended. Please check the results page.");
-            navigate("/results");
-            clearInterval(timer);
-          }
-        }, 60000); // Check every minute
 
         const candidatesCount = await contract.methods.getCandidatesCount().call();
         console.log("Candidates Count:", candidatesCount);
@@ -70,9 +79,6 @@ const Voters = () => {
         setContract(contract);
         const accounts = await web3.eth.getAccounts();
         setAccounts(accounts);
-
-        // Clean up timer on unmount
-        return () => clearInterval(timer);
       } catch (error) {
         console.error("Error fetching candidates: ", error);
         setErrorMessage("Failed to fetch candidates.");
@@ -81,6 +87,50 @@ const Voters = () => {
 
     fetchCandidates();
   }, [navigate]);
+
+  // Update timer effect
+  useEffect(() => {
+    let interval;
+    let contractSync;
+    
+    if (contract && remainingTime > 0) {
+      // Function to check voting status and update timer
+      const updateVotingStatus = async () => {
+        try {
+          const votingStarted = await contract.methods.votingStarted().call();
+          const votingEnded = await contract.methods.votingEnded().call();
+          const votingEndTime = await contract.methods.votingEndTime().call();
+          const currentTime = Math.floor(Date.now() / 1000);
+          const remainingSeconds = Number(votingEndTime) - currentTime;
+          
+          // Check if voting has ended either by time or contract state
+          if (votingEnded || remainingSeconds <= 0) {
+            clearInterval(interval);
+            clearInterval(contractSync);
+            setMessage("Voting has ended. Please check the results page.");
+            setRemainingTime(0);
+            navigate("/results");
+            return;
+          }
+          
+          setRemainingTime(Math.max(0, remainingSeconds));
+        } catch (error) {
+          console.error("Error updating voting status:", error);
+        }
+      };
+
+      // Initial check
+      updateVotingStatus();
+
+      // Update every second
+      interval = setInterval(updateVotingStatus, 1000);
+
+      return () => {
+        if (interval) clearInterval(interval);
+        if (contractSync) clearInterval(contractSync);
+      };
+    }
+  }, [contract, remainingTime, navigate]);
 
   // Function to handle voting
   const handleVote = async (id) => {
@@ -225,6 +275,17 @@ const Voters = () => {
         <h1>Voters Page</h1>
         <p>Welcome to the Voters page.</p>
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        
+        {/* Add Time Remaining Banner */}
+        {remainingTime > 0 && (
+          <div className="voting-status-banner active">
+            <h2>VOTING IS ACTIVE</h2>
+            <p className="voting-status-subtitle">
+              Time Remaining: {formatTime(remainingTime)}
+            </p>
+          </div>
+        )}
+
         {userInfo && (
           <div>
             <h2>User Information</h2>
