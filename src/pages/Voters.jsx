@@ -90,6 +90,15 @@ const Voters = () => {
     }
 
     try {
+      // Request account access and reinitialize Web3
+      const currentAccounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      if (!currentAccounts || currentAccounts.length === 0) {
+        setMessage("Error: No Metamask account connected.");
+        return;
+      }
+      const currentAccount = currentAccounts[0];
+
+      // Reinitialize Web3 and contract
       const web3 = new Web3(window.ethereum);
       const networkId = await web3.eth.net.getId();
       const deployedNetwork = MyContract.networks[networkId];
@@ -104,48 +113,35 @@ const Voters = () => {
         deployedNetwork.address
       );
 
-      // Check if voting is still active
-      const remainingTime = await contractInstance.methods.getRemainingTime().call();
-      if (remainingTime === "0") {
-        setMessage("Voting has ended. Please check the results page.");
-        navigate("/results");
-        return;
-      }
-
-      const currentAccounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      if (!currentAccounts || currentAccounts.length === 0) {
-        setMessage("Error: No MetaMask account connected.");
-        return;
-      }
-      const currentAccount = currentAccounts[0];
-
-      // Check if user is registered
+      // Check if user has already voted before attempting to vote
       const voter = await contractInstance.methods.voters(currentAccount).call();
-      if (!voter.isRegistered) {
-        setMessage("Error: You are not registered to vote. Please contact an admin to register.");
-        return;
-      }
-
       if (voter.hasVoted) {
-        setMessage("You have already cast your vote!");
+        alert("You have already cast your vote!");
         return;
       }
 
       await contractInstance.methods.vote(id).send({ from: currentAccount });
       setMessage("Vote cast successfully!");
-      window.location.reload();
+      setCandidates((prevCandidates) =>
+        prevCandidates.map((candidate) =>
+          candidate.id === id
+            ? { ...candidate, votes: BigInt(candidate.votes) + BigInt(1) }
+            : candidate
+        )
+      );
     } catch (error) {
-      console.error("Error casting vote:", error);
-      if (error.message.includes('Voting period has ended')) {
-        setMessage("Voting period has ended. Please check the results page.");
-        navigate("/results");
-      } else if (error.message.includes('Voter is not registered')) {
-        setMessage("You are not registered to vote. Please contact an admin.");
-      } else if (error.message.includes('You have already voted')) {
-        setMessage("You have already cast your vote!");
+      // Extract the revert reason from the error
+      if (error.message.includes('You have already voted')) {
+        alert("You have already cast your vote!");
+        setMessage("Error: You have already cast your vote.");
+      } else if (error.message.includes('Voting is not active')) {
+        setMessage("Error: Voting is not currently active.");
+      } else if (error.message.includes('Invalid candidate')) {
+        setMessage("Error: Invalid candidate selection.");
       } else {
         setMessage("Error: Failed to cast vote. Please try again.");
       }
+      console.error("Error casting vote:", error);
     }
   };
 

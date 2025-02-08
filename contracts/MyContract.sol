@@ -131,7 +131,8 @@ contract MyContract {
 
     // Function to cast a vote
     function vote(uint256 candidateId) public votingActive {
-        require(voters[msg.sender].isRegistered, "Voter is not registered");
+        // Remove the registration check
+        // require(voters[msg.sender].isRegistered, "Voter is not registered");
         require(!voters[msg.sender].hasVoted, "You have already voted");
         require(candidateId > 0 && candidateId <= candidatesCount, "Invalid candidate");
 
