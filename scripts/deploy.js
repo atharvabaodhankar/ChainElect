@@ -54,6 +54,11 @@ async function main() {
   await myContract.methods.addCandidate("Diana Prince").send({ from: owner });
   console.log("Candidates added successfully!");
 
+  // Reset voting state
+  console.log('Resetting voting state...');
+  await myContract.methods.resetVotingState().send({ from: owner });
+  console.log("Voting state reset successfully!");
+
   // Save the deployed address to MyContract.json
   contractJson.networks = {
     "31337": {

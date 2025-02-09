@@ -9,13 +9,11 @@ contract MyContract {
     mapping(address => bool) public admins;
     
     // Voting time limit (1 hour in seconds)
-  //  uint256 public constant VOTING_DURATION = 1 hours;
+   // uint256 public constant VOTING_DURATION = 1 hours;
 
     // Voting time limit (1 minute in seconds)
     uint256 public constant VOTING_DURATION = 1 minutes;
 
-
-    
     uint256 public votingEndTime;
 
     // Voter structure
@@ -147,6 +145,19 @@ contract MyContract {
         candidates[candidateId].voteCount++;
 
         emit Voted(msg.sender, candidateId);
+    }
+
+    // Function to reset voting state
+    function resetVotingState() public onlyOwner {
+        votingStarted = false;
+        votingEnded = false;
+        votingEndTime = 0;
+        // Reset all candidate vote counts
+        for (uint256 i = 1; i <= candidatesCount; i++) {
+            candidates[i].voteCount = 0;
+        }
+        // Reset all voter states
+        emit VotingEnded();
     }
 
     // Function to get the winner

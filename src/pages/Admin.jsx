@@ -26,6 +26,7 @@ const Admin = () => {
         }
 
         const web3 = new Web3(window.ethereum);
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
         const accounts = await web3.eth.getAccounts();
         
         if (!accounts || accounts.length === 0) {
@@ -33,17 +34,16 @@ const Admin = () => {
           return;
         }
 
-        const networkId = await web3.eth.net.getId();
-        const deployedNetwork = MyContract.networks[networkId];
-
-        if (!deployedNetwork) {
-          setMessage("Contract not deployed on this network");
+        // Get contract artifact
+        const contractAddress = MyContract.networks[31337]?.address;
+        if (!contractAddress) {
+          setMessage("Contract not deployed on this network. Please make sure you're connected to the correct network.");
           return;
         }
 
         const contractInstance = new web3.eth.Contract(
           MyContract.abi,
-          deployedNetwork.address
+          contractAddress
         );
 
         // Check if connected account is an admin using contract method
@@ -60,12 +60,22 @@ const Admin = () => {
         setContract(contractInstance);
 
         // Get current voting status
-        const votingStarted = await contractInstance.methods.votingStarted().call();
-        const votingEnded = await contractInstance.methods.votingEnded().call();
-        setVotingStatus({ started: votingStarted, ended: votingEnded });
+        const [votingStarted, votingEnded, endTime] = await Promise.all([
+          contractInstance.methods.votingStarted().call(),
+          contractInstance.methods.votingEnded().call(),
+          contractInstance.methods.votingEndTime().call()
+        ]);
+
+        const currentTime = Math.floor(Date.now() / 1000);
+        const hasEnded = votingEnded || (votingStarted && currentTime >= endTime);
+
+        setVotingStatus({ 
+          started: votingStarted, 
+          ended: hasEnded 
+        });
 
         // Fetch remaining time if voting is active
-        if (votingStarted && !votingEnded) {
+        if (votingStarted && !hasEnded) {
           const remaining = await contractInstance.methods.getRemainingTime().call();
           setRemainingTime(Number(remaining));
         }
@@ -79,84 +89,21 @@ const Admin = () => {
     initializeContract();
   }, []);
 
-  // Function to periodically update remaining time
-  useEffect(() => {
-    let interval;
-    if (contract) {
-      // Function to fetch and update voting status and time from contract
-      const updateVotingStatus = async () => {
-        try {
-          const votingStarted = await contract.methods.votingStarted().call();
-          const votingEnded = await contract.methods.votingEnded().call();
-          const votingEndTime = await contract.methods.votingEndTime().call();
-          const currentTime = Math.floor(Date.now() / 1000);
-          const remainingSeconds = Number(votingEndTime) - currentTime;
-          
-          // Check if voting has ended either by time or by contract state
-          const isEnded = votingEnded || remainingSeconds <= 0;
-          
-          setVotingStatus({ 
-            started: votingStarted, 
-            ended: isEnded 
-          });
-          
-          // If voting has ended, ensure timer shows 0
-          setRemainingTime(isEnded ? 0 : Math.max(0, remainingSeconds));
-
-          // If voting has ended, clear the interval
-          if (isEnded) {
-            clearInterval(interval);
-          }
-        } catch (error) {
-          console.error("Error updating voting status:", error);
-        }
-      };
-
-      // Initial update
-      updateVotingStatus();
-      
-      // Only start countdown if voting is active
-      if (votingStatus.started && !votingStatus.ended) {
-        interval = setInterval(() => {
-          updateVotingStatus();
-        }, 1000);
-      }
-
-      return () => {
-        if (interval) {
-          clearInterval(interval);
-        }
-      };
-    }
-  }, [contract, votingStatus.started, votingStatus.ended]);
-
-  // Function to format time
-  const formatTime = (seconds) => {
-    if (seconds <= 0) return "0:00";
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
-
+  // Function to handle voting
   const startVoting = async () => {
     try {
       setIsLoading(true);
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       await contract.methods.startVoting().send({ from: accounts[0] });
-      setMessage("Voting started successfully!");
+      
+      // Update state after successful start
       setVotingStatus({ started: true, ended: false });
+      setMessage("Voting started successfully!");
 
-      // Set timer to end voting after 1 hour
-      setTimeout(async () => {
-        try {
-          await contract.methods.endVoting().send({ from: accounts[0] });
-          setVotingStatus({ started: false, ended: true });
-          setMessage("Voting has ended automatically after 1 hour");
-        } catch (error) {
-          console.error("Error ending voting:", error);
-          setMessage("Failed to end voting automatically");
-        }
-      }, 3600000); // 1 hour in milliseconds
+      // Get the voting end time and set up timer
+      const endTime = await contract.methods.votingEndTime().call();
+      const currentTime = Math.floor(Date.now() / 1000);
+      setRemainingTime(Number(endTime) - currentTime);
 
     } catch (error) {
       console.error("Error starting voting:", error);
@@ -166,6 +113,7 @@ const Admin = () => {
     }
   };
 
+  // Function to add candidate
   const addCandidate = async () => {
     if (!candidateName.trim()) {
       setMessage("Please enter a candidate name");
@@ -184,6 +132,50 @@ const Admin = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Update timer effect
+  useEffect(() => {
+    let interval;
+    if (contract && votingStatus.started && !votingStatus.ended) {
+      interval = setInterval(async () => {
+        try {
+          const [votingStarted, votingEnded, endTime] = await Promise.all([
+            contract.methods.votingStarted().call(),
+            contract.methods.votingEnded().call(),
+            contract.methods.votingEndTime().call()
+          ]);
+
+          const currentTime = Math.floor(Date.now() / 1000);
+          const hasEnded = votingEnded || (votingStarted && currentTime >= endTime);
+          
+          if (hasEnded) {
+            setVotingStatus({ started: votingStarted, ended: true });
+            setRemainingTime(0);
+            clearInterval(interval);
+          } else if (votingStarted) {
+            setRemainingTime(Math.max(0, Number(endTime) - currentTime));
+          }
+        } catch (error) {
+          console.error("Error updating voting status:", error);
+          clearInterval(interval);
+        }
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [contract, votingStatus.started, votingStatus.ended]);
+
+  // Function to format time
+  const formatTime = (seconds) => {
+    if (seconds <= 0) return "0:00";
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
   if (!isAdmin) {
