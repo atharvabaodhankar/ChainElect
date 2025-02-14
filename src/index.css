@@ -1197,202 +1197,33 @@ line-height: 2.5rem;
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  padding-top: 9rem;
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding-top: 12rem;
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 64px);
 }
 
 .admin-page h1 {
   color: #2c3e50;
-  text-align: center;
+  font-size: 3rem;
   margin-bottom: 2rem;
-  font-size: 2.5rem;
-  font-weight: 700;
-}
-
-.admin-page h2 {
-  color: #34495e;
-  margin: 1.5rem 0;
-  font-size: 1.8rem;
   font-weight: 600;
 }
 
-.status-section {
-  background-color: #f8f9fa;
-  padding: 1.5rem;
-  border-radius: 8px;
-  margin-bottom: 2rem;
-  border: 1px solid #e9ecef;
-}
-
-.status-section p {
-  font-size: 1.8rem;
-  margin: 0.5rem 0;
-  color: #495057;
-  display: flex;
-  align-items: center;
-}
-
-
-.actions-section {
-  display: grid;
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
-.actions-section input {
-  width: 100%;
-  padding: 0.8rem 1rem;
-  font-size: 1rem;
-  border: 2px solid #e9ecef;
-  border-radius: 6px;
-  margin-bottom: 1rem;
-  transition: border-color 0.3s ease;
-}
-
-.actions-section input:focus {
-  outline: none;
-  border-color: #3498db;
-}
-
-.actions-section button {
-  background-color: #3498db;
-  color: white;
-  border: none;
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  width: 100%;
-  max-width: 300px;
-  margin: 0 auto;
-  display: block;
-}
-
-.actions-section button:hover:not(:disabled) {
-  background-color: #2980b9;
-  transform: translateY(-2px);
-}
-
-.actions-section button:disabled {
-  background-color: #bdc3c7;
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-.message {
-  text-align: center;
-  margin-top: 2rem;
-  padding: 1rem;
-  border-radius: 6px;
-  font-size: 1.1rem;
-}
-
-/* Success message */
-.message:not(:empty) {
-  background-color: #f8f9fa;
-  border-left: 4px solid #3498db;
-  color: #2c3e50;
-}
-
-/* Error message styles */
-.message[style*="color: red"] {
-  background-color: #fff5f5;
-  border-left: 4px solid #e74c3c;
-}
-
-/* Add hover effect to the status indicators */
-.status-section p span {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  margin-right: 8px;
-}
-
-.status-section p span.active {
-  background-color: #2ecc71;
-}
-
-.status-section p span.inactive {
-  background-color: #e74c3c;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .admin-page {
-    margin: 1rem;
-    padding: 1rem;
-    padding-top: 12rem;
-  }
-
-  .admin-page h1 {
-    font-size: 2rem;
-  }
-
-  .admin-page h2 {
-    font-size: 1.5rem;
-  }
-
-  .actions-section {
-    gap: 1rem;
-  }
-
-  .actions-section button {
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
-  }
-}
-
-/* Loading state for buttons */
-.actions-section button.loading {
-  position: relative;
-  color: transparent;
-}
-
-.actions-section button.loading::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 20px;
-  height: 20px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top-color: white;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
-}
-
-/* Add new voting status banner styles */
 .voting-status-banner {
-  background: linear-gradient(135deg, #1a237e, #3949ab);
-  color: white;
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  border-radius: 12px;
   padding: 2rem;
-  border-radius: 10px;
-  text-align: center;
-  margin: 2rem 0;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  position: relative;
-  overflow: hidden;
+  color: white;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .voting-status-banner h2 {
-  font-size: 3.5rem !important;
-  font-weight: 800 !important;
-  margin: 0 !important;
-  color: white !important;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  font-size: 1.8rem;
+  margin: 0;
+  color: white;
+  font-weight: 600;
 }
 
 .voting-status-banner.active {
@@ -1403,94 +1234,166 @@ line-height: 2.5rem;
   background: linear-gradient(135deg, #e74c3c, #c0392b);
 }
 
-.voting-status-banner.not-started {
-  background: linear-gradient(135deg, #f39c12, #d35400);
-}
-
-.voting-status-banner::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
-  pointer-events: none;
-}
-
 .voting-status-subtitle {
-  font-size: 1.8rem !important;
-  margin-top: 1rem !important;
-  color: rgba(255, 255, 255, 0.9) !important;
-  font-weight: 400;
+  margin: 0.5rem 0 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
 }
 
-/* Remaining Time Styles */
-.remaining-time {
-  font-size: 2.2rem !important;
-  margin-top: 1.5rem !important;
-  padding: 1rem;
-  background: rgba(52, 152, 219, 0.1);
-  border-radius: 8px;
+.status-section {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.status-section h2 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+.status-section p {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  color: #2c3e50 !important;
+  margin: 1rem 0;
+  color: #4a5568;
+  font-size: 1.6rem;
+}
+
+.status-section span.active,
+.status-section span.inactive {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 1rem;
+}
+
+.status-section span.active {
+  background-color: #2ecc71;
+  box-shadow: 0 0 8px rgba(46, 204, 113, 0.4);
+}
+
+.status-section span.inactive {
+  background-color: #e74c3c;
+  box-shadow: 0 0 8px rgba(231, 76, 60, 0.4);
+}
+
+.remaining-time {
+  background: #f1f5f9;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
 }
 
 .time-label {
-  font-weight: 600;
-  color: #34495e;
+  color: #64748b;
+  margin-right: 1rem;
 }
 
 .time-value {
-  font-family: 'Roboto Mono', monospace;
-  font-weight: 700;
-  color: #e74c3c;
-  background: rgba(231, 76, 60, 0.1);
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  min-width: 100px;
-  text-align: center;
+  color: #2c3e50;
+  font-weight: 600;
+  font-size: 1.2rem;
 }
 
-/* Update voting status banner subtitle for time */
-.voting-status-banner.active .voting-status-subtitle {
-  font-size: 2.2rem !important;
-  font-weight: 600 !important;
-  margin-top: 1.5rem !important;
-  background: rgba(255, 255, 255, 0.2);
-  padding: 1rem 2rem;
+.actions-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.actions-section > div {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.actions-section h2 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+.actions-section input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 2px solid #e2e8f0;
   border-radius: 8px;
-  display: inline-block;
+  margin-bottom: 1rem;
+  font-size: 1.6rem;
+  transition: all 0.3s ease;
 }
 
-/* Responsive adjustments */
+.actions-section input:focus {
+  border-color: #2c3e50;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+}
+
+.actions-section button {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.actions-section button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.actions-section button:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.actions-section button.loading {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.message {
+  margin-top: 2rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background: #f8f9fa;
+  color: #2c3e50;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.message.error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
 @media (max-width: 768px) {
-  .remaining-time {
-    font-size: 1.8rem !important;
-    flex-direction: column;
-    gap: 0.5rem;
-    text-align: center;
+  .admin-page {
+    padding: 1rem;
+    padding-top: 12rem;
   }
-
-  .time-value {
-    min-width: 80px;
+  
+  .actions-section {
+    grid-template-columns: 1fr;
   }
-
-  .voting-status-banner.active .voting-status-subtitle {
-    font-size: 1.8rem !important;
-    padding: 0.8rem 1.5rem;
+  
+  .voting-status-banner {
+    padding: 1.5rem;
   }
-}
-
-@media (max-width: 480px) {
-  .remaining-time {
-    font-size: 1.6rem !important;
-  }
-
-  .voting-status-banner.active .voting-status-subtitle {
-    font-size: 1.6rem !important;
-    padding: 0.6rem 1rem;
+  
+  .voting-status-banner h2 {
+    font-size: 1.5rem;
   }
 }

@@ -34,7 +34,6 @@ const Admin = () => {
           return;
         }
 
-        // Get contract artifact
         const contractAddress = MyContract.networks[31337]?.address;
         if (!contractAddress) {
           setMessage("Contract not deployed on this network. Please make sure you're connected to the correct network.");
@@ -46,7 +45,6 @@ const Admin = () => {
           contractAddress
         );
 
-        // Check if connected account is an admin using contract method
         const currentAccount = accounts[0];
         const adminStatus = await contractInstance.methods.isAdmin(currentAccount).call();
         
@@ -59,7 +57,6 @@ const Admin = () => {
         setIsAdmin(true);
         setContract(contractInstance);
 
-        // Get current voting status
         const [votingStarted, votingEnded, endTime] = await Promise.all([
           contractInstance.methods.votingStarted().call(),
           contractInstance.methods.votingEnded().call(),
@@ -74,7 +71,6 @@ const Admin = () => {
           ended: hasEnded 
         });
 
-        // Fetch remaining time if voting is active
         if (votingStarted && !hasEnded) {
           const remaining = await contractInstance.methods.getRemainingTime().call();
           setRemainingTime(Number(remaining));
@@ -89,18 +85,15 @@ const Admin = () => {
     initializeContract();
   }, []);
 
-  // Function to handle voting
   const startVoting = async () => {
     try {
       setIsLoading(true);
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       await contract.methods.startVoting().send({ from: accounts[0] });
       
-      // Update state after successful start
       setVotingStatus({ started: true, ended: false });
       setMessage("Voting started successfully!");
 
-      // Get the voting end time and set up timer
       const endTime = await contract.methods.votingEndTime().call();
       const currentTime = Math.floor(Date.now() / 1000);
       setRemainingTime(Number(endTime) - currentTime);
@@ -113,7 +106,6 @@ const Admin = () => {
     }
   };
 
-  // Function to add candidate
   const addCandidate = async () => {
     if (!candidateName.trim()) {
       setMessage("Please enter a candidate name");
@@ -125,7 +117,7 @@ const Admin = () => {
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       await contract.methods.addCandidate(candidateName).send({ from: accounts[0] });
       setMessage(`Candidate "${candidateName}" added successfully!`);
-      setCandidateName(""); // Clear input field
+      setCandidateName("");
     } catch (error) {
       console.error("Error adding candidate:", error);
       setMessage("Failed to add candidate: " + error.message);
@@ -134,7 +126,6 @@ const Admin = () => {
     }
   };
 
-  // Update timer effect
   useEffect(() => {
     let interval;
     if (contract && votingStatus.started && !votingStatus.ended) {
@@ -170,7 +161,6 @@ const Admin = () => {
     };
   }, [contract, votingStatus.started, votingStatus.ended]);
 
-  // Function to format time
   const formatTime = (seconds) => {
     if (seconds <= 0) return "0:00";
     const minutes = Math.floor(seconds / 60);
@@ -183,8 +173,11 @@ const Admin = () => {
       <div>
         <Navbar home="/" features="/#features" aboutus="/#aboutus" contactus="/#contactus" />
         <div className="admin-page">
-          <h1>Admin Access Only</h1>
-          <p className="message" style={{ color: 'red' }}>{message}</p>
+          <div className="voting-status-banner ended">
+            <h2>Access Denied</h2>
+            <p className="voting-status-subtitle">Only administrators can access this page</p>
+          </div>
+          <p className="message error">{message}</p>
         </div>
       </div>
     );
@@ -199,41 +192,41 @@ const Admin = () => {
         <div className={`voting-status-banner ${
           votingStatus.ended ? 'ended' : 
           votingStatus.started ? 'active' : 
-          'not-started'
+          ''
         }`}>
           <h2>
-            {votingStatus.ended ? 'VOTING ENDED' :
-             votingStatus.started ? 'VOTING IS ACTIVE' :
-             'VOTING NOT STARTED'}
+            {votingStatus.ended ? 'Voting Has Ended' :
+             votingStatus.started ? 'Voting In Progress' :
+             'Voting Not Started'}
           </h2>
-          <p className="voting-status-subtitle">
-            {votingStatus.ended ? 'The voting period has concluded' :
-             votingStatus.started ? `Time Remaining: ${formatTime(remainingTime)}` :
-             'Waiting to start the voting period'}
-          </p>
+          {votingStatus.started && !votingStatus.ended && (
+            <p className="voting-status-subtitle">
+              Time Remaining: {formatTime(remainingTime)}
+            </p>
+          )}
         </div>
 
         <div className="status-section">
-          <h2>Detailed Status</h2>
+          <h2>Current Status</h2>
           <p>
             <span className={votingStatus.started ? 'active' : 'inactive'}></span>
-            Voting Started: {votingStatus.started ? "Yes" : "No"}
+            Voting Status: {votingStatus.started ? "Active" : "Not Started"}
           </p>
           <p>
             <span className={votingStatus.ended ? 'active' : 'inactive'}></span>
-            Voting Ended: {votingStatus.ended ? "Yes" : "No"}
+            Election Status: {votingStatus.ended ? "Concluded" : "In Progress"}
           </p>
           {votingStatus.started && !votingStatus.ended && (
-            <p className="remaining-time">
+            <div className="remaining-time">
               <span className="time-label">Time Remaining:</span>
               <span className="time-value">{formatTime(remainingTime)}</span>
-            </p>
+            </div>
           )}
         </div>
 
         <div className="actions-section">
           <div>
-            <h2>Add Candidate</h2>
+            <h2>Add New Candidate</h2>
             <input
               type="text"
               value={candidateName}
@@ -251,20 +244,22 @@ const Admin = () => {
           </div>
 
           <div>
-            <h2>Voting Control</h2>
+            <h2>Election Control</h2>
             <button
               onClick={startVoting}
               disabled={votingStatus.started || votingStatus.ended || isLoading}
               className={isLoading ? 'loading' : ''}
             >
-              Start Voting
+              Start Election
             </button>
           </div>
         </div>
 
-        <p className={`message ${message.includes('Failed') || message.includes('Error') ? 'error' : ''}`}>
-          {message}
-        </p>
+        {message && (
+          <p className={`message ${message.includes('Failed') || message.includes('Error') ? 'error' : ''}`}>
+            {message}
+          </p>
+        )}
       </div>
     </div>
   );
