@@ -11,7 +11,8 @@ const __dirname = dirname(__filename);
 const ADMIN_ADDRESSES = [
   "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", // Replace with your first admin MetaMask address
   "0x2345678901234567890123456789012345678901", // Replace with your second admin MetaMask address
-  "0x3456789012345678901234567890123456789012"  // Replace with your third admin MetaMask address
+  "0x3456789012345678901234567890123456789012",
+  "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097"  // Replace with your third admin MetaMask address
 ];
 
 async function main() {

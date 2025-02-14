@@ -9,10 +9,10 @@ contract MyContract {
     mapping(address => bool) public admins;
     
     // Voting time limit (1 hour in seconds)
-   // uint256 public constant VOTING_DURATION = 1 hours;
+    uint256 public constant VOTING_DURATION = 1 hours;
 
     // Voting time limit (1 minute in seconds)
-    uint256 public constant VOTING_DURATION = 1 minutes;
+   // uint256 public constant VOTING_DURATION = 1 minutes;
 
     uint256 public votingEndTime;
 
