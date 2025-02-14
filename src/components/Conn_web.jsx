@@ -50,14 +50,10 @@ const Web3Connection = () => {
 
   return (
     <div>
-      <h1>Web3 Connection</h1>
       {account ? (
-        <div>
-          <p>Account: {account}</p>
-          <p>Balance: {balance} ETH</p>
-        </div>
+        <span>{balance}</span>
       ) : (
-        <p>Please connect to MetaMask.</p>
+        <span>0</span>
       )}
     </div>
   );

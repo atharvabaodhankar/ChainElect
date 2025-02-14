@@ -14,6 +14,7 @@ const Voters = () => {
   const navigate = useNavigate();
   const [contract, setContract] = useState(null);
   const [accounts, setAccounts] = useState([]);
+  const [balance, setBalance] = useState('0');
 
   // Function to format time
   const formatTime = (seconds) => {
@@ -255,16 +256,17 @@ const Voters = () => {
     };
   }, []);
 
-  // Callback function to update userInfo with the latest Metamask ID
-  const updateMetamaskId = (newMetamaskId) => {
+  // Update the callback to handle both metamask ID and balance
+  const updateWalletInfo = (newMetamaskId, newBalance) => {
     setUserInfo((prevUserInfo) => ({
       ...prevUserInfo,
       metamask_id: newMetamaskId,
     }));
+    setBalance(newBalance);
   };
 
   return (
-    <div>
+    <div className="voters-page">
       <Navbar
         home="/"
         features="/#features"
@@ -274,22 +276,26 @@ const Voters = () => {
       <div className="voters-modern-container">
         {message && <div className="voting-message">{message}</div>}
         
-        <div className="voting-status-section">
-          <h1>Active Election Session</h1>
-          {remainingTime > 0 && (
-            <div className="time-display">
-              <span className="time-label">Time Remaining</span>
-              <span className="time-value">{formatTime(remainingTime)}</span>
-            </div>
-          )}
-        </div>
+        {!message.includes("not started") && (
+          <div className="voting-status-section">
+            <h1>Active Election Session</h1>
+            {remainingTime > 0 && (
+              <div className="time-display">
+                <span className="time-label">Time Remaining</span>
+                <span className="time-value">{formatTime(remainingTime)}</span>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="candidates-modern-grid">
           {candidates.map((candidate) => (
             <div key={candidate.id} className="candidate-modern-card">
               <div className="candidate-content">
-                <h2>{candidate.name}</h2>
-                <p className="candidate-id">Candidate #{candidate.id}</p>
+                <div>
+                  <h2>{candidate.name}</h2>
+                  <p className="candidate-id">Candidate #{candidate.id}</p>
+                </div>
                 <button
                   onClick={() => handleVote(candidate.id)}
                   className="modern-vote-button"
@@ -300,6 +306,7 @@ const Voters = () => {
             </div>
           ))}
         </div>
+
 
         {userInfo && (
           <div className="voter-profile-section">
@@ -312,8 +319,13 @@ const Voters = () => {
                 <span className="detail-value">{userInfo.voter_id}</span>
               </div>
               <div className="detail-item">
-                <span className="detail-label">Balance</span>
+                <span className="detail-label">Metamask ID</span>
                 <span className="detail-value">{userInfo.metamask_id}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Balance</span>
+                <span className="detail-value">{<Conn_web updateMetamaskId={updateWalletInfo} />
+              }&nbsp;ETH</span>
               </div>
             </div>
           </div>
