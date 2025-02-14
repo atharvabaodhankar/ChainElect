@@ -14,6 +14,7 @@ const Voters = () => {
   const navigate = useNavigate();
   const [contract, setContract] = useState(null);
   const [accounts, setAccounts] = useState([]);
+  const [balance, setBalance] = useState('0');
 
   // Function to format time
   const formatTime = (seconds) => {
@@ -255,60 +256,84 @@ const Voters = () => {
     };
   }, []);
 
-  // Callback function to update userInfo with the latest Metamask ID
-  const updateMetamaskId = (newMetamaskId) => {
+  // Update the callback to handle both metamask ID and balance
+  const updateWalletInfo = (newMetamaskId, newBalance) => {
     setUserInfo((prevUserInfo) => ({
       ...prevUserInfo,
       metamask_id: newMetamaskId,
     }));
+    setBalance(newBalance);
   };
 
   return (
-    <div>
+    <div className="voters-page">
       <Navbar
         home="/"
         features="/#features"
         aboutus="/#aboutus"
         contactus="/#contactus"
       />
-      <div className="voters-page">
-        <h1>Voters Page</h1>
-        <p>Welcome to the Voters page.</p>
-        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+      <div className="voters-modern-container">
+        {message && <div className="voting-message">{message}</div>}
         
-        {/* Add Time Remaining Banner */}
-        {remainingTime > 0 && (
-          <div className="voting-status-banner active">
-            <h2>VOTING IS ACTIVE</h2>
-            <p className="voting-status-subtitle">
-              Time Remaining: {formatTime(remainingTime)}
-            </p>
+        {!message.includes("not started") && (
+          <div className="voting-status-section">
+            <h1>Active Election Session</h1>
+            {remainingTime > 0 && (
+              <div className="time-display">
+                <span className="time-label">Time Remaining</span>
+                <span className="time-value">{formatTime(remainingTime)}</span>
+              </div>
+            )}
           </div>
         )}
 
-        {userInfo && (
-          <div>
-            <h2>User Information</h2>
-            <p>Voter ID: {userInfo.voter_id}</p>
-            <p>Metamask ID: {userInfo.metamask_id}</p>
-          </div>
-        )}
-        <Conn_web updateMetamaskId={updateMetamaskId} />
-        <button onClick={handleLogout} className="logout-btn">
-          Logout
-        </button>
-        <h1>Vote for Your Favorite Candidate</h1>
-        <div className="candidates-container">
+        <div className="candidates-modern-grid">
           {candidates.map((candidate) => (
-            <div key={candidate.id} className="candidate-box">
-              <h2>{candidate.name}</h2>
-              <p>Index: {candidate.id}</p>
-              <p>Votes: {candidate.votes.toString()}</p>
-              <button onClick={() => handleVote(candidate.id)}>Vote Now</button>
+            <div key={candidate.id} className="candidate-modern-card">
+              <div className="candidate-content">
+                <div>
+                  <h2>{candidate.name}</h2>
+                  <p className="candidate-id">Candidate #{candidate.id}</p>
+                </div>
+                <button
+                  onClick={() => handleVote(candidate.id)}
+                  className="modern-vote-button"
+                >
+                  Cast Vote
+                </button>
+              </div>
             </div>
           ))}
         </div>
-        <p>{message}</p>
+
+
+        {userInfo && (
+          <div className="voter-profile-section">
+            <div className="profile-header">
+              <h2>Voter Profile</h2>
+            </div>
+            <div className="profile-details">
+              <div className="detail-item">
+                <span className="detail-label">Voter ID</span>
+                <span className="detail-value">{userInfo.voter_id}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Metamask ID</span>
+                <span className="detail-value">{userInfo.metamask_id}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Balance</span>
+                <span className="detail-value">{<Conn_web updateMetamaskId={updateWalletInfo} />
+              }&nbsp;ETH</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <button onClick={handleLogout} className="modern-logout-button">
+          Logout
+        </button>
       </div>
     </div>
   );
