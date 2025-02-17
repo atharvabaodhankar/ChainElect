@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import Conn_web from "../components/Conn_web";
 import Web3 from "web3";
 import MyContract from "../../artifacts/contracts/MyContract.sol/MyContract.json";
+import tickGif from "../assets/tick.gif";
 
 const Voters = () => {
   const [candidates, setCandidates] = useState([]);
@@ -15,6 +16,7 @@ const Voters = () => {
   const [contract, setContract] = useState(null);
   const [accounts, setAccounts] = useState([]);
   const [balance, setBalance] = useState('0');
+  const [showPopup, setShowPopup] = useState(false);
 
   // Function to format time
   const formatTime = (seconds) => {
@@ -173,6 +175,7 @@ const Voters = () => {
 
       await contractInstance.methods.vote(id).send({ from: currentAccount });
       setMessage("Vote cast successfully!");
+      setShowPopup(true);
       setCandidates((prevCandidates) =>
         prevCandidates.map((candidate) =>
           candidate.id === id
@@ -274,7 +277,17 @@ const Voters = () => {
         contactus="/#contactus"
       />
       <div className="voters-modern-container">
-        {message && <div className="voting-message">{message}</div>}
+        {showPopup && message && (
+          <div className="vote-success-overlay">
+            <div className="vote-success-modal">
+              <img src={tickGif} alt="Success" className="success-gif" />
+              <h2>{message}</h2>
+              <button className="close-button" onClick={() => setShowPopup(false)}>
+                Close
+              </button>
+            </div>
+          </div>
+        )}
         
         {!message.includes("not started") && (
           <div className="voting-status-section">
