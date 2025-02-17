@@ -11,6 +11,7 @@ const Voters = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [message, setMessage] = useState("");
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [remainingTime, setRemainingTime] = useState(0);
   const navigate = useNavigate();
   const [contract, setContract] = useState(null);
@@ -169,7 +170,8 @@ const Voters = () => {
       // Check if user has already voted before attempting to vote
       const voter = await contractInstance.methods.voters(currentAccount).call();
       if (voter.hasVoted) {
-        alert("You have already cast your vote!");
+        setMessage("You have already cast your vote!");
+        setShowErrorPopup(true);
         return;
       }
 
@@ -186,14 +188,17 @@ const Voters = () => {
     } catch (error) {
       // Extract the revert reason from the error
       if (error.message.includes('You have already voted')) {
-        alert("You have already cast your vote!");
-        setMessage("Error: You have already cast your vote.");
+        setMessage("You have already cast your vote!");
+        setShowErrorPopup(true);
       } else if (error.message.includes('Voting is not active')) {
-        setMessage("Error: Voting is not currently active.");
+        setMessage("Voting is not currently active");
+        setShowErrorPopup(true);
       } else if (error.message.includes('Invalid candidate')) {
-        setMessage("Error: Invalid candidate selection.");
+        setMessage("Invalid candidate selection");
+        setShowErrorPopup(true);
       } else {
-        setMessage("Error: Failed to cast vote. Please try again.");
+        setMessage("Failed to cast vote. Please try again");
+        setShowErrorPopup(true);
       }
       console.error("Error casting vote:", error);
     }
@@ -285,6 +290,19 @@ const Voters = () => {
               <button className="close-button" onClick={() => setShowPopup(false)}>
                 Close
               </button>
+            </div>
+          </div>
+        )}
+
+        {showErrorPopup && (
+          <div className="error-popup-overlay">
+            <div className="error-popup-modal">
+              <div className="error-content">
+                <h2>{message}</h2>
+                <button className="error-close-button" onClick={() => setShowErrorPopup(false)}>
+                  OK
+                </button>
+              </div>
             </div>
           </div>
         )}
