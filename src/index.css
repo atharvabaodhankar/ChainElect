@@ -1359,6 +1359,7 @@ line-height: 2.5rem;
   border: 2px solid #e2e8f0;
   border-radius: 8px;
   margin-bottom: 1rem;
+  color: #2c3e50;
   font-size: 1.6rem;
   transition: all 0.3s ease;
 }
@@ -1376,7 +1377,7 @@ line-height: 2.5rem;
   border-radius: 8px;
   background: linear-gradient(135deg, #2c3e50, #34495e);
   color: white;
-  font-size: 1rem;
+  font-size: 1.8rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -1402,10 +1403,10 @@ line-height: 2.5rem;
   margin-top: 2rem;
   padding: 1rem;
   border-radius: 8px;
-  background: #f8f9fa;
-  color: #2c3e50;
+  background: #3c454e;
+  color: #fff;
   text-align: center;
-  font-size: 1.1rem;
+  font-size: 1.8rem;
 }
 
 .message.error {
