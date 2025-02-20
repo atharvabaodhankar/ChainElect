@@ -53,15 +53,36 @@ app.post('/auth/register', upload.single('image'), async (req, res) => {
     }
 
     try {
+        // Check if voter_id already exists
+        const { data: existingVoter, error: voterCheckError } = await supabase
+            .from('voters')
+            .select('voter_id')
+            .eq('voter_id', voter_id)
+            .single();
+
+        if (existingVoter) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Voter ID already registered' 
+            });
+        }
+
         // First register the user with Supabase Auth
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
             password,
+            options: {
+                emailRedirectTo: 'http://localhost:5173/login'
+            }
         });
 
         if (authError) {
             console.error('Auth error:', authError);
-            return res.status(500).json({ success: false, message: authError.message });
+            return res.status(500).json({ 
+                success: false, 
+                message: authError.message,
+                isEmailError: authError.message.includes('email')
+            });
         }
 
         // Upload image to Supabase Storage
@@ -101,7 +122,9 @@ app.post('/auth/register', upload.single('image'), async (req, res) => {
 
         res.json({ 
             success: true, 
-            message: 'Registration successful. Please check your email for confirmation.' 
+            message: 'Registration successful! A confirmation email has been sent.',
+            email: email,
+            confirmationSent: true
         });
 
     } catch (err) {

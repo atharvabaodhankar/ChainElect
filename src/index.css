@@ -2260,3 +2260,84 @@ z-index: 55;
     font-size: 1.4rem;
   }
 }
+
+/* Registration Success Styles */
+.registration-success {
+  text-align: center;
+  padding: 2rem;
+}
+
+.registration-success h2 {
+  color: #2c3e50;
+  font-size: 2.8rem;
+  margin-bottom: 2rem;
+}
+
+.success-message {
+  background: #f8fafc;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.email-highlight {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  font-weight: 600;
+  background: #e2e8f0;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+  display: inline-block;
+}
+
+.email-instructions {
+  text-align: left;
+  margin: 2rem 0;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.email-instructions h3 {
+  color: #2c3e50;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.email-instructions ol {
+  list-style-position: inside;
+  padding-left: 0;
+}
+
+.email-instructions li {
+  color: #4a5568;
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.note {
+  color: #718096;
+  font-style: italic;
+  margin: 2rem 0;
+}
+
+.login-redirect-button {
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  color: white;
+  border: none;
+  padding: 1.2rem 2.4rem;
+  border-radius: 8px;
+  font-size: 1.6rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 2rem;
+}
+
+.login-redirect-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.15);
+}

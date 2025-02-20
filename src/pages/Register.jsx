@@ -13,6 +13,8 @@ const Register = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [registrationComplete, setRegistrationComplete] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
   const navigate = useNavigate();
 
   const handleImageChange = (e) => {
@@ -59,8 +61,10 @@ const Register = () => {
 
       const result = await response.json();
 
-      if (response.ok) {
-        setSuccessMessage('Registration successful! Please check your email for confirmation.');
+      if (response.ok && result.success) {
+        setRegistrationComplete(true);
+        setRegisteredEmail(result.email);
+        setSuccessMessage(result.message);
         // Clear form
         setVoterId('');
         setMetamaskId('');
@@ -68,13 +72,12 @@ const Register = () => {
         setPassword('');
         setImage(null);
         setImagePreview(null);
-        
-        // Redirect to login after 3 seconds
-        setTimeout(() => {
-          navigate('/login');
-        }, 3000);
       } else {
         setErrorMessage(result.message || 'Registration failed. Please try again.');
+        // If it's an email-related error, provide more specific guidance
+        if (result.isEmailError) {
+          setErrorMessage('This email address is already registered. Please use a different email or try logging in.');
+        }
       }
     } catch (error) {
       console.error('Error:', error);
@@ -83,6 +86,43 @@ const Register = () => {
       setIsLoading(false);
     }
   };
+
+  if (registrationComplete) {
+    return (
+      <div className="register-page">
+        <Navbar home="/" features="/#features" aboutus="/#aboutus" contactus="/#contactus" />
+        <div className="register-wrapper">
+          <div className="register-content">
+            <div className="registration-success">
+              <h2>Registration Successful!</h2>
+              <div className="success-message">
+                <p>We've sent a confirmation email to:</p>
+                <p className="email-highlight">{registeredEmail}</p>
+                <p>Please check your email and click the confirmation link to activate your account.</p>
+                <div className="email-instructions">
+                  <h3>Next steps:</h3>
+                  <ol>
+                    <li>Open your email inbox</li>
+                    <li>Look for an email from ChainElect</li>
+                    <li>Click the confirmation link in the email</li>
+                    <li>Once confirmed, you can log in to your account</li>
+                  </ol>
+                </div>
+                <p className="note">Note: If you don't see the email, please check your spam folder.</p>
+                <button 
+                  className="login-redirect-button"
+                  onClick={() => navigate('/login')}
+                >
+                  Go to Login Page
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="register-page">
