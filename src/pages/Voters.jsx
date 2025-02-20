@@ -343,6 +343,11 @@ const Voters = () => {
           <div className="voter-profile-section">
             <div className="profile-header">
               <h2>Voter Profile</h2>
+              {userInfo.image_url && (
+                <div className="profile-image-container">
+                  <img src={userInfo.image_url} alt="Profile" className="profile-image" />
+                </div>
+              )}
             </div>
             <div className="profile-details">
               <div className="detail-item">
@@ -354,9 +359,12 @@ const Voters = () => {
                 <span className="detail-value">{userInfo.metamask_id}</span>
               </div>
               <div className="detail-item">
+                <span className="detail-label">Email</span>
+                <span className="detail-value">{userInfo.email}</span>
+              </div>
+              <div className="detail-item">
                 <span className="detail-label">Balance</span>
-                <span className="detail-value">{<Conn_web updateMetamaskId={updateWalletInfo} />
-              }&nbsp;ETH</span>
+                <span className="detail-value">{<Conn_web updateMetamaskId={updateWalletInfo} />}&nbsp;ETH</span>
               </div>
             </div>
           </div>
