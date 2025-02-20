@@ -2361,3 +2361,63 @@ z-index: 55;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(44, 62, 80, 0.15);
 }
+
+/* File Input Styles */
+.form-group input[type="file"] {
+  width: 100%;
+  padding: 1.2rem;
+  border: 2px dashed #e2e8f0;
+  border-radius: 10px;
+  font-size: 1.6rem;
+  color: #2c3e50;
+  transition: all 0.3s ease;
+  background: #f8fafc;
+  cursor: pointer;
+  text-align: center;
+}
+
+.form-group input[type="file"]::-webkit-file-upload-button {
+  visibility: hidden;
+  display: none;
+}
+
+.form-group input[type="file"]::before {
+  content: 'Choose Profile Image';
+  display: inline-block;
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  color: white;
+  padding: 8px 20px;
+  border-radius: 6px;
+  margin-right: 10px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.form-group input[type="file"]:hover::before {
+  background: linear-gradient(135deg, #34495e, #2c3e50);
+}
+
+.form-group input[type="file"]:hover {
+  border-color: #2c3e50;
+  background: #ffffff;
+}
+
+.form-group input[type="file"]:active {
+  background: #f1f5f9;
+}
+
+.image-preview {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.image-preview img {
+  max-width: 200px;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
