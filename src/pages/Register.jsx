@@ -6,33 +6,73 @@ import Footer from '../components/Footer';
 const Register = () => {
   const [voterId, setVoterId] = useState('');
   const [metamaskId, setMetamaskId] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        setErrorMessage('Image size should be less than 5MB');
+        return;
+      }
+      if (!file.type.match(/image\/(jpeg|jpg|png)/)) {
+        setErrorMessage('Only .jpg, .jpeg, and .png files are allowed');
+        return;
+      }
+      setImage(file);
+      setImagePreview(URL.createObjectURL(file));
+      setErrorMessage('');
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
+    setSuccessMessage('');
     setIsLoading(true);
 
+    if (!image) {
+      setErrorMessage('Please select a profile image');
+      setIsLoading(false);
+      return;
+    }
+
     try {
+      const formData = new FormData();
+      formData.append('voter_id', voterId);
+      formData.append('metamask_id', metamaskId);
+      formData.append('email', email);
+      formData.append('password', password);
+      formData.append('image', image);
+
       const response = await fetch('http://localhost:3000/auth/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          voter_id: voterId,
-          metamask_id: metamaskId,
-          password,
-        }),
+        body: formData,
       });
 
       const result = await response.json();
 
       if (response.ok) {
-        navigate('/login');
+        setSuccessMessage('Registration successful! Please check your email for confirmation.');
+        // Clear form
+        setVoterId('');
+        setMetamaskId('');
+        setEmail('');
+        setPassword('');
+        setImage(null);
+        setImagePreview(null);
+        
+        // Redirect to login after 3 seconds
+        setTimeout(() => {
+          navigate('/login');
+        }, 3000);
       } else {
         setErrorMessage(result.message || 'Registration failed. Please try again.');
       }
@@ -84,6 +124,20 @@ const Register = () => {
             </div>
 
             <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <div className="input-wrapper">
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
               <label htmlFor="password">Password</label>
               <div className="input-wrapper">
                 <input
@@ -97,9 +151,33 @@ const Register = () => {
               </div>
             </div>
 
+            <div className="form-group">
+              <label htmlFor="image">Profile Image</label>
+              <div className="input-wrapper">
+                <input
+                  type="file"
+                  id="image"
+                  accept="image/jpeg,image/jpg,image/png"
+                  onChange={handleImageChange}
+                  required
+                />
+              </div>
+              {imagePreview && (
+                <div className="image-preview">
+                  <img src={imagePreview} alt="Preview" style={{ maxWidth: '200px', marginTop: '10px' }} />
+                </div>
+              )}
+            </div>
+
             {errorMessage && (
               <div className="error-container">
                 <p className="error-message">{errorMessage}</p>
+              </div>
+            )}
+
+            {successMessage && (
+              <div className="success-container">
+                <p className="success-message">{successMessage}</p>
               </div>
             )}
 

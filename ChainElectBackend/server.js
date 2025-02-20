@@ -3,25 +3,34 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-const bcrypt = require('bcrypt');
-const mysql = require('mysql');
+const { createClient } = require('@supabase/supabase-js');
+const multer = require('multer');
+const path = require('path');
 
 const app = express();
 const secretKey = 'your_secret_key';
 
-// Database connection
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'chainelect',
-});
+// Supabase configuration
+const supabaseUrl = 'https://hanlwbbbniiujtzutpbv.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhhbmx3YmJibmlpdWp0enV0cGJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5NzM3MjgsImV4cCI6MjA1NTU0OTcyOH0.WG-NlQ4atZdiQVPPqPNefAQJS00ObgV-73tGrWgHEgY';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-db.connect((err) => {
-    if (err) {
-        console.error('Database connection failed:', err);
-    } else {
-        console.log('Database connected.');
+// Configure multer for image upload
+const storage = multer.memoryStorage();
+const upload = multer({ 
+    storage: storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit
+    },
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = /jpeg|jpg|png/;
+        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+        const mimetype = allowedTypes.test(file.mimetype);
+        if (extname && mimetype) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+        }
     }
 });
 
@@ -36,83 +45,156 @@ app.use(session({
 }));
 
 // Authentication routes
-app.post('/auth/register', async (req, res) => {
-    const { voter_id, metamask_id, password } = req.body;
+app.post('/auth/register', upload.single('image'), async (req, res) => {
+    const { voter_id, metamask_id, email, password } = req.body;
 
-    if (!voter_id || !metamask_id || !password) {
-        return res.status(400).json({ success: false, message: 'All fields are required' });
+    if (!voter_id || !metamask_id || !email || !password || !req.file) {
+        return res.status(400).json({ success: false, message: 'All fields including image are required' });
     }
 
     try {
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // First register the user with Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+            email,
+            password,
+        });
 
-        db.query(
-            'INSERT INTO voters (voter_id, metamask_id, password) VALUES (?, ?, ?)',
-            [voter_id, metamask_id, hashedPassword],
-            (err, result) => {
-                if (err) {
-                    console.error(err);
-                    return res.status(500).json({ success: false, message: 'Database error' });
-                }
-                res.json({ success: true, message: 'Registration successful' });
-            }
-        );
+        if (authError) {
+            console.error('Auth error:', authError);
+            return res.status(500).json({ success: false, message: authError.message });
+        }
+
+        // Upload image to Supabase Storage
+        const timestamp = Date.now();
+        const fileExtension = path.extname(req.file.originalname);
+        const fileName = `${voter_id}-${timestamp}${fileExtension}`;
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('voter-images')
+            .upload(fileName, req.file.buffer);
+
+        if (uploadError) {
+            console.error('Upload error:', uploadError);
+            return res.status(500).json({ success: false, message: 'Failed to upload image' });
+        }
+
+        // Get the public URL of the uploaded image
+        const { data: { publicUrl } } = supabase.storage
+            .from('voter-images')
+            .getPublicUrl(fileName);
+
+        // Insert voter data into the voters table
+        const { data: voterData, error: voterError } = await supabase
+            .from('voters')
+            .insert([{
+                auth_user_id: authData.user.id,
+                voter_id,
+                metamask_id,
+                email,
+                image_url: publicUrl
+            }]);
+
+        if (voterError) {
+            console.error('Database error:', voterError);
+            return res.status(500).json({ success: false, message: 'Failed to create voter record' });
+        }
+
+        res.json({ 
+            success: true, 
+            message: 'Registration successful. Please check your email for confirmation.' 
+        });
+
     } catch (err) {
-        console.error(err);
+        console.error('Server error:', err);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 });
 
-app.post('/auth/login', (req, res) => {
-    const { voter_id, password } = req.body;
+app.post('/auth/login', async (req, res) => {
+    const { email, password } = req.body;
 
-    if (!voter_id || !password) {
+    if (!email || !password) {
         return res.status(400).json({ success: false, message: 'All fields are required' });
     }
 
-    db.query('SELECT * FROM voters WHERE voter_id = ?', [voter_id], async (err, results) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ success: false, message: 'Database error' });
-        }
+    try {
+        // Sign in with Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
 
-        if (results.length === 0) {
+        if (authError) {
             return res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
 
-        const voter = results[0];
-        const isMatch = await bcrypt.compare(password, voter.password);
+        // Get voter information
+        const { data: voterData, error: voterError } = await supabase
+            .from('voters')
+            .select('*')
+            .eq('auth_user_id', authData.user.id)
+            .single();
 
-        if (!isMatch) {
-            return res.status(401).json({ success: false, message: 'Invalid credentials' });
+        if (voterError) {
+            return res.status(500).json({ success: false, message: 'Failed to fetch voter data' });
         }
 
-        req.session.voter_id = voter.voter_id;
-        res.json({ success: true, message: 'Login successful' });
-    });
+        req.session.voter_id = voterData.voter_id;
+        res.json({ 
+            success: true, 
+            message: 'Login successful',
+            voter: {
+                voter_id: voterData.voter_id,
+                metamask_id: voterData.metamask_id,
+                email: voterData.email,
+                image_url: voterData.image_url
+            }
+        });
+
+    } catch (err) {
+        console.error('Server error:', err);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
 });
 
-app.post('/auth/logout', (req, res) => {
-    req.session.destroy();
-    res.json({ success: true, message: 'Logged out successfully' });
+app.post('/auth/logout', async (req, res) => {
+    try {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+        
+        req.session.destroy();
+        res.json({ success: true, message: 'Logged out successfully' });
+    } catch (err) {
+        console.error('Logout error:', err);
+        res.status(500).json({ success: false, message: 'Failed to logout' });
+    }
 });
 
-// New route to fetch user information
-app.get('/voters/:voter_id', (req, res) => {
+// Route to fetch user information
+app.get('/voters/:voter_id', async (req, res) => {
     const { voter_id } = req.params;
 
-    db.query('SELECT voter_id, metamask_id FROM voters WHERE voter_id = ?', [voter_id], (err, results) => {
-        if (err) {
-            console.error(err);
+    try {
+        const { data: voter, error } = await supabase
+            .from('voters')
+            .select('voter_id, metamask_id, email, image_url')
+            .eq('voter_id', voter_id)
+            .single();
+
+        if (error) {
+            console.error('Database error:', error);
             return res.status(500).json({ success: false, message: 'Database error' });
         }
 
-        if (results.length === 0) {
+        if (!voter) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        res.json(results[0]);
-    });
+        res.json(voter);
+    } catch (err) {
+        console.error('Server error:', err);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
 });
 
 // Start server

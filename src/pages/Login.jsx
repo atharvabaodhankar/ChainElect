@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 const Login = () => {
-  const [voterId, setVoterId] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -21,13 +21,14 @@ const Login = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ voter_id: voterId, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       const result = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('voter_id', voterId);
+        localStorage.setItem('voter_id', result.voter.voter_id);
+        localStorage.setItem('voter_data', JSON.stringify(result.voter));
         navigate('/voters');
       } else {
         setErrorMessage(result.message || 'Login failed. Please try again.');
@@ -52,14 +53,14 @@ const Login = () => {
           
           <form onSubmit={handleSubmit} className="login-form">
             <div className="form-group">
-              <label htmlFor="voterId">Voter ID</label>
+              <label htmlFor="email">Email</label>
               <div className="input-wrapper">
                 <input
-                  type="text"
-                  id="voterId"
-                  value={voterId}
-                  onChange={(e) => setVoterId(e.target.value)}
-                  placeholder="Enter your Voter ID"
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
                   required
                 />
               </div>
