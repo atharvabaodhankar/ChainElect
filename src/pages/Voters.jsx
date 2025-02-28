@@ -5,6 +5,7 @@ import Conn_web from "../components/Conn_web";
 import Web3 from "web3";
 import MyContract from "../../artifacts/contracts/MyContract.sol/MyContract.json";
 import tickGif from "../assets/tick.gif";
+import FaceAuth from "../components/FaceAuth";
 
 const Voters = () => {
   const [candidates, setCandidates] = useState([]);
@@ -18,6 +19,8 @@ const Voters = () => {
   const [accounts, setAccounts] = useState([]);
   const [balance, setBalance] = useState('0');
   const [showPopup, setShowPopup] = useState(false);
+  const [showFaceAuth, setShowFaceAuth] = useState(false);
+  const [selectedCandidateId, setSelectedCandidateId] = useState(null);
 
   // Function to format time
   const formatTime = (seconds) => {
@@ -136,13 +139,18 @@ const Voters = () => {
     }
   }, [contract, remainingTime, navigate]);
 
-  // Function to handle voting
+  // Modified handleVote function
   const handleVote = async (id) => {
     if (!id) {
       setMessage("Please enter a candidate ID.");
       return;
     }
 
+    setSelectedCandidateId(id);
+    setShowFaceAuth(true);
+  };
+
+  const handleFaceAuthSuccess = async () => {
     try {
       // Request account access and reinitialize Web3
       const currentAccounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -167,7 +175,7 @@ const Voters = () => {
         deployedNetwork.address
       );
 
-      // Check if user has already voted before attempting to vote
+      // Check if user has already voted
       const voter = await contractInstance.methods.voters(currentAccount).call();
       if (voter.hasVoted) {
         setMessage("You have already cast your vote!");
@@ -175,33 +183,39 @@ const Voters = () => {
         return;
       }
 
-      await contractInstance.methods.vote(id).send({ from: currentAccount });
+      await contractInstance.methods.vote(selectedCandidateId).send({ from: currentAccount });
       setMessage("Vote cast successfully!");
       setShowPopup(true);
       setCandidates((prevCandidates) =>
         prevCandidates.map((candidate) =>
-          candidate.id === id
+          candidate.id === selectedCandidateId
             ? { ...candidate, votes: BigInt(candidate.votes) + BigInt(1) }
             : candidate
         )
       );
     } catch (error) {
-      // Extract the revert reason from the error
       if (error.message.includes('You have already voted')) {
         setMessage("You have already cast your vote!");
-        setShowErrorPopup(true);
       } else if (error.message.includes('Voting is not active')) {
         setMessage("Voting is not currently active");
-        setShowErrorPopup(true);
       } else if (error.message.includes('Invalid candidate')) {
         setMessage("Invalid candidate selection");
-        setShowErrorPopup(true);
       } else {
         setMessage("Failed to cast vote. Please try again");
-        setShowErrorPopup(true);
       }
+      setShowErrorPopup(true);
       console.error("Error casting vote:", error);
+    } finally {
+      setShowFaceAuth(false);
+      setSelectedCandidateId(null);
     }
+  };
+
+  const handleFaceAuthFailure = () => {
+    setMessage("Face verification failed. Please try again or login again.");
+    setShowErrorPopup(true);
+    setShowFaceAuth(false);
+    setSelectedCandidateId(null);
   };
 
   // Function to handle logout
@@ -282,6 +296,14 @@ const Voters = () => {
         contactus="/#contactus"
       />
       <div className="voters-modern-container">
+        {showFaceAuth && userInfo && (
+          <FaceAuth
+            storedImageUrl={userInfo.image_url}
+            onAuthSuccess={handleFaceAuthSuccess}
+            onAuthFailure={handleFaceAuthFailure}
+          />
+        )}
+
         {showPopup && message && (
           <div className="vote-success-overlay">
             <div className="vote-success-modal">
