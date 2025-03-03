@@ -4,7 +4,7 @@ import * as faceapi from 'face-api.js';
 const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
 
 // Adjust this value based on testing. 0.6 is slightly more lenient than 0.5
-const FACE_MATCH_THRESHOLD = 0.65;
+const FACE_MATCH_THRESHOLD = 0.45;
 
 const FaceAuth = ({ storedImageUrl, onAuthSuccess, onAuthFailure }) => {
   const videoRef = useRef();
