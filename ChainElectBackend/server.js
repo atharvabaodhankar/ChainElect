@@ -46,10 +46,19 @@ app.use(session({
 
 // Authentication routes
 app.post('/auth/register', upload.single('image'), async (req, res) => {
-    const { voter_id, metamask_id, email, password } = req.body;
+    const { voter_id, metamask_id, email, password, face_descriptor } = req.body;
+    
+    // Parse face descriptor if it's a string
+    let parsedFaceDescriptor;
+    try {
+        parsedFaceDescriptor = typeof face_descriptor === 'string' ? JSON.parse(face_descriptor) : face_descriptor;
+    } catch (error) {
+        console.error('Face descriptor parsing error:', error);
+        return res.status(400).json({ success: false, message: 'Invalid face descriptor format' });
+    }
 
-    if (!voter_id || !metamask_id || !email || !password || !req.file) {
-        return res.status(400).json({ success: false, message: 'All fields including image are required' });
+    if (!voter_id || !metamask_id || !email || !password || !req.file || !face_descriptor) {
+        return res.status(400).json({ success: false, message: 'All fields including face capture are required' });
     }
 
     try {
@@ -112,7 +121,8 @@ app.post('/auth/register', upload.single('image'), async (req, res) => {
                 voter_id,
                 metamask_id,
                 email,
-                image_url: publicUrl
+                image_url: publicUrl,
+                face_descriptor: parsedFaceDescriptor
             }]);
 
         if (voterError) {

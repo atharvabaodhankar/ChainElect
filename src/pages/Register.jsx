@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import FaceRegister from '../components/FaceRegister';
 
 const Register = () => {
   const [voterId, setVoterId] = useState('');
@@ -16,7 +17,8 @@ const Register = () => {
   const [registrationComplete, setRegistrationComplete] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState('');
   const navigate = useNavigate();
-
+  const [showFaceCapture, setShowFaceCapture] = useState(false);
+  const [faceDescriptor, setFaceDescriptor] = useState(null);
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -33,7 +35,16 @@ const Register = () => {
       setErrorMessage('');
     }
   };
-
+  const handleFaceDetected = ({ descriptor, imageFile }) => {
+    setFaceDescriptor(descriptor);
+    setImage(imageFile);
+    setImagePreview(URL.createObjectURL(imageFile));
+    setShowFaceCapture(false);
+  };
+  const handleFaceError = (error) => {
+    setErrorMessage(error);
+    setShowFaceCapture(false);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
@@ -53,6 +64,7 @@ const Register = () => {
       formData.append('email', email);
       formData.append('password', password);
       formData.append('image', image);
+      formData.append('face_descriptor', JSON.stringify(faceDescriptor));
 
       const response = await fetch('http://localhost:3000/auth/register', {
         method: 'POST',
@@ -194,13 +206,13 @@ const Register = () => {
             <div className="form-group">
               <label htmlFor="image">Profile Image</label>
               <div className="input-wrapper">
-                <input
-                  type="file"
-                  id="image"
-                  accept="image/jpeg,image/jpg,image/png"
-                  onChange={handleImageChange}
-                  required
-                />
+                <button
+                  type="button"
+                  className="capture-face-button"
+                  onClick={() => setShowFaceCapture(true)}
+                >
+                  Capture Face Image
+                </button>
               </div>
               {imagePreview && (
                 <div className="image-preview">
@@ -208,7 +220,12 @@ const Register = () => {
                 </div>
               )}
             </div>
-
+            {showFaceCapture && (
+              <FaceRegister
+                onFaceDetected={handleFaceDetected}
+                onError={handleFaceError}
+              />
+            )}
             {errorMessage && (
               <div className="error-container">
                 <p className="error-message">{errorMessage}</p>
