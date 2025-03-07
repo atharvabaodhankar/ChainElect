@@ -252,7 +252,7 @@ const Voters = () => {
         const response = await fetch(`http://localhost:3000/voters/${voterId}`);
         const data = await response.json();
         setUserInfo(data);
-
+        console.log("Fetched user info:", data);
         // Compare with current Metamask ID
         if (currentMetamaskId && currentMetamaskId !== data.metamask_id.toLowerCase()) {
           alert('Metamask ID does not match');
@@ -301,6 +301,7 @@ const Voters = () => {
             storedImageUrl={userInfo.image_url}
             onAuthSuccess={handleFaceAuthSuccess}
             onAuthFailure={handleFaceAuthFailure}
+            storedFaceDescriptor={userInfo.face_descriptor}
           />
         )}
 

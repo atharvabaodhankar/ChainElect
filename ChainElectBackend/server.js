@@ -210,7 +210,7 @@ app.get('/voters/:voter_id', async (req, res) => {
     try {
         const { data: voter, error } = await supabase
             .from('voters')
-            .select('voter_id, metamask_id, email, image_url')
+            .select('voter_id, metamask_id, email, image_url , face_descriptor')
             .eq('voter_id', voter_id)
             .single();
 

@@ -6,7 +6,7 @@ const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
 // Adjust this value based on testing. 0.6 is slightly more lenient than 0.5
 const FACE_MATCH_THRESHOLD = 0.45;
 
-const FaceAuth = ({ storedImageUrl, onAuthSuccess, onAuthFailure }) => {
+const FaceAuth = ({ storedImageUrl, onAuthSuccess, onAuthFailure, storedFaceDescriptor }) => {
   const videoRef = useRef();
   const canvasRef = useRef();
   const [isLoading, setIsLoading] = useState(true);
@@ -77,44 +77,13 @@ const FaceAuth = ({ storedImageUrl, onAuthSuccess, onAuthFailure }) => {
     });
   };
 
-  const compareFaces = async (face1, face2) => {
-    try {
-      const distance = faceapi.euclideanDistance(face1.descriptor, face2.descriptor);
-      console.log('Face distance:', distance);
-      console.log('Threshold:', FACE_MATCH_THRESHOLD);
-      console.log('Match status:', distance < FACE_MATCH_THRESHOLD ? 'MATCH' : 'NO MATCH');
-      return distance < FACE_MATCH_THRESHOLD;
-    } catch (error) {
-      console.error('Error comparing faces:', error);
-      return false;
-    }
-  };
-
   const checkFace = async () => {
-    if (isChecking || !videoRef.current || !storedImageUrl) return;
+    if (isChecking || !videoRef.current) return;
 
     setIsChecking(true);
     setMessage('Checking face...');
 
     try {
-      // Load the stored profile image
-      const storedImage = await loadImage(storedImageUrl);
-      console.log('Stored image loaded');
-
-      const storedDetection = await faceapi
-        .detectSingleFace(storedImage)
-        .withFaceLandmarks()
-        .withFaceDescriptor();
-
-      if (!storedDetection) {
-        setMessage('No face detected in stored profile image. Please contact support.');
-        setIsChecking(false);
-        onAuthFailure();
-        return;
-      }
-
-      console.log('Stored face detected:', storedDetection);
-
       // Get current face from video with multiple attempts
       let attempts = 0;
       const maxAttempts = 3;
@@ -142,9 +111,15 @@ const FaceAuth = ({ storedImageUrl, onAuthSuccess, onAuthFailure }) => {
 
       console.log('Live face detected:', detections);
 
-      // Compare faces
-      const isMatch = await compareFaces(detections, storedDetection);
-      console.log('Face match result:', isMatch);
+      // Create a Float32Array from the stored descriptor
+      const storedDescriptor = new Float32Array(storedFaceDescriptor);
+
+      // Compare faces using the stored descriptor
+      const distance = faceapi.euclideanDistance(detections.descriptor, storedDescriptor);
+      console.log('Face distance:', distance);
+      console.log('Threshold:', FACE_MATCH_THRESHOLD);
+      const isMatch = distance < FACE_MATCH_THRESHOLD;
+      console.log('Match status:', isMatch ? 'MATCH' : 'NO MATCH');
 
       if (isMatch) {
         setMessage('Face verified successfully!');
@@ -161,7 +136,6 @@ const FaceAuth = ({ storedImageUrl, onAuthSuccess, onAuthFailure }) => {
       setIsChecking(false);
     }
   };
-
   return (
     <div className="face-auth-container">
       <div className="video-container">
@@ -190,4 +164,4 @@ const FaceAuth = ({ storedImageUrl, onAuthSuccess, onAuthFailure }) => {
   );
 };
 
-export default FaceAuth; 
+export default FaceAuth;
