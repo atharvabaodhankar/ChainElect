@@ -2519,3 +2519,61 @@ z-index: 55;
     min-width: 180px;
   }
 }
+
+.capture-face-button {
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  color: white;
+  border: none;
+  padding: 1.4rem 3rem;
+  border-radius: 10px;
+  font-size: 1.6rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  min-width: 200px;
+}
+
+.capture-face-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.15);
+}
+
+.capture-face-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.capture-face-button.loading {
+  color: transparent;
+}
+
+.capture-face-button.loading::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .capture-face-button {
+    padding: 1.2rem 2rem;
+    font-size: 1.4rem;
+    min-width: 180px;
+  }
+}
