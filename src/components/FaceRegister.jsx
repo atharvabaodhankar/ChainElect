@@ -9,6 +9,16 @@ const FaceRegister = ({ onFaceDetected, onError }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isCapturing, setIsCapturing] = useState(false);
   const [message, setMessage] = useState('Loading face recognition models...');
+  const [hasMultipleFaces, setHasMultipleFaces] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const detectionInterval = useRef(null);
+
+  const stopContinuousDetection = () => {
+    if (detectionInterval.current) {
+      clearInterval(detectionInterval.current);
+      detectionInterval.current = null;
+    }
+  };
 
   useEffect(() => {
     const loadModels = async () => {
@@ -37,6 +47,7 @@ const FaceRegister = ({ onFaceDetected, onError }) => {
         const tracks = videoRef.current.srcObject.getTracks();
         tracks.forEach(track => track.stop());
       }
+      stopContinuousDetection();
     };
   }, []);
 
@@ -55,6 +66,8 @@ const FaceRegister = ({ onFaceDetected, onError }) => {
         videoRef.current.onloadedmetadata = () => {
           setIsLoading(false);
           setMessage('Camera started. Please look at the camera and ensure good lighting.');
+          // Start continuous face detection
+          startContinuousDetection();
         };
       }
     } catch (error) {
@@ -64,8 +77,41 @@ const FaceRegister = ({ onFaceDetected, onError }) => {
     }
   };
 
+  const startContinuousDetection = () => {
+    // Clear any existing interval first
+    stopContinuousDetection();
+
+    detectionInterval.current = setInterval(async () => {
+      if (!videoRef.current || isRegistered) {
+        stopContinuousDetection();
+        return;
+      }
+      
+      try {
+        const detections = await faceapi.detectAllFaces(videoRef.current);
+        
+        // Don't update UI if already registered
+        if (!isRegistered) {
+          if (detections.length > 1) {
+            setHasMultipleFaces(true);
+            setMessage('Multiple faces detected! Please ensure only one person is in the frame.');
+            onError('Multiple faces detected');
+          } else if (detections.length === 0) {
+            setHasMultipleFaces(false);
+            setMessage('No face detected. Please look at the camera.');
+          } else {
+            setHasMultipleFaces(false);
+            setMessage('Single face detected. Ready to capture.');
+          }
+        }
+      } catch (error) {
+        console.error('Error during continuous detection:', error);
+      }
+    }, 1000);
+  };
+
   const captureFace = async () => {
-    if (isCapturing || !videoRef.current) return;
+    if (isCapturing || !videoRef.current || hasMultipleFaces) return;
 
     setIsCapturing(true);
     setMessage('Detecting face...');
@@ -95,6 +141,11 @@ const FaceRegister = ({ onFaceDetected, onError }) => {
         return;
       }
 
+      // Stop continuous detection before proceeding with capture
+      stopContinuousDetection();
+      setIsRegistered(true);
+      setHasMultipleFaces(false); // Reset multiple faces flag
+
       console.log('Face detected:', detections);
       setMessage('Face captured successfully!');
 
@@ -120,6 +171,7 @@ const FaceRegister = ({ onFaceDetected, onError }) => {
       console.error('Error during face capture:', error);
       setMessage('Error during face capture. Please try again.');
       onError('Face capture failed');
+      setIsRegistered(false); // Reset registered state on error
     } finally {
       setIsCapturing(false);
     }
@@ -134,7 +186,9 @@ const FaceRegister = ({ onFaceDetected, onError }) => {
           playsInline
           muted
           onPlay={() => {
-            setMessage('Camera ready. Click "Capture Face" to proceed.');
+            if (!isRegistered) {
+              setMessage('Camera ready. Click "Capture Face" to proceed.');
+            }
           }}
         />
         <canvas ref={canvasRef} />
@@ -144,7 +198,7 @@ const FaceRegister = ({ onFaceDetected, onError }) => {
         <button
           className="verify-face-button"
           onClick={captureFace}
-          disabled={isLoading || isCapturing}
+          disabled={isLoading || isCapturing || hasMultipleFaces || isRegistered}
         >
           {isCapturing ? 'Capturing...' : 'Capture Face'}
         </button>
