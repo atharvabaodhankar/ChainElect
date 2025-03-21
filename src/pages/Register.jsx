@@ -21,6 +21,66 @@ const Register = () => {
   const [showFaceCapture, setShowFaceCapture] = useState(false);
   const [faceDescriptor, setFaceDescriptor] = useState(null);
   const [showInstructions, setShowInstructions] = useState(true);
+  const [validationErrors, setValidationErrors] = useState({
+    voterId: '',
+    metamaskId: '',
+    email: '',
+    password: ''
+  });
+
+  // Regex patterns
+  const patterns = {
+    voterId: /^[A-Z]{3}[0-9]{7}$/, // Based on Indian Voter ID format
+    metamaskId: /^0x[a-fA-F0-9]{40}$/, // MetaMask address format
+    email: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/,
+    password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+  };
+
+  const validateField = (name, value) => {
+    if (!value) {
+      return `${name} is required`;
+    }
+    if (!patterns[name].test(value)) {
+      switch (name) {
+        case 'voterId':
+          return 'Invalid Voter ID format. Must be 3 uppercase letters followed by 7 digits';
+        case 'metamaskId':
+          return 'Invalid MetaMask address. Must start with 0x followed by 40 hexadecimal characters';
+        case 'email':
+          return 'Invalid email format';
+        case 'password':
+          return 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character';
+        default:
+          return 'Invalid format';
+      }
+    }
+    return '';
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    switch (name) {
+      case 'voterId':
+        setVoterId(value.toUpperCase());
+        break;
+      case 'metamaskId':
+        setMetamaskId(value);
+        break;
+      case 'email':
+        setEmail(value);
+        break;
+      case 'password':
+        setPassword(value);
+        break;
+      default:
+        break;
+    }
+    
+    setValidationErrors(prev => ({
+      ...prev,
+      [name]: validateField(name, value)
+    }));
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -52,13 +112,29 @@ const Register = () => {
     e.preventDefault();
     setErrorMessage('');
     setSuccessMessage('');
-    setIsLoading(true);
+
+    // Validate all fields
+    const errors = {
+      voterId: validateField('voterId', voterId),
+      metamaskId: validateField('metamaskId', metamaskId),
+      email: validateField('email', email),
+      password: validateField('password', password)
+    };
+
+    setValidationErrors(errors);
+
+    // Check if there are any validation errors
+    if (Object.values(errors).some(error => error)) {
+      setErrorMessage('Please fix the validation errors before submitting');
+      return;
+    }
 
     if (!image) {
       setErrorMessage('Please select a profile image');
-      setIsLoading(false);
       return;
     }
+
+    setIsLoading(true);
 
     try {
       const formData = new FormData();
@@ -89,7 +165,6 @@ const Register = () => {
         setImagePreview(null);
       } else {
         setErrorMessage(result.message || 'Registration failed. Please try again.');
-        // If it's an email-related error, provide more specific guidance
         if (result.isEmailError) {
           setErrorMessage('This email address is already registered. Please use a different email or try logging in.');
         }
@@ -166,25 +241,33 @@ const Register = () => {
                 <input
                   type="text"
                   id="voterId"
+                  name="voterId"
                   value={voterId}
-                  onChange={(e) => setVoterId(e.target.value)}
-                  placeholder="Enter your Voter ID"
+                  onChange={handleInputChange}
+                  placeholder="Enter your Voter ID (e.g., ABC1234567)"
                   required
                 />
+                {validationErrors.voterId && (
+                  <div className="validation-error">{validationErrors.voterId}</div>
+                )}
               </div>
             </div>
 
             <div className="form-group">
-              <label htmlFor="metamaskId">Metamask ID</label>
+              <label htmlFor="metamaskId">MetaMask ID</label>
               <div className="input-wrapper">
                 <input
                   type="text"
                   id="metamaskId"
+                  name="metamaskId"
                   value={metamaskId}
-                  onChange={(e) => setMetamaskId(e.target.value)}
-                  placeholder="Enter your Metamask ID"
+                  onChange={handleInputChange}
+                  placeholder="Enter your MetaMask ID (0x...)"
                   required
                 />
+                {validationErrors.metamaskId && (
+                  <div className="validation-error">{validationErrors.metamaskId}</div>
+                )}
               </div>
             </div>
 
@@ -194,11 +277,15 @@ const Register = () => {
                 <input
                   type="email"
                   id="email"
+                  name="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={handleInputChange}
                   placeholder="Enter your email"
                   required
                 />
+                {validationErrors.email && (
+                  <div className="validation-error">{validationErrors.email}</div>
+                )}
               </div>
             </div>
 
@@ -208,11 +295,15 @@ const Register = () => {
                 <input
                   type="password"
                   id="password"
+                  name="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={handleInputChange}
                   placeholder="Create a strong password"
                   required
                 />
+                {validationErrors.password && (
+                  <div className="validation-error">{validationErrors.password}</div>
+                )}
               </div>
             </div>
 
