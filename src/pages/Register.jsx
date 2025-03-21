@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import FaceRegister from '../components/FaceRegister';
+import RegisterInstructions from '../components/RegisterInstructions';
 
 const Register = () => {
   const [voterId, setVoterId] = useState('');
@@ -19,6 +20,8 @@ const Register = () => {
   const navigate = useNavigate();
   const [showFaceCapture, setShowFaceCapture] = useState(false);
   const [faceDescriptor, setFaceDescriptor] = useState(null);
+  const [showInstructions, setShowInstructions] = useState(true);
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -98,6 +101,16 @@ const Register = () => {
       setIsLoading(false);
     }
   };
+
+  if (showInstructions) {
+    return (
+      <div className="register-page">
+        <Navbar home="/" features="/#features" aboutus="/#aboutus" contactus="/#contactus" />
+        <RegisterInstructions onStart={() => setShowInstructions(false)} />
+        <Footer />
+      </div>
+    );
+  }
 
   if (registrationComplete) {
     return (
