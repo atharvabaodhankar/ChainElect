@@ -1,6 +1,18 @@
 import React from 'react';
 
 const RegisterInstructions = ({ onStart }) => {
+  const handleStartClick = () => {
+    // Scroll to top before starting registration
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    // Wait for scroll to complete before proceeding
+    setTimeout(() => {
+      onStart();
+    }, 500);
+  };
+
   return (
     <div className="register-instructions">
       <div className="instructions-content">
@@ -72,7 +84,7 @@ const RegisterInstructions = ({ onStart }) => {
           </ul>
         </div>
 
-        <button className="start-registration-button" onClick={onStart}>
+        <button className="start-registration-button" onClick={handleStartClick}>
           Start Registration
         </button>
       </div>
