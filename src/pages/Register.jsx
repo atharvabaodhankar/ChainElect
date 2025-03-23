@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import FaceRegister from '../components/FaceRegister';
 import RegisterInstructions from '../components/RegisterInstructions';
+import { endpoints } from "../config/api.js";
 
 const Register = () => {
   const [voterId, setVoterId] = useState('');
@@ -26,6 +27,12 @@ const Register = () => {
     metamaskId: '',
     email: '',
     password: ''
+  });
+  const [formData, setFormData] = useState({
+    voter_id: "",
+    metamask_id: "",
+    email: "",
+    password: "",
   });
 
   // Regex patterns
@@ -110,70 +117,30 @@ const Register = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessage('');
-    setSuccessMessage('');
-
-    // Validate all fields
-    const errors = {
-      voterId: validateField('voterId', voterId),
-      metamaskId: validateField('metamaskId', metamaskId),
-      email: validateField('email', email),
-      password: validateField('password', password)
-    };
-
-    setValidationErrors(errors);
-
-    // Check if there are any validation errors
-    if (Object.values(errors).some(error => error)) {
-      setErrorMessage('Please fix the validation errors before submitting');
-      return;
-    }
-
-    if (!image) {
-      setErrorMessage('Please select a profile image');
-      return;
-    }
-
-    setIsLoading(true);
+    setError("");
+    setLoading(true);
 
     try {
-      const formData = new FormData();
-      formData.append('voter_id', voterId);
-      formData.append('metamask_id', metamaskId);
-      formData.append('email', email);
-      formData.append('password', password);
-      formData.append('image', image);
-      formData.append('face_descriptor', JSON.stringify(faceDescriptor));
-
-      const response = await fetch('http://localhost:3000/auth/register', {
-        method: 'POST',
-        body: formData,
+      const response = await fetch(endpoints.register, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(formData),
       });
 
-      const result = await response.json();
+      const data = await response.json();
 
-      if (response.ok && result.success) {
-        setRegistrationComplete(true);
-        setRegisteredEmail(result.email);
-        setSuccessMessage(result.message);
-        // Clear form
-        setVoterId('');
-        setMetamaskId('');
-        setEmail('');
-        setPassword('');
-        setImage(null);
-        setImagePreview(null);
-      } else {
-        setErrorMessage(result.message || 'Registration failed. Please try again.');
-        if (result.isEmailError) {
-          setErrorMessage('This email address is already registered. Please use a different email or try logging in.');
-        }
+      if (!response.ok) {
+        throw new Error(data.message || "Registration failed");
       }
-    } catch (error) {
-      console.error('Error:', error);
-      setErrorMessage('An error occurred. Please try again.');
+
+      navigate("/login");
+    } catch (err) {
+      setError(err.message);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 

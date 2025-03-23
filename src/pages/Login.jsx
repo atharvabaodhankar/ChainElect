@@ -2,42 +2,43 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { endpoints } from "../config/api.js";
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessage('');
-    setIsLoading(true);
+    setError("");
+    setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3000/auth/login', {
-        method: 'POST',
+      const response = await fetch(endpoints.login, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        credentials: "include",
+        body: JSON.stringify(formData),
       });
 
-      const result = await response.json();
+      const data = await response.json();
 
-      if (response.ok) {
-        localStorage.setItem('voter_id', result.voter.voter_id);
-        localStorage.setItem('voter_data', JSON.stringify(result.voter));
-        navigate('/voters');
-      } else {
-        setErrorMessage(result.message || 'Login failed. Please try again.');
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
       }
-    } catch (error) {
-      console.error('Error:', error);
-      setErrorMessage('An error occurred. Please try again.');
+
+      navigate("/voters");
+    } catch (err) {
+      setError(err.message);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -58,8 +59,8 @@ const Login = () => {
                 <input
                   type="email"
                   id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="Enter your email"
                   required
                 />
@@ -72,26 +73,26 @@ const Login = () => {
                 <input
                   type="password"
                   id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="Enter your password"
                   required
                 />
               </div>
             </div>
 
-            {errorMessage && (
+            {error && (
               <div className="error-container">
-                <p className="error-message">{errorMessage}</p>
+                <p className="error-message">{error}</p>
               </div>
             )}
 
             <button 
               type="submit" 
-              className={`login-button ${isLoading ? 'loading' : ''}`}
-              disabled={isLoading}
+              className={`login-button ${loading ? 'loading' : ''}`}
+              disabled={loading}
             >
-              {isLoading ? 'Logging in...' : 'Login'}
+              {loading ? 'Logging in...' : 'Login'}
             </button>
 
             <div className="login-footer">

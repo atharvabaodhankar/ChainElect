@@ -6,6 +6,7 @@ import Web3 from "web3";
 import { CONTRACT_ABI, CONTRACT_ADDRESS, NETWORK_CONFIG } from "../config/contract";
 import tickGif from "../assets/tick.gif";
 import FaceAuth from "../components/FaceAuth";
+import { endpoints } from "../config/api.js";
 
 const Voters = () => {
   const [candidates, setCandidates] = useState([]);
@@ -21,6 +22,8 @@ const Voters = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [showFaceAuth, setShowFaceAuth] = useState(false);
   const [selectedCandidateId, setSelectedCandidateId] = useState(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // Function to format time
   const formatTime = (seconds) => {
@@ -222,19 +225,18 @@ const Voters = () => {
   // Function to handle logout
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:3000/auth/logout", {
+      const response = await fetch(endpoints.logout, {
         method: "POST",
         credentials: "include",
       });
 
-      if (response.ok) {
-        localStorage.removeItem("voter_id");
-        navigate("/login");
-      } else {
-        console.error("Logout failed");
+      if (!response.ok) {
+        throw new Error("Logout failed");
       }
-    } catch (error) {
-      console.error("Error during logout:", error);
+
+      navigate("/login");
+    } catch (err) {
+      setError(err.message);
     }
   };
 
@@ -250,7 +252,7 @@ const Voters = () => {
         }
 
         // Then fetch user info and compare with current Metamask ID
-        const response = await fetch(`http://localhost:3000/voters/${voterId}`);
+        const response = await fetch(endpoints.getVoter(voterId));
         const data = await response.json();
         setUserInfo(data);
         console.log("Fetched user info:", data);
