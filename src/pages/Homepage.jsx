@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Button from "../components/button";
+import Button from "../components/Button.jsx";
 import Sample from "../components/Sample";
 import Aboutus from "./Aboutus";
 import Features from "./Features";
