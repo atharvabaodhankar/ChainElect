@@ -8,11 +8,10 @@ const multer = require('multer');
 const path = require('path');
 
 const app = express();
-const secretKey = 'your_secret_key';
 
 // Supabase configuration
-const supabaseUrl = 'https://hanlwbbbniiujtzutpbv.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhhbmx3YmJibmlpdWp0enV0cGJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5NzM3MjgsImV4cCI6MjA1NTU0OTcyOH0.WG-NlQ4atZdiQVPPqPNefAQJS00ObgV-73tGrWgHEgY';
+const supabaseUrl = process.env.SUPABASE_URL || 'https://hanlwbbbniiujtzutpbv.supabase.co';
+const supabaseKey = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhhbmx3YmJibmlpdWp0enV0cGJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5NzM3MjgsImV4cCI6MjA1NTU0OTcyOH0.WG-NlQ4atZdiQVPPqPNefAQJS00ObgV-73tGrWgHEgY';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Configure multer for image upload
@@ -45,7 +44,7 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(session({
-    secret: 'your_session_secret',
+    secret: process.env.SESSION_SECRET || 'your_session_secret',
     resave: false,
     saveUninitialized: true,
 }));
@@ -87,7 +86,9 @@ app.post('/auth/register', upload.single('image'), async (req, res) => {
             email,
             password,
             options: {
-                emailRedirectTo: 'http://localhost:5173/login'
+                emailRedirectTo: process.env.NODE_ENV === 'production' 
+                    ? 'https://chainelect.vercel.app/login' 
+                    : 'http://localhost:5173/login'
             }
         });
 
