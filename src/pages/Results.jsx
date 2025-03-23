@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Web3 from "web3";
-import MyContract from "../../artifacts/contracts/MyContract.sol/MyContract.json";
+import { CONTRACT_ABI, CONTRACT_ADDRESS } from "../config/contract";
 import Navbar from "../components/Navbar";
 
 const Results = () => {
@@ -11,12 +11,10 @@ const Results = () => {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
-        const networkId = await web3.eth.net.getId();
-        const deployedNetwork = MyContract.networks[networkId];
+        const web3 = new Web3(window.ethereum || "http://localhost:8545");
         const contract = new web3.eth.Contract(
-          MyContract.abi,
-          deployedNetwork && deployedNetwork.address
+          CONTRACT_ABI,
+          CONTRACT_ADDRESS
         );
 
         // Fetch all candidates
