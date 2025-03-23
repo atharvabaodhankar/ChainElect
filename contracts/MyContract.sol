@@ -49,6 +49,7 @@ contract MyContract {
     event Voted(address voter, uint256 candidateId);
     event AdminAdded(address admin);
     event AdminRemoved(address admin);
+    event VoterReset(address voter);
 
     // Modifiers
     modifier onlyOwner() {
@@ -148,16 +149,32 @@ contract MyContract {
     }
 
     // Function to reset voting state
-    function resetVotingState() public onlyOwner {
+    function resetVotingState() public onlyAdmin {
         votingStarted = false;
         votingEnded = false;
         votingEndTime = 0;
+
         // Reset all candidate vote counts
         for (uint256 i = 1; i <= candidatesCount; i++) {
             candidates[i].voteCount = 0;
         }
-        // Reset all voter states
+
+        // Reset voter's status
+        if (voters[msg.sender].hasVoted) {
+            voters[msg.sender].hasVoted = false;
+            voters[msg.sender].votedFor = 0;
+            emit VoterReset(msg.sender);
+        }
+
         emit VotingEnded();
+    }
+
+    // Function to reset a specific voter's status
+    function resetVoter(address voterAddress) public onlyAdmin {
+        require(voters[voterAddress].hasVoted, "Voter has not voted yet");
+        voters[voterAddress].hasVoted = false;
+        voters[voterAddress].votedFor = 0;
+        emit VoterReset(voterAddress);
     }
 
     // Function to get the winner

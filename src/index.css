@@ -1420,6 +1420,15 @@ line-height: 2.5rem;
   cursor: wait;
 }
 
+.actions-section button.reset-button {
+  margin-top: 1rem;
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.actions-section button.reset-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #c0392b, #a93226);
+}
+
 .message {
   margin-top: 2rem;
   padding: 1rem;

@@ -126,6 +126,22 @@ const Admin = () => {
     }
   };
 
+  const resetVotingState = async () => {
+    try {
+      setIsLoading(true);
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      await contract.methods.resetVotingState().send({ from: accounts[0] });
+      
+      setVotingStatus({ started: false, ended: false });
+      setMessage("Voting state has been reset successfully!");
+    } catch (error) {
+      console.error("Error resetting voting state:", error);
+      setMessage("Failed to reset voting state: " + error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     let interval;
     if (contract && votingStatus.started && !votingStatus.ended) {
@@ -251,6 +267,13 @@ const Admin = () => {
               className={isLoading ? 'loading' : ''}
             >
               Start Election
+            </button>
+            <button
+              onClick={resetVotingState}
+              disabled={isLoading}
+              className={`reset-button ${isLoading ? 'loading' : ''}`}
+            >
+              Reset Election
             </button>
           </div>
         </div>
