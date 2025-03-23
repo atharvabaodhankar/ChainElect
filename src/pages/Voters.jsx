@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Conn_web from "../components/Conn_web";
 import Web3 from "web3";
-import MyContract from "../../artifacts/contracts/MyContract.sol/MyContract.json";
+import { CONTRACT_ABI, CONTRACT_ADDRESS, NETWORK_CONFIG } from "../config/contract";
 import tickGif from "../assets/tick.gif";
 import FaceAuth from "../components/FaceAuth";
 
@@ -33,25 +33,29 @@ const Voters = () => {
   useEffect(() => {
     const fetchCandidates = async () => {
       try {
-        const web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
-        const networkId = await web3.eth.net.getId();
-        console.log("Network ID:", networkId);
-        const deployedNetwork = MyContract.networks[networkId];
-        if (!deployedNetwork) {
-          console.error("Contract not deployed on the current network");
-          return;
+        const web3 = new Web3(window.ethereum || NETWORK_CONFIG.rpcUrl);
+        
+        // Request account access if needed
+        if (window.ethereum) {
+          await window.ethereum.request({ method: 'eth_requestAccounts' });
+          
+          // Check if we're on the correct network
+          const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+          if (chainId !== `0x${Number(NETWORK_CONFIG.id).toString(16)}`) {
+            throw new Error(`Please switch to the ${NETWORK_CONFIG.name} network`);
+          }
         }
+
         const contract = new web3.eth.Contract(
-          MyContract.abi,
-          deployedNetwork && deployedNetwork.address
+          CONTRACT_ABI,
+          CONTRACT_ADDRESS
         );
 
         // Check voting status
-        const votingStarted = await contract.methods.votingStarted().call();
-        const votingEnded = await contract.methods.votingEnded().call();
+        const [votingStarted, votingEnded] = await contract.methods.getVotingStatus().call();
         
         // Get both the end time and current remaining time
-        const votingEndTime = await contract.methods.votingEndTime().call();
+        const votingEndTime = await contract.methods.getVotingEndTime().call();
         const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
         const remainingSeconds = Number(votingEndTime) - currentTime;
         
@@ -88,7 +92,7 @@ const Voters = () => {
         setAccounts(accounts);
       } catch (error) {
         console.error("Error fetching candidates: ", error);
-        setErrorMessage("Failed to fetch candidates.");
+        setErrorMessage(error.message || "Failed to fetch candidates.");
       }
     };
 
@@ -104,9 +108,8 @@ const Voters = () => {
       // Function to check voting status and update timer
       const updateVotingStatus = async () => {
         try {
-          const votingStarted = await contract.methods.votingStarted().call();
-          const votingEnded = await contract.methods.votingEnded().call();
-          const votingEndTime = await contract.methods.votingEndTime().call();
+          const [votingStarted, votingEnded] = await contract.methods.getVotingStatus().call();
+          const votingEndTime = await contract.methods.getVotingEndTime().call();
           const currentTime = Math.floor(Date.now() / 1000);
           const remainingSeconds = Number(votingEndTime) - currentTime;
           
@@ -160,24 +163,22 @@ const Voters = () => {
       }
       const currentAccount = currentAccounts[0];
 
-      // Reinitialize Web3 and contract
-      const web3 = new Web3(window.ethereum);
-      const networkId = await web3.eth.net.getId();
-      const deployedNetwork = MyContract.networks[networkId];
-      
-      if (!deployedNetwork) {
-        setMessage("Error: Contract not deployed on the current network");
-        return;
+      // Check if we're on the correct network
+      const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+      if (chainId !== `0x${Number(NETWORK_CONFIG.id).toString(16)}`) {
+        throw new Error(`Please switch to the ${NETWORK_CONFIG.name} network`);
       }
 
+      // Initialize contract
+      const web3 = new Web3(window.ethereum);
       const contractInstance = new web3.eth.Contract(
-        MyContract.abi,
-        deployedNetwork.address
+        CONTRACT_ABI,
+        CONTRACT_ADDRESS
       );
 
       // Check if user has already voted
-      const voter = await contractInstance.methods.voters(currentAccount).call();
-      if (voter.hasVoted) {
+      const hasVoted = await contractInstance.methods.hasVoted(currentAccount).call();
+      if (hasVoted) {
         setMessage("You have already cast your vote!");
         setShowErrorPopup(true);
         return;
@@ -201,7 +202,7 @@ const Voters = () => {
       } else if (error.message.includes('Invalid candidate')) {
         setMessage("Invalid candidate selection");
       } else {
-        setMessage("Failed to cast vote. Please try again");
+        setMessage(error.message || "Failed to cast vote. Please try again");
       }
       setShowErrorPopup(true);
       console.error("Error casting vote:", error);
