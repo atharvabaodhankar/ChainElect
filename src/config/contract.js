@@ -1,4 +1,12 @@
-export const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; // Replace with your deployed contract address
+// Get contract address from environment variable
+export const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS;
+
+// Network Configuration
+export const NETWORK_CONFIG = {
+  id: import.meta.env.VITE_NETWORK_ID || "11155111", // Sepolia network ID
+  name: import.meta.env.VITE_NETWORK_NAME || "Sepolia",
+  rpcUrl: import.meta.env.VITE_RPC_URL // Your Infura/Alchemy endpoint
+};
 
 export const CONTRACT_ABI = [
   {

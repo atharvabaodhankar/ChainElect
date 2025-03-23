@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Web3 from "web3";
-import { CONTRACT_ABI, CONTRACT_ADDRESS } from "../config/contract";
+import { CONTRACT_ABI, CONTRACT_ADDRESS, NETWORK_CONFIG } from "../config/contract";
 import Navbar from "../components/Navbar";
 
 const Results = () => {
@@ -11,7 +11,20 @@ const Results = () => {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const web3 = new Web3(window.ethereum || "http://localhost:8545");
+        // Initialize Web3 with the RPC URL if MetaMask is not available
+        const web3 = new Web3(window.ethereum || NETWORK_CONFIG.rpcUrl);
+        
+        // Request account access if needed
+        if (window.ethereum) {
+          await window.ethereum.request({ method: 'eth_requestAccounts' });
+          
+          // Check if we're on the correct network
+          const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+          if (chainId !== `0x${Number(NETWORK_CONFIG.id).toString(16)}`) {
+            throw new Error(`Please switch to the ${NETWORK_CONFIG.name} network`);
+          }
+        }
+
         const contract = new web3.eth.Contract(
           CONTRACT_ABI,
           CONTRACT_ADDRESS
@@ -37,7 +50,7 @@ const Results = () => {
         setLoading(false);
       } catch (error) {
         console.error("Error fetching results:", error);
-        setError("Failed to fetch voting results. Please try again later.");
+        setError(error.message || "Failed to fetch voting results. Please try again later.");
         setLoading(false);
       }
     };
