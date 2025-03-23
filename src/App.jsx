@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Homepage from './pages/Homepage';
-import Register from './pages/Register';
-import Login from './pages/Login';
-import Voters from './pages/Voters';
-import PrivateRoute from './components/PrivateRoute';
-import Results from './pages/Results';
-import Admin from './pages/Admin';
-import VotersPage from './pages/VotersPage';
-import Preloader from './components/Preloader';
+import Homepage from './pages/Homepage.jsx';
+import Register from './pages/Register.jsx';
+import Login from './pages/Login.jsx';
+import Voters from './pages/Voters.jsx';
+import PrivateRoute from './components/PrivateRoute.jsx';
+import Results from './pages/Results.jsx';
+import Admin from './pages/Admin.jsx';
+import VotersPage from './pages/VotersPage.jsx';
+import Preloader from './components/Preloader.jsx';
 
 const App = () => {
   const [loading, setLoading] = useState(true);

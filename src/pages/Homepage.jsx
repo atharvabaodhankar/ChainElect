@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import Button from "../components/Button.jsx";
-import Sample from "../components/Sample";
-import Aboutus from "./Aboutus";
-import Features from "./Features";
-import Footer from "../components/Footer";
+import Sample from "../components/Sample.jsx";
+import Aboutus from "./Aboutus.jsx";
+import Features from "./Features.jsx";
+import Footer from "../components/Footer.jsx";
 import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
-import Register from "./Register";
-import Navbar from "../components/Navbar";
+import Register from "./Register.jsx";
+import Navbar from "../components/Navbar.jsx";
 import Web3 from "web3";
 
 const Homepage = () => {
