@@ -7,6 +7,27 @@ const Web3Connection = () => {
   const [account, setAccount] = useState(null);
   const [balance, setBalance] = useState(null);
 
+  const setupNetwork = async () => {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [{
+          chainId: '0xaa36a7',  // 11155111 in hex
+          chainName: 'Sepolia Test Network',
+          nativeCurrency: {
+            name: 'Sepolia ETH',
+            symbol: 'SEP',
+            decimals: 18
+          },
+          rpcUrls: ['https://sepolia.infura.io/v3/c9ce36a11fef47d3b611df8773fa71b1'],
+          blockExplorerUrls: ['https://sepolia.etherscan.io/']
+        }]
+      });
+    } catch (error) {
+      console.error('Error setting up network:', error);
+    }
+  };
+
   useEffect(() => {
     // Check if MetaMask is installed
     if (window.ethereum) {
@@ -21,6 +42,9 @@ const Web3Connection = () => {
           getBalance(accounts[0], web3Instance);
         })
         .catch((err) => console.error("User denied account access", err));
+
+      // Setup Sepolia network
+      setupNetwork();
     } else {
       console.error("MetaMask is not installed.");
     }
@@ -38,6 +62,9 @@ const Web3Connection = () => {
     if (window.ethereum) {
       const handleNetworkChange = (chainId) => {
         console.log("Network changed to:", chainId);
+        if (chainId !== '0xaa36a7') { // If not Sepolia
+          setupNetwork();
+        }
       };
 
       window.ethereum.on("chainChanged", handleNetworkChange);
