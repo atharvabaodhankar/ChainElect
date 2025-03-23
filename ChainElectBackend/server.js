@@ -7,7 +7,11 @@ const { createClient } = require('@supabase/supabase-js');
 const multer = require('multer');
 const path = require('path');
 
+// Initialize Express app
 const app = express();
+
+// Environment variables
+const isProduction = process.env.NODE_ENV === 'production';
 
 // Supabase configuration
 const supabaseUrl = process.env.SUPABASE_URL || 'https://hanlwbbbniiujtzutpbv.supabase.co';
@@ -33,7 +37,7 @@ const upload = multer({
     }
 });
 
-// Middleware
+// CORS configuration
 app.use(cors({ 
     origin: [
         'http://localhost:5173',
@@ -41,13 +45,55 @@ app.use(cors({
     ], 
     credentials: true 
 }));
+
+// Body parser and cookie middleware
 app.use(bodyParser.json());
 app.use(cookieParser());
+
+// Session configuration with enhanced security
 app.use(session({
     secret: process.env.SESSION_SECRET || 'your_session_secret',
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
+    cookie: {
+        secure: isProduction, // Only use secure cookies in production
+        httpOnly: true,       // Mitigate XSS attacks
+        sameSite: isProduction ? 'none' : 'lax', // CSRF protection but allow cross-site in production
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
 }));
+
+// Simple request rate limiter
+const requestCounts = {};
+const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
+const RATE_LIMIT_MAX = 100; // 100 requests per window
+
+app.use((req, res, next) => {
+    const ip = req.ip;
+    const now = Date.now();
+    
+    // Initialize or clean up old entries
+    if (!requestCounts[ip] || now - requestCounts[ip].timestamp > RATE_LIMIT_WINDOW) {
+        requestCounts[ip] = {
+            count: 1,
+            timestamp: now
+        };
+        return next();
+    }
+    
+    // Increment count for existing IPs
+    requestCounts[ip].count++;
+    
+    // Check if rate limit exceeded
+    if (requestCounts[ip].count > RATE_LIMIT_MAX) {
+        return res.status(429).json({ 
+            success: false, 
+            message: 'Too many requests, please try again later.' 
+        });
+    }
+    
+    next();
+});
 
 // Authentication routes
 app.post('/auth/register', upload.single('image'), async (req, res) => {
@@ -86,7 +132,7 @@ app.post('/auth/register', upload.single('image'), async (req, res) => {
             email,
             password,
             options: {
-                emailRedirectTo: process.env.NODE_ENV === 'production' 
+                emailRedirectTo: isProduction
                     ? 'https://chainelect.vercel.app/login' 
                     : 'http://localhost:5173/login'
             }
@@ -237,6 +283,28 @@ app.get('/voters/:voter_id', async (req, res) => {
     }
 });
 
+// Global error handler
+app.use((err, req, res, next) => {
+    console.error('Unhandled error:', err);
+    res.status(500).json({ 
+        success: false, 
+        message: 'An unexpected error occurred',
+        error: isProduction ? null : err.message
+    });
+});
+
+// Health check endpoint for Render
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    // In production, you might want to exit the process
+    // process.exit(1);
+});

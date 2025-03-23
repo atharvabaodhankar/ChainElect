@@ -3,6 +3,10 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -16,9 +20,33 @@ const ADMIN_ADDRESSES = [
 ];
 
 async function main() {
-  const web3 = new Web3('http://127.0.0.1:8545');
-  const accounts = await web3.eth.getAccounts();
-  const owner = accounts[0];
+  // Use Sepolia in production, localhost for development
+  const isProduction = process.env.NODE_ENV === 'production';
+  const rpcUrl = isProduction 
+    ? process.env.INFURA_SEPOLIA_URL 
+    : 'http://127.0.0.1:8545';
+  
+  console.log(`Deploying to: ${isProduction ? 'Sepolia Testnet' : 'Local Network'}`);
+  
+  const web3 = new Web3(rpcUrl);
+  
+  // Set up account from private key in production
+  let owner;
+  if (isProduction) {
+    const privateKey = process.env.PRIVATE_KEY;
+    if (!privateKey) {
+      throw new Error('PRIVATE_KEY environment variable is required for Sepolia deployment');
+    }
+    
+    const account = web3.eth.accounts.privateKeyToAccount('0x' + privateKey);
+    web3.eth.accounts.wallet.add(account);
+    owner = account.address;
+    console.log(`Using account: ${owner}`);
+  } else {
+    // For local development, use the first account
+    const accounts = await web3.eth.getAccounts();
+    owner = accounts[0];
+  }
 
   const contractPath = path.resolve(__dirname, '../artifacts/contracts/MyContract.sol/MyContract.json');
   const contractJson = JSON.parse(fs.readFileSync(contractPath, 'utf8'));
@@ -26,13 +54,15 @@ async function main() {
   const MyContract = new web3.eth.Contract(contractJson.abi);
 
   console.log('Deploying contract...');
-  const myContract = await MyContract.deploy({
-    data: contractJson.bytecode,
-  }).send({
+  const deployOptions = {
     from: owner,
     gas: 5000000,
     gasPrice: '30000000000'
-  });
+  };
+  
+  const myContract = await MyContract.deploy({
+    data: contractJson.bytecode,
+  }).send(deployOptions);
 
   console.log("MyContract deployed to:", myContract.options.address);
 
@@ -61,13 +91,14 @@ async function main() {
   console.log("Voting state reset successfully!");
 
   // Save the deployed address to MyContract.json
+  const networkId = isProduction ? "11155111" : "31337"; // 11155111 is Sepolia network ID
   contractJson.networks = {
-    "31337": {
+    [networkId]: {
       "address": myContract.options.address
     }
   };
   fs.writeFileSync(contractPath, JSON.stringify(contractJson, null, 2));
-  console.log("Contract address saved to artifact file");
+  console.log(`Contract address saved to artifact file for network ${networkId}`);
 }
 
 main()
