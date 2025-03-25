@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -21,12 +21,55 @@ const Register = () => {
   const [showFaceCapture, setShowFaceCapture] = useState(false);
   const [faceDescriptor, setFaceDescriptor] = useState(null);
   const [showInstructions, setShowInstructions] = useState(true);
+  const [isMetamaskConnected, setIsMetamaskConnected] = useState(false);
+  const [isMetamaskInstalled, setIsMetamaskInstalled] = useState(false);
   const [validationErrors, setValidationErrors] = useState({
     voterId: '',
     metamaskId: '',
     email: '',
     password: ''
   });
+
+  // Check if Metamask is installed and connected
+  useEffect(() => {
+    const checkMetamask = async () => {
+      if (window.ethereum) {
+        setIsMetamaskInstalled(true);
+        try {
+          // Check if already connected
+          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+          if (accounts.length > 0) {
+            setIsMetamaskConnected(true);
+            setMetamaskId(accounts[0]); // Automatically set the Metamask ID
+          }
+        } catch (error) {
+          console.error('Error checking Metamask connection:', error);
+        }
+      } else {
+        setIsMetamaskInstalled(false);
+      }
+    };
+
+    checkMetamask();
+  }, []);
+
+  // Function to connect Metamask
+  const connectMetamask = async () => {
+    try {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      setIsMetamaskConnected(true);
+      if (accounts.length > 0) {
+        setMetamaskId(accounts[0]);
+        setValidationErrors(prev => ({
+          ...prev,
+          metamaskId: validateField('metamaskId', accounts[0])
+        }));
+      }
+    } catch (error) {
+      console.error('Error connecting to Metamask:', error);
+      setErrorMessage('Failed to connect to Metamask. Please try again.');
+    }
+  };
 
   // Regex patterns
   const patterns = {
@@ -113,6 +156,12 @@ const Register = () => {
     setErrorMessage('');
     setSuccessMessage('');
 
+    // Check if Metamask is connected
+    if (!isMetamaskConnected) {
+      setErrorMessage('Please connect your Metamask wallet before registering.');
+      return;
+    }
+
     // Validate all fields
     const errors = {
       voterId: validateField('voterId', voterId),
@@ -137,6 +186,14 @@ const Register = () => {
     setIsLoading(true);
 
     try {
+      // Ensure we're using the current Metamask account
+      if (window.ethereum) {
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        if (accounts.length > 0 && accounts[0].toLowerCase() !== metamaskId.toLowerCase()) {
+          setMetamaskId(accounts[0]);
+        }
+      }
+
       const formData = new FormData();
       formData.append('voter_id', voterId);
       formData.append('metamask_id', metamaskId);
@@ -234,6 +291,38 @@ const Register = () => {
             <p>Join the secure voting platform</p>
           </div>
           
+          {/* Metamask Connection Status */}
+          <div className="metamask-status">
+            {!isMetamaskInstalled ? (
+              <div className="metamask-warning">
+                <p>MetaMask is not installed. Please install MetaMask to proceed with registration.</p>
+                <a 
+                  href="https://metamask.io/download/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="metamask-install-button"
+                >
+                  Install MetaMask
+                </a>
+              </div>
+            ) : !isMetamaskConnected ? (
+              <div className="metamask-connect">
+                <p>Please connect your MetaMask wallet to proceed with registration.</p>
+                <button 
+                  type="button"
+                  onClick={connectMetamask} 
+                  className="metamask-connect-button"
+                >
+                  Connect MetaMask
+                </button>
+              </div>
+            ) : (
+              <div className="metamask-connected">
+                <p className="connected-status">✓ MetaMask Connected</p>
+              </div>
+            )}
+          </div>
+          
           <form onSubmit={handleSubmit} className="register-form">
             <div className="form-group">
               <label htmlFor="voterId">Voter ID</label>
@@ -264,6 +353,7 @@ const Register = () => {
                   onChange={handleInputChange}
                   placeholder="Enter your MetaMask ID (0x...)"
                   required
+                  disabled={isMetamaskConnected} // Disable when connected through Metamask
                 />
                 {validationErrors.metamaskId && (
                   <div className="validation-error">{validationErrors.metamaskId}</div>

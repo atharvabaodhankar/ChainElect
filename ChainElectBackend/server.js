@@ -144,7 +144,7 @@ app.post('/auth/register', upload.single('image'), async (req, res) => {
 });
 
 app.post('/auth/login', async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, metamask_id } = req.body;
 
     if (!email || !password) {
         return res.status(400).json({ success: false, message: 'All fields are required' });
@@ -170,6 +170,14 @@ app.post('/auth/login', async (req, res) => {
 
         if (voterError) {
             return res.status(500).json({ success: false, message: 'Failed to fetch voter data' });
+        }
+
+        // Validate Metamask ID if provided
+        if (metamask_id && voterData.metamask_id.toLowerCase() !== metamask_id.toLowerCase()) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'The connected Metamask wallet does not match the one registered with this account.' 
+            });
         }
 
         req.session.voter_id = voterData.voter_id;
