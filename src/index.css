@@ -3106,7 +3106,8 @@ z-index: 55;
 }
 
 .metamask-install-button, 
-.metamask-connect-button {
+.metamask-connect-button,
+.metamask-network-button {
   padding: 1rem 2rem;
   font-size: 1.6rem;
   border: none;
@@ -3116,6 +3117,7 @@ z-index: 55;
   font-weight: 600;
   width: auto;
   min-width: 20rem;
+  margin: 0.5rem 0;
 }
 
 .metamask-install-button {
@@ -3128,8 +3130,14 @@ z-index: 55;
   color: #fff;
 }
 
+.metamask-network-button {
+  background-color: #8247E5;
+  color: #fff;
+}
+
 .metamask-install-button:hover, 
-.metamask-connect-button:hover {
+.metamask-connect-button:hover,
+.metamask-network-button:hover {
   opacity: 0.9;
   transform: translateY(-2px);
 }
@@ -3146,7 +3154,8 @@ z-index: 55;
   }
   
   .metamask-install-button, 
-  .metamask-connect-button {
+  .metamask-connect-button,
+  .metamask-network-button {
     padding: 0.8rem 1.6rem;
     font-size: 1.4rem;
     min-width: 16rem;

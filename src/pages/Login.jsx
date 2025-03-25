@@ -12,6 +12,29 @@ const Login = () => {
   const [isMetamaskInstalled, setIsMetamaskInstalled] = useState(false);
   const navigate = useNavigate();
 
+  // Function to add Polygon Amoy Testnet network
+  const addPolygonAmoyNetwork = async () => {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [{
+          chainId: '0x13882', // 80002 in hex
+          chainName: 'POLYGON AMOY TESTNET',
+          nativeCurrency: {
+            name: 'POL',
+            symbol: 'POL',
+            decimals: 18
+          },
+          rpcUrls: ['https://rpc-amoy.polygon.technology/'],
+          blockExplorerUrls: ['https://www.oklink.com/amoy']
+        }]
+      });
+    } catch (error) {
+      console.error('Error adding network:', error);
+      setErrorMessage('Failed to add Polygon Amoy Testnet network. Please try again.');
+    }
+  };
+
   // Check if Metamask is installed and connected
   useEffect(() => {
     const checkMetamask = async () => {
@@ -122,10 +145,22 @@ const Login = () => {
                 >
                   Connect MetaMask
                 </button>
+                <button 
+                  onClick={addPolygonAmoyNetwork} 
+                  className="metamask-network-button"
+                >
+                  Add Polygon Amoy Testnet
+                </button>
               </div>
             ) : (
               <div className="metamask-connected">
                 <p className="connected-status">✓ MetaMask Connected</p>
+                <button 
+                  onClick={addPolygonAmoyNetwork} 
+                  className="metamask-network-button"
+                >
+                  Add Polygon Amoy Testnet
+                </button>
               </div>
             )}
           </div>
