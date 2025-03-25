@@ -16,7 +16,7 @@ const ADMIN_ADDRESSES = [
 ];
 
 async function main() {
-  const web3 = new Web3('http://127.0.0.1:8545');
+  const web3 = new Web3('https://rpc-amoy.polygon.technology');
   const accounts = await web3.eth.getAccounts();
   const owner = accounts[0];
 

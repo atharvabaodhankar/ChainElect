@@ -8,11 +8,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 async function main() {
-  const web3 = new Web3('http://127.0.0.1:8545');
+  const web3 = new Web3('https://rpc-amoy.polygon.technology');
   const contractPath = path.resolve(__dirname, '../artifacts/contracts/MyContract.sol/MyContract.json');
   const contractJson = JSON.parse(fs.readFileSync(contractPath, 'utf8'));
   
-  const contractAddress = contractJson.networks["31337"].address;
+  const contractAddress = "0x229bDE80F288C3a12a15e639238c359482636397";
   const contract = new web3.eth.Contract(contractJson.abi, contractAddress);
 
   console.log('Checking voting status...');

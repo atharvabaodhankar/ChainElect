@@ -25,21 +25,26 @@ const Admin = () => {
           return;
         }
 
-        const web3 = new Web3(window.ethereum);
+        // Request account access
         await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const accounts = await web3.eth.getAccounts();
         
+        // Create Web3 instance with MetaMask provider
+        const web3 = new Web3(window.ethereum);
+        
+        // Check if we're on the correct network (Polygon Amoy)
+        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        if (chainId !== '0x13882') { // Polygon Amoy chain ID (80002)
+          setMessage("Please switch to Polygon Amoy network in MetaMask");
+          return;
+        }
+
+        const accounts = await web3.eth.getAccounts();
         if (!accounts || accounts.length === 0) {
           setMessage("Please connect your MetaMask account");
           return;
         }
 
-        const contractAddress = MyContract.networks[31337]?.address;
-        if (!contractAddress) {
-          setMessage("Contract not deployed on this network. Please make sure you're connected to the correct network.");
-          return;
-        }
-
+        const contractAddress = "0x229bDE80F288C3a12a15e639238c359482636397";
         const contractInstance = new web3.eth.Contract(
           MyContract.abi,
           contractAddress
@@ -130,13 +135,35 @@ const Admin = () => {
     try {
       setIsLoading(true);
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      await contract.methods.resetVotingState().send({ from: accounts[0] });
+      
+      // Get current gas price
+      const gasPrice = await window.ethereum.request({ method: 'eth_gasPrice' });
+      
+      // Estimate gas for the transaction
+      const gasEstimate = await contract.methods.resetVotingState().estimateGas({ 
+        from: accounts[0] 
+      });
+
+      // Add 20% buffer to gas estimate
+      const gasLimit = Math.floor(Number(gasEstimate) * 1.2);
+
+      await contract.methods.resetVotingState().send({ 
+        from: accounts[0],
+        gas: gasLimit,
+        gasPrice: gasPrice
+      });
       
       setVotingStatus({ started: false, ended: false });
       setMessage("Voting state has been reset successfully!");
     } catch (error) {
       console.error("Error resetting voting state:", error);
-      setMessage("Failed to reset voting state: " + error.message);
+      if (error.message.includes("insufficient funds")) {
+        setMessage("Insufficient funds for transaction. Please add MATIC to your wallet.");
+      } else if (error.message.includes("nonce")) {
+        setMessage("Transaction failed. Please try again.");
+      } else {
+        setMessage("Failed to reset voting state: " + error.message);
+      }
     } finally {
       setIsLoading(false);
     }

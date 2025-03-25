@@ -12,11 +12,10 @@ const Results = () => {
     const fetchResults = async () => {
       try {
         const web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
-        const networkId = await web3.eth.net.getId();
-        const deployedNetwork = MyContract.networks[networkId];
+        const contractAddress = "0x229bDE80F288C3a12a15e639238c359482636397";
         const contract = new web3.eth.Contract(
           MyContract.abi,
-          deployedNetwork && deployedNetwork.address
+          contractAddress
         );
 
         // Fetch all candidates
