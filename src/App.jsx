@@ -9,6 +9,7 @@ import Results from './pages/Results';
 import Admin from './pages/Admin';
 import VotersPage from './pages/VotersPage';
 import Preloader from './components/Preloader';
+import DeclaredResults from './pages/DeclaredResults';
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -30,6 +31,7 @@ const App = () => {
         <Route path="/voterspage" element={<VotersPage />} />
         <Route path="/results" element={<Results />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/declared-results" element={<DeclaredResults />} />
         <Route
           path="/voters"
           element={

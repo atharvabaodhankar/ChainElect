@@ -28,6 +28,7 @@ const Homepage = () => {
             <Link to="/login" className="button">Login to Vote</Link>
             <Link to="/register" className="button">Register Now</Link>
             <Link to="/results" className="button">View Results</Link>
+            <Link to="/declared-results" className="button">Historical Results</Link>
           </div>
         </div>
       </section>

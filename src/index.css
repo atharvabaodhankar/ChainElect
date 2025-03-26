@@ -3161,3 +3161,235 @@ z-index: 55;
     min-width: 16rem;
   }
 }
+
+/* Historical Results Page Styles */
+.declared-results-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+  padding-top: 10rem;
+}
+
+.historical-results-title {
+  font-size: 3rem;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 3rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.election-date {
+  font-size: 1.8rem;
+  color: #455a64;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #f5f5f5;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.historical-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.historical-result-card {
+  background: white;
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.historical-result-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.winner-section {
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.winner-section h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.winner-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.winner-name {
+  font-size: 1.9rem;
+  font-weight: 600;
+}
+
+.vote-count {
+  font-size: 1.6rem;
+  opacity: 0.9;
+}
+
+.candidates-list {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 12px;
+}
+
+.candidates-list h3 {
+  color: #2c3e50;
+  font-size: 1.7rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 0.5rem;
+}
+
+.candidate-result {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.candidate-result:hover {
+  transform: translateX(5px);
+  background: #f5f5f5;
+}
+
+.candidate-name {
+  color: #2c3e50;
+  font-weight: 500;
+  font-size: 1.6rem;
+}
+
+.candidate-votes {
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.no-results {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #f5f5f5;
+  border-radius: 15px;
+  margin: 2rem 0;
+}
+
+.no-results p {
+  color: #616161;
+  font-size: 1.8rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .historical-results-title {
+    font-size: 2.5rem;
+  }
+
+  .historical-results-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .election-date {
+    font-size: 1.2rem;
+  }
+
+  .winner-section h3 {
+    font-size: 1.5rem;
+  }
+
+  .winner-name {
+    font-size: 1.2rem;
+  }
+
+  .candidates-list h3 {
+    font-size: 1.2rem;
+  }
+}
+
+/* Animation for cards */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.historical-result-card {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+/* Loading State */
+.loading-state {
+  text-align: center;
+  padding: 4rem;
+}
+
+.loading-state h2 {
+  color: #2c3e50;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Error State */
+.error-state {
+  text-align: center;
+  padding: 4rem;
+  color: #d32f2f;
+}
+
+.error-state h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Vote percentage bar */
+.vote-percentage-bar {
+  width: 100%;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+.vote-percentage-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}

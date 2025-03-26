@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Web3 from "web3";
 import MyContract from "../../artifacts/contracts/MyContract.sol/MyContract.json";
+import { supabase } from "../utils/supabaseClient";
 
 const Admin = () => {
   const [message, setMessage] = useState("");
@@ -25,27 +26,44 @@ const Admin = () => {
           return;
         }
 
-        const web3 = new Web3(window.ethereum);
+        // Request account access
         await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const accounts = await web3.eth.getAccounts();
         
-        if (!accounts || accounts.length === 0) {
-          setMessage("Please connect your MetaMask account");
+        // Create Web3 instance with MetaMask provider
+        const web3 = new Web3(window.ethereum);
+        
+        // Get current network ID
+        const networkId = await web3.eth.net.getId();
+        
+        // Get contract address for current network
+        const deployedNetwork = MyContract.networks[networkId];
+        if (!deployedNetwork) {
+          setMessage(`Contract not deployed on network ${networkId}. Please make sure you're connected to the correct network.`);
           return;
         }
 
-        const contractAddress = MyContract.networks[31337]?.address;
+        const contractAddress = deployedNetwork.address;
         if (!contractAddress) {
-          setMessage("Contract not deployed on this network. Please make sure you're connected to the correct network.");
+          setMessage("Contract address not found. Please make sure the contract is deployed.");
           return;
         }
 
+        // Create contract instance
         const contractInstance = new web3.eth.Contract(
           MyContract.abi,
           contractAddress
         );
 
+        // Get current account
+        const accounts = await web3.eth.getAccounts();
+        if (!accounts || accounts.length === 0) {
+          setMessage("Please connect your MetaMask account");
+          return;
+        }
+
         const currentAccount = accounts[0];
+        
+        // Check if current account is admin
         const adminStatus = await contractInstance.methods.isAdmin(currentAccount).call();
         
         if (!adminStatus) {
@@ -57,6 +75,7 @@ const Admin = () => {
         setIsAdmin(true);
         setContract(contractInstance);
 
+        // Get voting status
         const [votingStarted, votingEnded, endTime] = await Promise.all([
           contractInstance.methods.votingStarted().call(),
           contractInstance.methods.votingEnded().call(),
@@ -78,7 +97,11 @@ const Admin = () => {
 
       } catch (error) {
         console.error("Initialization error:", error);
-        setMessage("Failed to initialize: " + error.message);
+        if (error.message.includes("Internal JSON-RPC error")) {
+          setMessage("Please make sure you're connected to the correct network in MetaMask and the contract is deployed.");
+        } else {
+          setMessage("Failed to initialize: " + error.message);
+        }
       }
     };
 
@@ -130,10 +153,49 @@ const Admin = () => {
     try {
       setIsLoading(true);
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      
+      // First, get current results
+      const candidateCount = await contract.methods.getCandidatesCount().call();
+      const candidatesData = [];
+      
+      for (let i = 1; i <= candidateCount; i++) {
+        const candidate = await contract.methods.getCandidate(i).call();
+        candidatesData.push({
+          name: candidate[0],
+          votes: Number(candidate[1])
+        });
+      }
+      
+      // Sort candidates by vote count
+      candidatesData.sort((a, b) => Number(b.votes) - Number(a.votes));
+      
+      // Store results in Supabase if there are any votes
+      if (candidatesData.some(c => Number(c.votes) > 0)) {
+        const { error } = await supabase
+          .from('voting_results')
+          .insert([
+            {
+              winner_name: candidatesData[0].name,
+              winner_votes: Number(candidatesData[0].votes),
+              candidates: candidatesData.map(c => ({
+                name: c.name,
+                votes: Number(c.votes)
+              })),
+              created_at: new Date().toISOString()
+            }
+          ]);
+
+        if (error) {
+          console.error("Supabase error:", error);
+          throw new Error("Failed to store results in database");
+        }
+      }
+
+      // Now reset the voting state
       await contract.methods.resetVotingState().send({ from: accounts[0] });
       
       setVotingStatus({ started: false, ended: false });
-      setMessage("Voting state has been reset successfully!");
+      setMessage("Voting state has been reset successfully and results have been stored!");
     } catch (error) {
       console.error("Error resetting voting state:", error);
       setMessage("Failed to reset voting state: " + error.message);
@@ -270,7 +332,7 @@ const Admin = () => {
             </button>
             <button
               onClick={resetVotingState}
-              disabled={isLoading}
+              disabled={!votingStatus.started && !votingStatus.ended || isLoading}
               className={`reset-button ${isLoading ? 'loading' : ''}`}
             >
               Reset Election

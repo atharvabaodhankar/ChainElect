@@ -2,11 +2,15 @@ import React, { useEffect, useState } from "react";
 import Web3 from "web3";
 import MyContract from "../../artifacts/contracts/MyContract.sol/MyContract.json";
 import Navbar from "../components/Navbar";
+import { supabase } from "../utils/supabaseClient";
+import { useNavigate } from 'react-router-dom';
 
 const Results = () => {
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [votingEnded, setVotingEnded] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -19,7 +23,46 @@ const Results = () => {
           deployedNetwork && deployedNetwork.address
         );
 
-        // Fetch all candidates
+        // Check if voting has ended
+        const hasVotingEnded = await contract.methods.hasVotingEnded().call();
+        setVotingEnded(hasVotingEnded);
+
+        if (hasVotingEnded) {
+          // Store results in Supabase
+          const candidateCount = await contract.methods.getCandidatesCount().call();
+          const candidatesData = [];
+          
+          for (let i = 1; i <= candidateCount; i++) {
+            const candidate = await contract.methods.getCandidate(i).call();
+            candidatesData.push({
+              name: candidate[0],
+              votes: candidate[1]
+            });
+          }
+          
+          // Sort candidates by vote count
+          candidatesData.sort((a, b) => Number(b.votes) - Number(a.votes));
+          
+          // Store in Supabase
+          const { error } = await supabase
+            .from('voting_results')
+            .insert([
+              {
+                winner_name: candidatesData[0].name,
+                winner_votes: candidatesData[0].votes,
+                candidates: candidatesData,
+                created_at: new Date().toISOString()
+              }
+            ]);
+
+          if (error) throw error;
+
+          // Redirect to declared results
+          navigate('/declared-results');
+          return;
+        }
+
+        // If voting hasn't ended, show current results
         const candidateCount = await contract.methods.getCandidatesCount().call();
         const candidatesData = [];
         
@@ -45,7 +88,7 @@ const Results = () => {
     };
 
     fetchResults();
-  }, []);
+  }, [navigate]);
 
   if (loading) {
     return (
