@@ -8,6 +8,7 @@ import { supabase } from "../utils/supabaseClient";
 const Admin = () => {
   const [message, setMessage] = useState("");
   const [candidateName, setCandidateName] = useState("");
+  const [votingDuration, setVotingDuration] = useState(60); // default 60 minutes
   const [votingStatus, setVotingStatus] = useState({
     started: false,
     ended: false
@@ -149,12 +150,9 @@ const Admin = () => {
     }
   };
 
-  const resetVotingState = async () => {
+  // Function to store results in Supabase
+  const storeResults = async () => {
     try {
-      setIsLoading(true);
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      
-      // First, get current results
       const candidateCount = await contract.methods.getCandidatesCount().call();
       const candidatesData = [];
       
@@ -169,7 +167,7 @@ const Admin = () => {
       // Sort candidates by vote count
       candidatesData.sort((a, b) => Number(b.votes) - Number(a.votes));
       
-      // Store results in Supabase if there are any votes
+      // Only store in Supabase if there are votes
       if (candidatesData.some(c => Number(c.votes) > 0)) {
         const { error } = await supabase
           .from('voting_results')
@@ -189,21 +187,16 @@ const Admin = () => {
           console.error("Supabase error:", error);
           throw new Error("Failed to store results in database");
         }
+        
+        setMessage("Voting has ended and results have been stored!");
       }
-
-      // Now reset the voting state
-      await contract.methods.resetVotingState().send({ from: accounts[0] });
-      
-      setVotingStatus({ started: false, ended: false });
-      setMessage("Voting state has been reset successfully and results have been stored!");
     } catch (error) {
-      console.error("Error resetting voting state:", error);
-      setMessage("Failed to reset voting state: " + error.message);
-    } finally {
-      setIsLoading(false);
+      console.error("Error storing results:", error);
+      setMessage("Failed to store voting results: " + error.message);
     }
   };
 
+  // Modify the useEffect for timer to include result storage
   useEffect(() => {
     let interval;
     if (contract && votingStatus.started && !votingStatus.ended) {
@@ -219,6 +212,8 @@ const Admin = () => {
           const hasEnded = votingEnded || (votingStarted && currentTime >= endTime);
           
           if (hasEnded) {
+            // Store results when voting ends naturally
+            await storeResults();
             setVotingStatus({ started: votingStarted, ended: true });
             setRemainingTime(0);
             clearInterval(interval);
@@ -238,6 +233,42 @@ const Admin = () => {
       }
     };
   }, [contract, votingStatus.started, votingStatus.ended]);
+
+  // Modify resetVotingState to use the new storeResults function
+  const resetVotingState = async () => {
+    try {
+      setIsLoading(true);
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      
+      // Store current results before resetting
+      await storeResults();
+
+      // Now reset the voting state
+      await contract.methods.resetVotingState().send({ from: accounts[0] });
+      
+      setVotingStatus({ started: false, ended: false });
+      setMessage("Voting state has been reset successfully and results have been stored!");
+    } catch (error) {
+      console.error("Error resetting voting state:", error);
+      setMessage("Failed to reset voting state: " + error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const setDuration = async () => {
+    try {
+      setIsLoading(true);
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      await contract.methods.setVotingDuration(votingDuration).send({ from: accounts[0] });
+      setMessage(`Voting duration set to ${votingDuration} minutes successfully!`);
+    } catch (error) {
+      console.error("Error setting duration:", error);
+      setMessage("Failed to set voting duration: " + error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const formatTime = (seconds) => {
     if (seconds <= 0) return "0:00";
@@ -319,6 +350,31 @@ const Admin = () => {
             >
               Add Candidate
             </button>
+          </div>
+
+          <div>
+            <h2>Voting Duration</h2>
+            <div className="duration-control">
+              <div className="duration-input-group">
+                <input
+                  type="number"
+                  min="1"
+                  value={votingDuration}
+                  onChange={(e) => setVotingDuration(Math.max(1, parseInt(e.target.value) || 1))}
+                  placeholder="Enter duration"
+                  disabled={votingStatus.started || isLoading}
+                />
+                <span className="duration-label">minutes</span>
+              </div>
+              <button
+                onClick={setDuration}
+                disabled={votingStatus.started || isLoading}
+                className={isLoading ? 'loading' : ''}
+              >
+                Set Duration
+              </button>
+            </div>
+            <p className="duration-helper">Set the voting duration in minutes (minimum 1 minute)</p>
           </div>
 
           <div>

@@ -8,11 +8,8 @@ contract MyContract {
     // Admin addresses mapping
     mapping(address => bool) public admins;
     
-    // Voting time limit (1 hour in seconds)
-    uint256 public constant VOTING_DURATION = 1 hours;
-
-    // Voting time limit (1 minute in seconds)
-    // uint256 public constant VOTING_DURATION = 1 minutes;
+    // Voting duration in seconds (default 1 hour)
+    uint256 public votingDuration = 1 hours;
 
     uint256 public votingEndTime;
 
@@ -50,6 +47,7 @@ contract MyContract {
     event AdminAdded(address admin);
     event AdminRemoved(address admin);
     event VoterReset(address voter);
+    event VotingDurationChanged(uint256 newDuration);
 
     // Modifiers
     modifier onlyOwner() {
@@ -110,13 +108,21 @@ contract MyContract {
         emit VoterRegistered(_voter);
     }
 
+    // Function to set voting duration (in minutes)
+    function setVotingDuration(uint256 durationInMinutes) public onlyAdmin {
+        require(!votingStarted, "Cannot change duration while voting is active");
+        require(durationInMinutes > 0, "Duration must be greater than 0");
+        votingDuration = durationInMinutes * 1 minutes;
+        emit VotingDurationChanged(votingDuration);
+    }
+
     // Function to start voting
     function startVoting() public onlyAdmin {
         require(!votingStarted, "Voting has already started");
         require(candidatesCount > 0, "No candidates registered");
         votingStarted = true;
         votingEnded = false;
-        votingEndTime = block.timestamp + VOTING_DURATION;
+        votingEndTime = block.timestamp + votingDuration;
         emit VotingStarted(votingEndTime);
     }
 

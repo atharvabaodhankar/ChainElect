@@ -3393,3 +3393,108 @@ z-index: 55;
   border-radius: 3px;
   transition: width 0.3s ease;
 }
+
+.duration-control {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  align-items: flex-start;
+}
+
+.duration-input-group {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.duration-input-group:focus-within {
+  border-color: #2c3e50;
+  box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.1);
+}
+
+.duration-input-group input {
+  flex: 1;
+  border: none !important;
+  padding: 1.2rem !important;
+  font-size: 1.6rem !important;
+  color: #2c3e50 !important;
+  background: transparent !important;
+  width: auto !important;
+  margin: 0 !important;
+}
+
+.duration-input-group input:focus {
+  outline: none;
+  box-shadow: none !important;
+}
+
+.duration-label {
+  padding-right: 1.2rem;
+  color: #64748b;
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+
+.duration-helper {
+  color: #64748b;
+  font-size: 1.2rem;
+  margin-top: 0.8rem;
+  padding-left: 0.2rem;
+}
+
+.duration-control button {
+  padding: 1.2rem 2.5rem;
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.6rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.duration-control button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.duration-control button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #94a3b8;
+}
+
+/* Hide number input spinners */
+.duration-input-group input[type="number"]::-webkit-inner-spin-button,
+.duration-input-group input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.duration-input-group input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+@media (max-width: 768px) {
+  .duration-control {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .duration-input-group {
+    width: 100%;
+  }
+
+  .duration-control button {
+    width: 100%;
+  }
+}

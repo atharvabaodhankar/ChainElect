@@ -10,85 +10,140 @@ const Results = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [votingEnded, setVotingEnded] = useState(false);
+  const [contract, setContract] = useState(null);
   const navigate = useNavigate();
 
+  // Initialize contract
   useEffect(() => {
-    const fetchResults = async () => {
+    const initContract = async () => {
       try {
         const web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
         const networkId = await web3.eth.net.getId();
         const deployedNetwork = MyContract.networks[networkId];
-        const contract = new web3.eth.Contract(
+        if (!deployedNetwork) {
+          throw new Error("Contract not deployed on this network");
+        }
+        const newContract = new web3.eth.Contract(
           MyContract.abi,
-          deployedNetwork && deployedNetwork.address
+          deployedNetwork.address
         );
+        setContract(newContract);
+      } catch (error) {
+        console.error("Error initializing contract:", error);
+        setError("Failed to initialize contract. Please try again later.");
+        setLoading(false);
+      }
+    };
+    initContract();
+  }, []);
 
-        // Check if voting has ended
-        const hasVotingEnded = await contract.methods.hasVotingEnded().call();
-        setVotingEnded(hasVotingEnded);
+  // Store results in Supabase
+  const storeResults = async () => {
+    try {
+      const candidateCount = await contract.methods.getCandidatesCount().call();
+      const candidatesData = [];
+      
+      for (let i = 1; i <= candidateCount; i++) {
+        const candidate = await contract.methods.getCandidate(i).call();
+        candidatesData.push({
+          name: candidate[0],
+          votes: Number(candidate[1])
+        });
+      }
+      
+      // Sort candidates by vote count
+      candidatesData.sort((a, b) => Number(b.votes) - Number(a.votes));
+      
+      // Only store in Supabase if there are votes
+      if (candidatesData.some(c => Number(c.votes) > 0)) {
+        const { error } = await supabase
+          .from('voting_results')
+          .insert([
+            {
+              winner_name: candidatesData[0].name,
+              winner_votes: Number(candidatesData[0].votes),
+              candidates: candidatesData.map(c => ({
+                name: c.name,
+                votes: Number(c.votes)
+              })),
+              created_at: new Date().toISOString()
+            }
+          ]);
 
-        if (hasVotingEnded) {
-          // Store results in Supabase
+        if (error) throw error;
+        
+        // Navigate to declared results after successful storage
+        navigate('/declared-results');
+      }
+    } catch (error) {
+      console.error("Error storing results:", error);
+      setError("Failed to store voting results. Please try again later.");
+    }
+  };
+
+  // Check voting status and update results
+  useEffect(() => {
+    let interval;
+    
+    const checkVotingStatus = async () => {
+      if (!contract) return;
+
+      try {
+        const [votingStarted, votingEndedStatus, votingEndTime] = await Promise.all([
+          contract.methods.votingStarted().call(),
+          contract.methods.votingEnded().call(),
+          contract.methods.votingEndTime().call()
+        ]);
+        
+        const currentTime = Math.floor(Date.now() / 1000);
+        const hasEnded = votingEndedStatus || (votingStarted && currentTime >= Number(votingEndTime));
+
+        if (hasEnded && !votingEnded) {
+          setVotingEnded(true);
+          await storeResults();
+          if (interval) clearInterval(interval);
+          return;
+        }
+
+        if (!hasEnded) {
+          // Update current results
           const candidateCount = await contract.methods.getCandidatesCount().call();
           const candidatesData = [];
           
           for (let i = 1; i <= candidateCount; i++) {
             const candidate = await contract.methods.getCandidate(i).call();
             candidatesData.push({
+              id: i,
               name: candidate[0],
-              votes: candidate[1]
+              voteCount: Number(candidate[1])
             });
           }
           
-          // Sort candidates by vote count
-          candidatesData.sort((a, b) => Number(b.votes) - Number(a.votes));
-          
-          // Store in Supabase
-          const { error } = await supabase
-            .from('voting_results')
-            .insert([
-              {
-                winner_name: candidatesData[0].name,
-                winner_votes: candidatesData[0].votes,
-                candidates: candidatesData,
-                created_at: new Date().toISOString()
-              }
-            ]);
-
-          if (error) throw error;
-
-          // Redirect to declared results
-          navigate('/declared-results');
-          return;
-        }
-
-        // If voting hasn't ended, show current results
-        const candidateCount = await contract.methods.getCandidatesCount().call();
-        const candidatesData = [];
-        
-        for (let i = 1; i <= candidateCount; i++) {
-          const candidate = await contract.methods.getCandidate(i).call();
-          candidatesData.push({
-            id: i,
-            name: candidate[0],
-            voteCount: candidate[1]
-          });
+          candidatesData.sort((a, b) => Number(b.voteCount) - Number(a.voteCount));
+          setCandidates(candidatesData);
         }
         
-        // Sort candidates by vote count in descending order
-        candidatesData.sort((a, b) => Number(b.voteCount) - Number(a.voteCount));
-        
-        setCandidates(candidatesData);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching results:", error);
-        setError("Failed to fetch voting results. Please try again later.");
+        console.error("Error checking voting status:", error);
+        setError("Failed to check voting status. Please try again later.");
         setLoading(false);
       }
     };
 
-    fetchResults();
-  }, [navigate]);
+    if (contract) {
+      // Check immediately
+      checkVotingStatus();
+      // Then check every 5 seconds
+      interval = setInterval(checkVotingStatus, 5000);
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [contract, votingEnded, navigate]);
 
   if (loading) {
     return (
