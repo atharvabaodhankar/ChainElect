@@ -76,7 +76,7 @@ const DeclaredResults = () => {
                     })}
                   </div>
                   
-                  <div className="winner-section">
+                  <div className="winner-section-declared">
                     <h3>Winner</h3>
                     <div className="winner-info">
                       <span className="winner-name">{result.winner_name}</span>

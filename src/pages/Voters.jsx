@@ -21,6 +21,7 @@ const Voters = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [showFaceAuth, setShowFaceAuth] = useState(false);
   const [selectedCandidateId, setSelectedCandidateId] = useState(null);
+  const [hasVoted, setHasVoted] = useState(false);
 
   // Function to format time
   const formatTime = (seconds) => {
@@ -31,11 +32,65 @@ const Voters = () => {
   };
 
   useEffect(() => {
+    const checkVotingStatus = async () => {
+      try {
+        if (!window.ethereum) {
+          setMessage("Please install MetaMask");
+          return;
+        }
+
+        const web3 = new Web3(window.ethereum);
+        const accounts = await web3.eth.getAccounts();
+        
+        if (!accounts || accounts.length === 0) {
+          setMessage("Please connect your MetaMask account");
+          return;
+        }
+
+        const networkId = await web3.eth.net.getId();
+        const deployedNetwork = MyContract.networks[networkId];
+        
+        if (!deployedNetwork) {
+          setMessage("Contract not deployed on this network");
+          return;
+        }
+
+        const contractInstance = new web3.eth.Contract(
+          MyContract.abi,
+          deployedNetwork.address
+        );
+
+        // Check if user has already voted
+        const voter = await contractInstance.methods.voters(accounts[0]).call();
+        
+        if (voter.hasVoted) {
+          setMessage("You have already cast your vote!");
+          setHasVoted(true);
+          // Redirect to results page after a short delay
+          setTimeout(() => {
+            navigate("/results");
+          }, 2000);
+          return;
+        }
+
+        setContract(contractInstance);
+        setAccounts(accounts);
+      } catch (error) {
+        console.error("Error checking voting status:", error);
+        setMessage("Failed to check voting status: " + error.message);
+      }
+    };
+
+    checkVotingStatus();
+  }, [navigate]);
+
+  useEffect(() => {
     const fetchCandidates = async () => {
       try {
+        if (hasVoted) return; // Don't fetch candidates if user has already voted
+
         const web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
         const networkId = await web3.eth.net.getId();
-        console.log("Network ID:", networkId);
         const deployedNetwork = MyContract.networks[networkId];
         if (!deployedNetwork) {
           console.error("Contract not deployed on the current network");
@@ -52,12 +107,8 @@ const Voters = () => {
         
         // Get both the end time and current remaining time
         const votingEndTime = await contract.methods.votingEndTime().call();
-        const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+        const currentTime = Math.floor(Date.now() / 1000);
         const remainingSeconds = Number(votingEndTime) - currentTime;
-        
-        console.log("Voting end time:", votingEndTime);
-        console.log("Current time:", currentTime);
-        console.log("Calculated remaining time:", remainingSeconds);
         
         setRemainingTime(remainingSeconds);
 
@@ -84,8 +135,6 @@ const Voters = () => {
 
         setCandidates(candidatesArray);
         setContract(contract);
-        const accounts = await web3.eth.getAccounts();
-        setAccounts(accounts);
       } catch (error) {
         console.error("Error fetching candidates: ", error);
         setErrorMessage("Failed to fetch candidates.");
@@ -93,7 +142,7 @@ const Voters = () => {
     };
 
     fetchCandidates();
-  }, [navigate]);
+  }, [navigate, hasVoted]);
 
   // Update timer effect
   useEffect(() => {
@@ -286,6 +335,20 @@ const Voters = () => {
     }));
     setBalance(newBalance);
   };
+
+  if (hasVoted) {
+    return (
+      <div>
+        <Navbar home="/" features="/#features" aboutus="/#aboutus" contactus="/#contactus" />
+        <div className="voters-page">
+          <div className="voting-message">
+            <h2>Already Voted</h2>
+            <p>You have already cast your vote. Redirecting to results page...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="voters-page">

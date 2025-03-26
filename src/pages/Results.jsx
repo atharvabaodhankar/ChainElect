@@ -11,6 +11,7 @@ const Results = () => {
   const [error, setError] = useState(null);
   const [votingEnded, setVotingEnded] = useState(false);
   const [contract, setContract] = useState(null);
+  const [timeRemaining, setTimeRemaining] = useState(null);
   const navigate = useNavigate();
 
   // Initialize contract
@@ -98,6 +99,21 @@ const Results = () => {
         const currentTime = Math.floor(Date.now() / 1000);
         const hasEnded = votingEndedStatus || (votingStarted && currentTime >= Number(votingEndTime));
 
+        // Calculate time remaining
+        if (!hasEnded && votingStarted) {
+          const remainingSeconds = Number(votingEndTime) - currentTime;
+          if (remainingSeconds > 0) {
+            const hours = Math.floor(remainingSeconds / 3600);
+            const minutes = Math.floor((remainingSeconds % 3600) / 60);
+            const seconds = remainingSeconds % 60;
+            setTimeRemaining(`${hours}h ${minutes}m ${seconds}s`);
+          } else {
+            setTimeRemaining(null);
+          }
+        } else {
+          setTimeRemaining(null);
+        }
+
         if (hasEnded && !votingEnded) {
           setVotingEnded(true);
           await storeResults();
@@ -134,8 +150,8 @@ const Results = () => {
     if (contract) {
       // Check immediately
       checkVotingStatus();
-      // Then check every 5 seconds
-      interval = setInterval(checkVotingStatus, 5000);
+      // Then check every second to update the timer more smoothly
+      interval = setInterval(checkVotingStatus, 1000);
     }
 
     return () => {
@@ -172,6 +188,12 @@ const Results = () => {
       />
       <div className="results-container">
         <h1 className="results-title">Election Results</h1>
+        {timeRemaining && (
+          <div className="time-remaining">
+            <h2>Time Remaining</h2>
+            <div className="timer-display">{timeRemaining}</div>
+          </div>
+        )}
         
         {candidates.length > 0 && (
           <div className="winner-section">
