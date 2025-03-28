@@ -1,0 +1,10 @@
+
+    Polygon Amoy Deployment Information
+    ==================================
+    Contract Address: 0x1b2603c6AB4e4328b1F0143e3B1721bB582Ce64b
+    Network: Polygon Amoy Testnet (Chain ID: 80002)
+    RPC URL: https://rpc-amoy.polygon.technology
+    Block Explorer: https://www.oklink.com/amoy
+    
+    Make sure to update contractConfig.js in the frontend to use this address.
+    

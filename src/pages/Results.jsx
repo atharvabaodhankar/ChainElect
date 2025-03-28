@@ -4,6 +4,7 @@ import MyContract from "../../artifacts/contracts/MyContract.sol/MyContract.json
 import Navbar from "../components/Navbar";
 import { supabase } from "../utils/supabaseClient";
 import { useNavigate } from 'react-router-dom';
+import contractConfig from "../utils/contractConfig";
 
 const Results = () => {
   const [candidates, setCandidates] = useState([]);
@@ -18,15 +19,54 @@ const Results = () => {
   useEffect(() => {
     const initContract = async () => {
       try {
-        const web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
-        const networkId = await web3.eth.net.getId();
-        const deployedNetwork = MyContract.networks[networkId];
-        if (!deployedNetwork) {
-          throw new Error("Contract not deployed on this network");
+        if (!window.ethereum) {
+          setError("Please install MetaMask");
+          setLoading(false);
+          return;
         }
+
+        // Request connection to Polygon Amoy testnet
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: contractConfig.polygonAmoy.chainHexId }],
+          });
+        } catch (switchError) {
+          // If the chain hasn't been added to MetaMask
+          if (switchError.code === 4902) {
+            try {
+              await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [{
+                  chainId: contractConfig.polygonAmoy.chainHexId,
+                  chainName: contractConfig.polygonAmoy.chainName,
+                  rpcUrls: [contractConfig.polygonAmoy.rpcUrl],
+                  nativeCurrency: {
+                    name: contractConfig.polygonAmoy.currencyName,
+                    symbol: contractConfig.polygonAmoy.currencySymbol,
+                    decimals: 18
+                  },
+                  blockExplorerUrls: [contractConfig.polygonAmoy.blockExplorer]
+                }],
+              });
+            } catch (addError) {
+              console.error("Error adding Polygon Amoy network:", addError);
+              setError("Please add Polygon Amoy network to MetaMask manually");
+              setLoading(false);
+              return;
+            }
+          } else {
+            console.error("Error switching to Polygon Amoy network:", switchError);
+            setError("Please switch to Polygon Amoy network in MetaMask");
+            setLoading(false);
+            return;
+          }
+        }
+
+        const web3 = new Web3(window.ethereum);
         const newContract = new web3.eth.Contract(
           MyContract.abi,
-          deployedNetwork.address
+          contractConfig.polygonAmoy.contractAddress
         );
         setContract(newContract);
       } catch (error) {

@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import FaceRegister from '../components/FaceRegister';
 import RegisterInstructions from '../components/RegisterInstructions';
+import contractConfig from '../utils/contractConfig';
 
 const Register = () => {
   const [voterId, setVoterId] = useState('');
@@ -29,6 +30,29 @@ const Register = () => {
     email: '',
     password: ''
   });
+
+  // Function to add Polygon Amoy Testnet network
+  const addPolygonAmoyNetwork = async () => {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [{
+          chainId: contractConfig.polygonAmoy.chainHexId,
+          chainName: contractConfig.polygonAmoy.chainName,
+          nativeCurrency: {
+            name: contractConfig.polygonAmoy.currencyName,
+            symbol: contractConfig.polygonAmoy.currencySymbol,
+            decimals: 18
+          },
+          rpcUrls: [contractConfig.polygonAmoy.rpcUrl],
+          blockExplorerUrls: [contractConfig.polygonAmoy.blockExplorer]
+        }]
+      });
+    } catch (error) {
+      console.error('Error adding network:', error);
+      setErrorMessage('Failed to add Polygon Amoy Testnet network. Please try again.');
+    }
+  };
 
   // Check if Metamask is installed and connected
   useEffect(() => {
@@ -64,6 +88,19 @@ const Register = () => {
           ...prev,
           metamaskId: validateField('metamaskId', accounts[0])
         }));
+      }
+
+      // Try to switch to Polygon Amoy network after connecting
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: contractConfig.polygonAmoy.chainHexId }],
+        });
+      } catch (switchError) {
+        // If the chain hasn't been added to MetaMask, add it
+        if (switchError.code === 4902) {
+          await addPolygonAmoyNetwork();
+        }
       }
     } catch (error) {
       console.error('Error connecting to Metamask:', error);
@@ -315,10 +352,24 @@ const Register = () => {
                 >
                   Connect MetaMask
                 </button>
+                <button 
+                  type="button"
+                  onClick={addPolygonAmoyNetwork} 
+                  className="metamask-network-button"
+                >
+                  Add Polygon Amoy Testnet
+                </button>
               </div>
             ) : (
               <div className="metamask-connected">
                 <p className="connected-status">✓ MetaMask Connected</p>
+                <button 
+                  type="button"
+                  onClick={addPolygonAmoyNetwork} 
+                  className="metamask-network-button"
+                >
+                  Add Polygon Amoy Testnet
+                </button>
               </div>
             )}
           </div>

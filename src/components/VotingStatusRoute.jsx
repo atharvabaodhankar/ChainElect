@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import Web3 from 'web3';
 import MyContract from '../../artifacts/contracts/MyContract.sol/MyContract.json';
+import contractConfig from '../utils/contractConfig';
 
 const VotingStatusRoute = ({ children }) => {
   const [isVotingActive, setIsVotingActive] = useState(null);
@@ -16,19 +17,24 @@ const VotingStatusRoute = ({ children }) => {
           return;
         }
 
-        const web3 = new Web3(window.ethereum);
-        const networkId = await web3.eth.net.getId();
-        const deployedNetwork = MyContract.networks[networkId];
-        
-        if (!deployedNetwork) {
+        // Request connection to Polygon Amoy testnet
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: contractConfig.polygonAmoy.chainHexId }],
+          });
+        } catch (switchError) {
+          console.error("Error switching to Polygon Amoy network:", switchError);
           setIsVotingActive(false);
           setIsLoading(false);
           return;
         }
 
+        const web3 = new Web3(window.ethereum);
+        
         const contract = new web3.eth.Contract(
           MyContract.abi,
-          deployedNetwork.address
+          contractConfig.polygonAmoy.contractAddress
         );
 
         const [votingStarted, votingEnded, votingEndTime] = await Promise.all([

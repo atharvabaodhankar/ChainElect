@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import contractConfig from '../utils/contractConfig';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -18,15 +19,15 @@ const Login = () => {
       await window.ethereum.request({
         method: 'wallet_addEthereumChain',
         params: [{
-          chainId: '0x13882', // 80002 in hex
-          chainName: 'POLYGON AMOY TESTNET',
+          chainId: contractConfig.polygonAmoy.chainHexId,
+          chainName: contractConfig.polygonAmoy.chainName,
           nativeCurrency: {
-            name: 'POL',
-            symbol: 'POL',
+            name: contractConfig.polygonAmoy.currencyName,
+            symbol: contractConfig.polygonAmoy.currencySymbol,
             decimals: 18
           },
-          rpcUrls: ['https://rpc-amoy.polygon.technology/'],
-          blockExplorerUrls: ['https://www.oklink.com/amoy']
+          rpcUrls: [contractConfig.polygonAmoy.rpcUrl],
+          blockExplorerUrls: [contractConfig.polygonAmoy.blockExplorer]
         }]
       });
     } catch (error) {

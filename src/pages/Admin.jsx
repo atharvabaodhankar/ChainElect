@@ -4,6 +4,35 @@ import Navbar from "../components/Navbar";
 import Web3 from "web3";
 import MyContract from "../../artifacts/contracts/MyContract.sol/MyContract.json";
 import { supabase } from "../utils/supabaseClient";
+import contractConfig from "../utils/contractConfig";
+
+// Helper function to check if error is an RPC error
+const isRpcError = (error) => {
+  return (
+    error &&
+    (error.message.includes("Internal JSON-RPC error") || 
+     error.message.includes("transaction underpriced") ||
+     error.message.includes("insufficient funds") ||
+     error.message.includes("gas required exceeds allowance"))
+  );
+};
+
+// Helper function to handle RPC errors
+const getRpcErrorMessage = (error) => {
+  if (!error) return "Unknown error";
+  
+  if (error.message.includes("transaction underpriced")) {
+    return "Transaction underpriced. Please try again with higher gas settings.";
+  } else if (error.message.includes("insufficient funds")) {
+    return "Insufficient funds. Please add more MATIC to your wallet.";
+  } else if (error.message.includes("gas required exceeds allowance")) {
+    return "Gas required exceeds allowance. Please try again with higher gas limit.";
+  } else if (error.message.includes("Internal JSON-RPC error")) {
+    return "Network is congested. Please try again later.";
+  }
+  
+  return error.message;
+};
 
 const Admin = () => {
   const [message, setMessage] = useState("");
@@ -32,29 +61,49 @@ const Admin = () => {
         // Request account access
         await window.ethereum.request({ method: 'eth_requestAccounts' });
         
+        // Request connection to Polygon Amoy testnet
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: contractConfig.polygonAmoy.chainHexId }],
+          });
+        } catch (switchError) {
+          // If the chain hasn't been added to MetaMask
+          if (switchError.code === 4902) {
+            try {
+              await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [{
+                  chainId: contractConfig.polygonAmoy.chainHexId,
+                  chainName: contractConfig.polygonAmoy.chainName,
+                  rpcUrls: [contractConfig.polygonAmoy.rpcUrl],
+                  nativeCurrency: {
+                    name: contractConfig.polygonAmoy.currencyName,
+                    symbol: contractConfig.polygonAmoy.currencySymbol,
+                    decimals: 18
+                  },
+                  blockExplorerUrls: [contractConfig.polygonAmoy.blockExplorer]
+                }],
+              });
+            } catch (addError) {
+              console.error("Error adding Polygon Amoy network:", addError);
+              setMessage("Please add Polygon Amoy network to MetaMask manually");
+              return;
+            }
+          } else {
+            console.error("Error switching to Polygon Amoy network:", switchError);
+            setMessage("Please switch to Polygon Amoy network in MetaMask");
+            return;
+          }
+        }
+        
         // Create Web3 instance with MetaMask provider
         const web3 = new Web3(window.ethereum);
         
-        // Get current network ID
-        const networkId = await web3.eth.net.getId();
-        
-        // Get contract address for current network
-        const deployedNetwork = MyContract.networks[networkId];
-        if (!deployedNetwork) {
-          setMessage(`Contract not deployed on network ${networkId}. Please make sure you're connected to the correct network.`);
-          return;
-        }
-
-        const contractAddress = deployedNetwork.address;
-        if (!contractAddress) {
-          setMessage("Contract address not found. Please make sure the contract is deployed.");
-          return;
-        }
-
-        // Create contract instance
+        // Create contract instance using our deployed contract address
         const contractInstance = new web3.eth.Contract(
           MyContract.abi,
-          contractAddress
+          contractConfig.polygonAmoy.contractAddress
         );
 
         // Get current account
@@ -103,8 +152,8 @@ const Admin = () => {
 
       } catch (error) {
         console.error("Initialization error:", error);
-        if (error.message.includes("Internal JSON-RPC error")) {
-          setMessage("Please make sure you're connected to the correct network in MetaMask and the contract is deployed.");
+        if (isRpcError(error)) {
+          setMessage(getRpcErrorMessage(error));
         } else {
           setMessage("Failed to initialize: " + error.message);
         }
@@ -133,7 +182,13 @@ const Admin = () => {
     try {
       setIsLoading(true);
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      await contract.methods.startVoting().send({ from: accounts[0] });
+      
+      // Use the transaction config from our contract configuration
+      await contract.methods.startVoting().send({ 
+        from: accounts[0],
+        gasPrice: contractConfig.polygonAmoy.transactionConfig.gasPrice,
+        gas: contractConfig.polygonAmoy.transactionConfig.gasLimit
+      });
       
       setVotingStatus({ started: true, ended: false });
       setMessage("Voting started successfully!");
@@ -144,7 +199,11 @@ const Admin = () => {
 
     } catch (error) {
       console.error("Error starting voting:", error);
-      setMessage("Failed to start voting: " + error.message);
+      if (isRpcError(error)) {
+        setMessage("Failed to start voting: " + getRpcErrorMessage(error));
+      } else {
+        setMessage("Failed to start voting: " + error.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -159,12 +218,20 @@ const Admin = () => {
     try {
       setIsLoading(true);
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      await contract.methods.addCandidate(candidateName).send({ from: accounts[0] });
+      await contract.methods.addCandidate(candidateName).send({ 
+        from: accounts[0],
+        gasPrice: contractConfig.polygonAmoy.transactionConfig.gasPrice,
+        gas: contractConfig.polygonAmoy.transactionConfig.gasLimit
+      });
       setMessage(`Candidate "${candidateName}" added successfully!`);
       setCandidateName("");
     } catch (error) {
       console.error("Error adding candidate:", error);
-      setMessage("Failed to add candidate: " + error.message);
+      if (isRpcError(error)) {
+        setMessage("Failed to add candidate: " + getRpcErrorMessage(error));
+      } else {
+        setMessage("Failed to add candidate: " + error.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -184,7 +251,11 @@ const Admin = () => {
     try {
       setIsLoading(true);
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      await contract.methods.addAdmin(newAdminAddress).send({ from: accounts[0] });
+      await contract.methods.addAdmin(newAdminAddress).send({ 
+        from: accounts[0],
+        gasPrice: contractConfig.polygonAmoy.transactionConfig.gasPrice,
+        gas: contractConfig.polygonAmoy.transactionConfig.gasLimit
+      });
       setMessage(`Admin "${newAdminAddress}" added successfully!`);
       setNewAdminAddress("");
       
@@ -192,7 +263,11 @@ const Admin = () => {
       await loadAdminList(contract);
     } catch (error) {
       console.error("Error adding admin:", error);
-      setMessage("Failed to add admin: " + error.message);
+      if (isRpcError(error)) {
+        setMessage("Failed to add admin: " + getRpcErrorMessage(error));
+      } else {
+        setMessage("Failed to add admin: " + error.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -292,13 +367,21 @@ const Admin = () => {
       await storeResults();
 
       // Now reset the voting state
-      await contract.methods.resetVotingState().send({ from: accounts[0] });
+      await contract.methods.resetVotingState().send({ 
+        from: accounts[0],
+        gasPrice: contractConfig.polygonAmoy.transactionConfig.gasPrice,
+        gas: contractConfig.polygonAmoy.transactionConfig.gasLimit
+      });
       
       setVotingStatus({ started: false, ended: false });
       setMessage("Voting state has been reset successfully and results have been stored!");
     } catch (error) {
       console.error("Error resetting voting state:", error);
-      setMessage("Failed to reset voting state: " + error.message);
+      if (isRpcError(error)) {
+        setMessage("Failed to reset voting state: " + getRpcErrorMessage(error));
+      } else {
+        setMessage("Failed to reset voting state: " + error.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -308,11 +391,19 @@ const Admin = () => {
     try {
       setIsLoading(true);
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      await contract.methods.setVotingDuration(votingDuration).send({ from: accounts[0] });
+      await contract.methods.setVotingDuration(votingDuration).send({ 
+        from: accounts[0],
+        gasPrice: contractConfig.polygonAmoy.transactionConfig.gasPrice,
+        gas: contractConfig.polygonAmoy.transactionConfig.gasLimit
+      });
       setMessage(`Voting duration set to ${votingDuration} minutes successfully!`);
     } catch (error) {
       console.error("Error setting duration:", error);
-      setMessage("Failed to set voting duration: " + error.message);
+      if (isRpcError(error)) {
+        setMessage("Failed to set voting duration: " + getRpcErrorMessage(error));
+      } else {
+        setMessage("Failed to set voting duration: " + error.message);
+      }
     } finally {
       setIsLoading(false);
     }

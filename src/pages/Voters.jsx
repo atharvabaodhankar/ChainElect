@@ -6,6 +6,35 @@ import Web3 from "web3";
 import MyContract from "../../artifacts/contracts/MyContract.sol/MyContract.json";
 import tickGif from "../assets/tick.gif";
 import FaceAuth from "../components/FaceAuth";
+import contractConfig from "../utils/contractConfig";
+
+// Helper function to check if error is an RPC error
+const isRpcError = (error) => {
+  return (
+    error &&
+    (error.message.includes("Internal JSON-RPC error") || 
+     error.message.includes("transaction underpriced") ||
+     error.message.includes("insufficient funds") ||
+     error.message.includes("gas required exceeds allowance"))
+  );
+};
+
+// Helper function to handle RPC errors
+const getRpcErrorMessage = (error) => {
+  if (!error) return "Unknown error";
+  
+  if (error.message.includes("transaction underpriced")) {
+    return "Transaction underpriced. Please try again with higher gas settings.";
+  } else if (error.message.includes("insufficient funds")) {
+    return "Insufficient funds. Please add more MATIC to your wallet.";
+  } else if (error.message.includes("gas required exceeds allowance")) {
+    return "Gas required exceeds allowance. Please try again with higher gas limit.";
+  } else if (error.message.includes("Internal JSON-RPC error")) {
+    return "Network is congested. Please try again later.";
+  }
+  
+  return error.message;
+};
 
 const Voters = () => {
   const [candidates, setCandidates] = useState([]);
@@ -39,6 +68,42 @@ const Voters = () => {
           return;
         }
 
+        // Request connection to Polygon Amoy testnet
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: contractConfig.polygonAmoy.chainHexId }],
+          });
+        } catch (switchError) {
+          // If the chain hasn't been added to MetaMask
+          if (switchError.code === 4902) {
+            try {
+              await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [{
+                  chainId: contractConfig.polygonAmoy.chainHexId,
+                  chainName: contractConfig.polygonAmoy.chainName,
+                  rpcUrls: [contractConfig.polygonAmoy.rpcUrl],
+                  nativeCurrency: {
+                    name: contractConfig.polygonAmoy.currencyName,
+                    symbol: contractConfig.polygonAmoy.currencySymbol,
+                    decimals: 18
+                  },
+                  blockExplorerUrls: [contractConfig.polygonAmoy.blockExplorer]
+                }],
+              });
+            } catch (addError) {
+              console.error("Error adding Polygon Amoy network:", addError);
+              setMessage("Please add Polygon Amoy network to MetaMask manually");
+              return;
+            }
+          } else {
+            console.error("Error switching to Polygon Amoy network:", switchError);
+            setMessage("Please switch to Polygon Amoy network in MetaMask");
+            return;
+          }
+        }
+
         const web3 = new Web3(window.ethereum);
         const accounts = await web3.eth.getAccounts();
         
@@ -47,17 +112,10 @@ const Voters = () => {
           return;
         }
 
-        const networkId = await web3.eth.net.getId();
-        const deployedNetwork = MyContract.networks[networkId];
-        
-        if (!deployedNetwork) {
-          setMessage("Contract not deployed on this network");
-          return;
-        }
-
+        // Using our deployed contract address from config
         const contractInstance = new web3.eth.Contract(
           MyContract.abi,
-          deployedNetwork.address
+          contractConfig.polygonAmoy.contractAddress
         );
 
         // Check if user has already voted
@@ -89,16 +147,12 @@ const Voters = () => {
       try {
         if (hasVoted) return; // Don't fetch candidates if user has already voted
 
-        const web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
-        const networkId = await web3.eth.net.getId();
-        const deployedNetwork = MyContract.networks[networkId];
-        if (!deployedNetwork) {
-          console.error("Contract not deployed on the current network");
-          return;
-        }
+        const web3 = new Web3(window.ethereum);
+        
+        // Using our deployed contract address from config
         const contract = new web3.eth.Contract(
           MyContract.abi,
-          deployedNetwork && deployedNetwork.address
+          contractConfig.polygonAmoy.contractAddress
         );
 
         // Check voting status
@@ -211,17 +265,11 @@ const Voters = () => {
 
       // Reinitialize Web3 and contract
       const web3 = new Web3(window.ethereum);
-      const networkId = await web3.eth.net.getId();
-      const deployedNetwork = MyContract.networks[networkId];
       
-      if (!deployedNetwork) {
-        setMessage("Error: Contract not deployed on the current network");
-        return;
-      }
-
+      // Using our deployed contract address from config
       const contractInstance = new web3.eth.Contract(
         MyContract.abi,
-        deployedNetwork.address
+        contractConfig.polygonAmoy.contractAddress
       );
 
       // Check if user has already voted
@@ -232,7 +280,13 @@ const Voters = () => {
         return;
       }
 
-      await contractInstance.methods.vote(selectedCandidateId).send({ from: currentAccount });
+      // Add gas configuration to avoid RPC errors
+      await contractInstance.methods.vote(selectedCandidateId).send({ 
+        from: currentAccount,
+        gasPrice: contractConfig.polygonAmoy.transactionConfig.gasPrice,
+        gas: contractConfig.polygonAmoy.transactionConfig.gasLimit
+      });
+      
       setMessage("Vote cast successfully!");
       setShowPopup(true);
       setCandidates((prevCandidates) =>
@@ -249,6 +303,8 @@ const Voters = () => {
         setMessage("Voting is not currently active");
       } else if (error.message.includes('Invalid candidate')) {
         setMessage("Invalid candidate selection");
+      } else if (isRpcError(error)) {
+        setMessage("Voting error: " + getRpcErrorMessage(error));
       } else {
         setMessage("Failed to cast vote. Please try again");
       }
