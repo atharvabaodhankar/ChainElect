@@ -14,7 +14,7 @@ const Homepage = () => {
   return (
     <>
       <section id="hero">
-        <video src="src/images/hero.mp4" autoPlay loop muted></video>
+        <video src="/src/images/hero.mp4" autoPlay loop muted></video>
         <Navbar home="/" features="/#features" aboutus="/#aboutus" contactus="/#contactus" />
 
         <div className="hero">
