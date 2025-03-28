@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 const Navbar = (props) => {
     const [navbarState, setNavbarState] = useState(false);
@@ -41,11 +42,13 @@ const Navbar = (props) => {
     return (
         <nav id="navbar" ref={navbarRef}>
             <div className="logo">
-                <h1>ChainElect</h1>
+                <Link to="/">
+                    <h1>ChainElect</h1>
+                </Link>
             </div>
             <ul className={navbarState ? "nav active" : "nav"}>
                 <li>
-                    <a href={props.home}>Home</a>
+                    <Link to="/">Home</Link>
                 </li>
                 <li>
                     <a href={props.features}>Features</a>
@@ -55,6 +58,15 @@ const Navbar = (props) => {
                 </li>
                 <li>
                     <a href={props.contactus}>Contact Us</a>
+                </li>
+                <li className="auth-links">
+                    <Link to="/login" className="nav-button login">Login</Link>
+                </li>
+                <li className="auth-links">
+                    <Link to="/register" className="nav-button register">Register</Link>
+                </li>
+                <li className="auth-links">
+                    <Link to="/results" className="nav-button results">Results</Link>
                 </li>
             </ul>
             <div

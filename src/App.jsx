@@ -7,9 +7,9 @@ import Voters from './pages/Voters';
 import PrivateRoute from './components/PrivateRoute';
 import Results from './pages/Results';
 import Admin from './pages/Admin';
-import VotersPage from './pages/VotersPage';
 import Preloader from './components/Preloader';
 import DeclaredResults from './pages/DeclaredResults';
+import VotingStatusRoute from './components/VotingStatusRoute';
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -28,8 +28,14 @@ const App = () => {
         <Route path="/" element={<Homepage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/voterspage" element={<VotersPage />} />
-        <Route path="/results" element={<Results />} />
+        <Route
+          path="/results"
+          element={
+            <VotingStatusRoute>
+              <Results />
+            </VotingStatusRoute>
+          }
+        />
         <Route path="/admin" element={<Admin />} />
         <Route path="/declared-results" element={<DeclaredResults />} />
         <Route

@@ -8,6 +8,7 @@ import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
 import Register from "./Register";
 import Navbar from "../components/Navbar";
 import Web3 from "web3";
+import ContactUs from "../components/ContactUs";
 
 const Homepage = () => {
 
@@ -34,8 +35,9 @@ const Homepage = () => {
       </section>
       <Features />
       <Aboutus />
+      <ContactUs />
       <Footer />
-      </>
+    </>
   );
 };
 
