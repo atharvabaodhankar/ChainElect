@@ -17,22 +17,30 @@ const Footer = () => {
             ChainElect is a blockchain-based voting platform that ensures
             secure, transparent, and efficient elections.
           </p>
-          <Button name="Learn More" link="/" />
         </div>
-        <div className="footer-right">
+        <div className="footer-links">
+          <h4>Quick Links</h4>
           <ul>
-            <li>
-              <a href="#">Home</a>
-            </li>
-            <li>
-              <a href="#features">Features</a>
-            </li>
-            <li>
-              <a href="#aboutus">About Us</a>
-            </li>
-            <li>
-              <a href="#contactus">ContactUs</a>
-            </li>
+            <li><a href="/">Home</a></li>
+            <li><a href="/register">Register</a></li>
+            <li><a href="/login">Login</a></li>
+            <li><a href="/voters">Vote</a></li>
+          </ul>
+        </div>
+        <div className="footer-resources">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="/#features">Features</a></li>
+            <li><a href="/#aboutus">About Us</a></li>
+            <li><a href="/#contactus">Contact Us</a></li>
+            <li><a href="/results">Results</a></li>
+          </ul>
+        </div>
+        <div className="footer-contact">
+          <h4>Contact Info</h4>
+          <ul>
+            <li><a href="mailto:support@chainelect.com">support@chainelect.com</a></li>
+            <li>Solapur, Maharashtra, India</li>
           </ul>
         </div>
       </div>

@@ -300,57 +300,212 @@ line-height: 2.5rem;
     bottom: 20px;
     animation: animateWave_02 3s linear infinite;
 }
-.footer-main{
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 2rem;
-    width: 90%;
-    margin-top: 2rem;
-    flex-wrap: wrap;
+.footer-main {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4rem;
+  padding: 6rem 8rem;
+  color: #fff;
 }
-.footer-content{
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    text-align: left;
-    gap: 2rem;
-    width: 500px;
-    margin-bottom: 6rem;
+
+.footer-content {
+  grid-column: span 1;
+  transition: transform 0.3s ease;
 }
-.footer-right{
-    gap: 2rem;
-    
+
+.footer-content:hover {
+  transform: translateY(-5px);
 }
-.footer-right ul{
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    text-align: left;
-    gap: 1rem;
+
+.footer-content h3 {
+  font-size: 3.6rem;
+  margin-bottom: 2rem;
+  font-weight: 700;
+  color: #fff;
+  position: relative;
+  display: inline-block;
 }
-.footer-right li{
-    font-size: 2rem;
+
+.footer-content h3::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background: #fff;
+  transition: width 0.3s ease;
 }
-.footer-content h3{
-    color: var(--white);
+
+.footer-content:hover h3::after {
+  width: 100%;
+}
+
+.footer-links,
+.footer-resources,
+.footer-contact {
+  padding-top: 1rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.footer-links:hover,
+.footer-resources:hover,
+.footer-contact:hover {
+  transform: translateY(-5px);
+}
+
+.footer-main h4 {
+  font-size: 2.4rem;
+  margin-bottom: 2.5rem;
+  font-weight: 600;
+  color: #fff;
+  position: relative;
+  display: inline-block;
+}
+
+.footer-main h4::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background: #fff;
+  transition: width 0.3s ease;
+}
+
+.footer-links:hover h4::after,
+.footer-resources:hover h4::after,
+.footer-contact:hover h4::after {
+  width: 100%;
+}
+
+.footer-main ul li {
+  margin-bottom: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.footer-main ul li:hover {
+  transform: translateX(10px);
+}
+
+.footer-main ul li a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.8rem;
+  opacity: 0.9;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+}
+
+.footer-main ul li a::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  bottom: -2px;
+  left: 0;
+  background: #fff;
+  visibility: hidden;
+  transform: scaleX(0);
+  transition: all 0.3s ease;
+}
+
+.footer-main ul li a:hover {
+  opacity: 1;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.footer-main ul li a:hover::before {
+  visibility: visible;
+  transform: scaleX(1);
+}
+
+.footer-contact ul li {
+  font-size: 1.8rem;
+  opacity: 0.9;
+  color: #fff;
+  transition: all 0.3s ease;
+  position: relative;
+  padding-left: 0;
+}
+
+.footer-contact ul li:hover {
+  opacity: 1;
+  transform: translateX(10px);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.footer-bottom {
+  text-align: center;
+  padding: 2rem 0;
+  font-size: 1.8rem;
+  opacity: 0.9;
+  color: #fff;
+  transition: opacity 0.3s ease;
+}
+
+.footer-bottom:hover {
+  opacity: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .footer-main {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4rem;
+    padding: 5rem;
+  }
+
+  .footer-content {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-main {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3rem;
+    padding: 4rem;
+    place-items: center;
+  }
+
+  .footer-content {
+    grid-column: span 2;
+  }
+
+  .footer-content h3 {
     font-size: 3rem;
+  }
+
+  .footer-main h4 {
+    font-size: 2.2rem;
+  }
+
+  .footer-main ul li a,
+  .footer-contact ul li,
+  .footer-content p {
+    font-size: 1.6rem;
+  }
 }
-.footer-content p{
-    color: var(--white);
-    font-size: 1.5rem;
-}
-.footer-bottom{
-    width: 100%;
-    background-color: #2e2e2e;
+
+@media (max-width: 480px) {
+  .footer-main {
+    grid-template-columns: 1fr;
     text-align: center;
-    padding: 2rem 0 ;
-    p{
-        font-size: 2rem;
-    }
+    padding: 3rem;
+  }
+
+  .footer-content {
+    grid-column: span 1;
+  }
+
+  .footer-main h4 {
+    margin-top: 3rem;
+  }
 }
+
 @keyframes animateWave {
     0% {
         background-position-x: 1000px;
