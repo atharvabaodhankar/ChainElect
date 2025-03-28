@@ -113,12 +113,14 @@ const Results = () => {
 
         if (error) throw error;
         
-        // Navigate to declared results after successful storage
-        navigate('/declared-results');
+        // Only return success status instead of redirecting
+        return true;
       }
+      return false;
     } catch (error) {
       console.error("Error storing results:", error);
       setError("Failed to store voting results. Please try again later.");
+      return false;
     }
   };
 
@@ -138,9 +140,26 @@ const Results = () => {
         
         const currentTime = Math.floor(Date.now() / 1000);
         const hasEnded = votingEndedStatus || (votingStarted && currentTime >= Number(votingEndTime));
+        
+        // Check if voting is active - it must be started AND not ended
+        const isActive = votingStarted && !hasEnded;
+
+        // If voting is not active (either not started or has ended), redirect to declared-results
+        if (!isActive) {
+          if (!votingStarted) {
+            console.log("Voting has not started yet, redirecting to declared-results");
+          } else if (hasEnded) {
+            console.log("Voting has ended, redirecting to declared-results");
+            // Store results before redirecting if voting has ended
+            await storeResults();
+          }
+          navigate("/declared-results");
+          if (interval) clearInterval(interval);
+          return;
+        }
 
         // Calculate time remaining
-        if (!hasEnded && votingStarted) {
+        if (votingStarted && !hasEnded) {
           const remainingSeconds = Number(votingEndTime) - currentTime;
           if (remainingSeconds > 0) {
             const hours = Math.floor(remainingSeconds / 3600);
@@ -156,28 +175,27 @@ const Results = () => {
 
         if (hasEnded && !votingEnded) {
           setVotingEnded(true);
+          // Store results but don't navigate away
           await storeResults();
           if (interval) clearInterval(interval);
           return;
         }
 
-        if (!hasEnded) {
-          // Update current results
-          const candidateCount = await contract.methods.getCandidatesCount().call();
-          const candidatesData = [];
-          
-          for (let i = 1; i <= candidateCount; i++) {
-            const candidate = await contract.methods.getCandidate(i).call();
-            candidatesData.push({
-              id: i,
-              name: candidate[0],
-              voteCount: Number(candidate[1])
-            });
-          }
-          
-          candidatesData.sort((a, b) => Number(b.voteCount) - Number(a.voteCount));
-          setCandidates(candidatesData);
+        // Update current results
+        const candidateCount = await contract.methods.getCandidatesCount().call();
+        const candidatesData = [];
+        
+        for (let i = 1; i <= candidateCount; i++) {
+          const candidate = await contract.methods.getCandidate(i).call();
+          candidatesData.push({
+            id: i,
+            name: candidate[0],
+            voteCount: Number(candidate[1])
+          });
         }
+        
+        candidatesData.sort((a, b) => Number(b.voteCount) - Number(a.voteCount));
+        setCandidates(candidatesData);
         
         setLoading(false);
       } catch (error) {

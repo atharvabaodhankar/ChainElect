@@ -5,14 +5,14 @@ import MyContract from '../../artifacts/contracts/MyContract.sol/MyContract.json
 import contractConfig from '../utils/contractConfig';
 
 const VotingStatusRoute = ({ children }) => {
-  const [isVotingActive, setIsVotingActive] = useState(null);
+  const [votingActive, setVotingActive] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkVotingStatus = async () => {
       try {
         if (!window.ethereum) {
-          setIsVotingActive(false);
+          setVotingActive(false);
           setIsLoading(false);
           return;
         }
@@ -25,7 +25,7 @@ const VotingStatusRoute = ({ children }) => {
           });
         } catch (switchError) {
           console.error("Error switching to Polygon Amoy network:", switchError);
-          setIsVotingActive(false);
+          setVotingActive(false);
           setIsLoading(false);
           return;
         }
@@ -37,19 +37,33 @@ const VotingStatusRoute = ({ children }) => {
           contractConfig.polygonAmoy.contractAddress
         );
 
-        const [votingStarted, votingEnded, votingEndTime] = await Promise.all([
+        const [votingStarted, votingEndedStatus, votingEndTime] = await Promise.all([
           contract.methods.votingStarted().call(),
           contract.methods.votingEnded().call(),
           contract.methods.votingEndTime().call()
         ]);
 
         const currentTime = Math.floor(Date.now() / 1000);
-        const hasEnded = votingEnded || (votingStarted && currentTime >= Number(votingEndTime));
         
-        setIsVotingActive(hasEnded);
+        // Check if voting has ended either by flag or by time
+        const hasEnded = votingEndedStatus || (votingStarted && currentTime >= Number(votingEndTime));
+        
+        // Check if voting is active - it must be started AND not ended
+        const isActive = votingStarted && !hasEnded;
+        
+        // Set votingActive to true only if voting has started and not ended
+        setVotingActive(isActive);
+        
+        console.log("VotingStatusRoute check:", {
+          votingStarted,
+          votingEndedStatus,
+          timeRemaining: Number(votingEndTime) - currentTime,
+          hasEnded,
+          isActive
+        });
       } catch (error) {
         console.error('Error checking voting status:', error);
-        setIsVotingActive(false);
+        setVotingActive(false); // Default to inactive on error
       } finally {
         setIsLoading(false);
       }
@@ -62,7 +76,9 @@ const VotingStatusRoute = ({ children }) => {
     return <div>Loading...</div>;
   }
 
-  if (!isVotingActive) {
+  // If voting is not active (either not started or has ended), redirect to declared results
+  // Otherwise, show the actual results page
+  if (!votingActive) {
     return <Navigate to="/declared-results" replace />;
   }
 

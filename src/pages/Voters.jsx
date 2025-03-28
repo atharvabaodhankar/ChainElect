@@ -167,13 +167,18 @@ const Voters = () => {
         setRemainingTime(remainingSeconds);
 
         if (!votingStarted) {
-          setMessage("Voting has not started yet. Please wait for the admin to start the voting.");
+          setMessage("Voting has not started yet. Redirecting to declared results page.");
+          setTimeout(() => {
+            navigate("/declared-results");
+          }, 2000);
           return;
         }
 
         if (votingEnded || remainingSeconds <= 0) {
-          setMessage("Voting has ended. Please check the results page.");
-          navigate("/results");
+          setMessage("Voting has ended. Redirecting to declared results page.");
+          setTimeout(() => {
+            navigate("/declared-results");
+          }, 2000);
           return;
         }
 
