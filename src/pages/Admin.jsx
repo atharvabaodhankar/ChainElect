@@ -9,6 +9,8 @@ const Admin = () => {
   const [message, setMessage] = useState("");
   const [candidateName, setCandidateName] = useState("");
   const [votingDuration, setVotingDuration] = useState(60); // default 60 minutes
+  const [newAdminAddress, setNewAdminAddress] = useState(""); // New state for admin address
+  const [adminList, setAdminList] = useState([]); // State for storing admins list
   const [votingStatus, setVotingStatus] = useState({
     started: false,
     ended: false
@@ -96,6 +98,9 @@ const Admin = () => {
           setRemainingTime(Number(remaining));
         }
 
+        // Load admin list
+        await loadAdminList(contractInstance);
+
       } catch (error) {
         console.error("Initialization error:", error);
         if (error.message.includes("Internal JSON-RPC error")) {
@@ -108,6 +113,21 @@ const Admin = () => {
 
     initializeContract();
   }, []);
+
+  // Function to load admin list
+  const loadAdminList = async (contractInstance) => {
+    try {
+      // Use the current contract instance if one isn't provided
+      const contractToUse = contractInstance || contract;
+      if (!contractToUse) return;
+      
+      const admins = await contractToUse.methods.getAllAdmins().call();
+      setAdminList(admins);
+    } catch (error) {
+      console.error("Error loading admin list:", error);
+      setMessage("Failed to load admin list: " + error.message);
+    }
+  };
 
   const startVoting = async () => {
     try {
@@ -145,6 +165,34 @@ const Admin = () => {
     } catch (error) {
       console.error("Error adding candidate:", error);
       setMessage("Failed to add candidate: " + error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const addAdmin = async () => {
+    if (!newAdminAddress.trim()) {
+      setMessage("Please enter an admin address");
+      return;
+    }
+
+    if (!Web3.utils.isAddress(newAdminAddress)) {
+      setMessage("Please enter a valid Ethereum address");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      await contract.methods.addAdmin(newAdminAddress).send({ from: accounts[0] });
+      setMessage(`Admin "${newAdminAddress}" added successfully!`);
+      setNewAdminAddress("");
+      
+      // Refresh admin list
+      await loadAdminList(contract);
+    } catch (error) {
+      console.error("Error adding admin:", error);
+      setMessage("Failed to add admin: " + error.message);
     } finally {
       setIsLoading(false);
     }
@@ -277,6 +325,12 @@ const Admin = () => {
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
+  // Helper to format Ethereum address
+  const formatAddress = (address) => {
+    if (!address) return '';
+    return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+  };
+
   if (!isAdmin) {
     return (
       <div>
@@ -349,6 +403,43 @@ const Admin = () => {
               className={isLoading ? 'loading' : ''}
             >
               Add Candidate
+            </button>
+          </div>
+
+          <div>
+            <h2>Admin Management</h2>
+            <div className="admin-list">
+              <h3>Current Admins:
+                <button 
+                  className="refresh-button" 
+                  onClick={() => loadAdminList()} 
+                  title="Refresh Admin List"
+                  disabled={isLoading}
+                >
+                  ↻
+                </button>
+              </h3>
+              <ul className="admin-addresses">
+                {adminList.map((admin, index) => (
+                  <li key={index} className="admin-address">
+                    <span title={admin}>{formatAddress(admin)}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <input
+              type="text"
+              value={newAdminAddress}
+              onChange={(e) => setNewAdminAddress(e.target.value)}
+              placeholder="Enter admin wallet address"
+              disabled={isLoading}
+            />
+            <button 
+              onClick={addAdmin} 
+              disabled={isLoading}
+              className={isLoading ? 'loading' : ''}
+            >
+              Add Admin
             </button>
           </div>
 

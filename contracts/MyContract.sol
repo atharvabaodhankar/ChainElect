@@ -8,6 +8,9 @@ contract MyContract {
     // Admin addresses mapping
     mapping(address => bool) public admins;
     
+    // Array to keep track of all admin addresses
+    address[] private adminAddresses;
+    
     // Voting duration in seconds (default 1 hour)
     uint256 public votingDuration = 1 hours;
 
@@ -74,9 +77,10 @@ contract MyContract {
     }
 
     // Function to add an admin
-    function addAdmin(address _admin) public onlyOwner {
+    function addAdmin(address _admin) public onlyAdmin {
         require(!admins[_admin], "Address is already an admin");
         admins[_admin] = true;
+        adminAddresses.push(_admin);
         emit AdminAdded(_admin);
     }
 
@@ -85,6 +89,17 @@ contract MyContract {
         require(_admin != owner, "Cannot remove owner from admins");
         require(admins[_admin], "Address is not an admin");
         admins[_admin] = false;
+        
+        // Remove from the array
+        for (uint i = 0; i < adminAddresses.length; i++) {
+            if (adminAddresses[i] == _admin) {
+                // Replace with the last element and then pop
+                adminAddresses[i] = adminAddresses[adminAddresses.length - 1];
+                adminAddresses.pop();
+                break;
+            }
+        }
+        
         emit AdminRemoved(_admin);
     }
 
@@ -218,5 +233,33 @@ contract MyContract {
             return 0;
         }
         return votingEndTime - block.timestamp;
+    }
+
+    // Function to get all admin addresses
+    function getAllAdmins() public view returns (address[] memory) {
+        // Count active admins
+        uint256 activeAdminCount = 0;
+        for (uint i = 0; i < adminAddresses.length; i++) {
+            if (admins[adminAddresses[i]]) {
+                activeAdminCount++;
+            }
+        }
+        
+        // Create a new array including the owner
+        address[] memory allAdmins = new address[](activeAdminCount + 1);
+        
+        // Add owner as the first admin
+        allAdmins[0] = owner;
+        
+        // Add other active admins
+        uint256 currentIndex = 1;
+        for (uint i = 0; i < adminAddresses.length; i++) {
+            if (admins[adminAddresses[i]]) {
+                allAdmins[currentIndex] = adminAddresses[i];
+                currentIndex++;
+            }
+        }
+        
+        return allAdmins;
     }
 }
