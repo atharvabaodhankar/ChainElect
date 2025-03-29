@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Web3 from "web3";
-import MyContract from "../../artifacts/contracts/MyContract.sol/MyContract.json";
+import MyContract from "/contracts/MyContract.json";
 import Navbar from "../components/Navbar";
 import { supabase } from "../utils/supabaseClient";
 import { useNavigate } from 'react-router-dom';

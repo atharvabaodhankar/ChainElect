@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Web3 from "web3";
-import MyContract from "../../artifacts/contracts/MyContract.sol/MyContract.json";
+import MyContract from "/contracts/MyContract.json";
 import { supabase } from "../utils/supabaseClient";
 import contractConfig from "../utils/contractConfig";
 

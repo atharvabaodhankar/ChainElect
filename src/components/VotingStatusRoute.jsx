@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import Web3 from 'web3';
-import MyContract from '../../artifacts/contracts/MyContract.sol/MyContract.json';
+import MyContract from '/contracts/MyContract.json';
 import contractConfig from '../utils/contractConfig';
 
 const VotingStatusRoute = ({ children }) => {
