@@ -21,26 +21,25 @@ export const isMetaMaskBrowser = () => {
 
 // Get the correct deep linking format for the current environment
 export const getMetaMaskDeepLink = () => {
-  // Base URL of the current page
-  const currentUrl = window.location.href;
-  const hostname = window.location.host;
-  const pathname = window.location.pathname;
+  // Get current URL components
+  const url = window.location.href;
+  const encodedUrl = encodeURIComponent(url);
   
   // iOS devices use different deep linking format
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   
-  // Universal linking format with fallbacks
+  // Universal linking formats - using direct URL approach
   if (isIOS) {
-    // iOS format with fallback chain
+    // iOS direct link using universal link
     return {
-      primary: `https://metamask.app.link/dapp/${hostname}${pathname}`,
-      fallback: `metamask://browse/${hostname}${pathname}`
+      primary: `https://metamask.app.link/dapp/${window.location.host}${window.location.pathname}`,
+      fallback: `metamask://dapp/${window.location.host}${window.location.pathname}`
     };
   } else {
-    // Android and others
+    // Android direct intent with fallback
     return {
-      primary: `https://metamask.app.link/dapp/${hostname}${pathname}`,
-      fallback: `intent://browse#Intent;scheme=metamask;package=io.metamask;end`
+      primary: `https://metamask.app.link/dapp/${window.location.host}${window.location.pathname}`, 
+      fallback: `metamask://dapp/${window.location.host}${window.location.pathname}`
     };
   }
 };
@@ -87,29 +86,49 @@ export const clearRedirectAttempt = () => {
   }
 };
 
-// Enhanced deep link to MetaMask mobile app with redirection memory
+// Deep link to MetaMask mobile app with improved handling
 export const openMetaMaskMobile = () => {
-  // Save the fact that we attempted a redirect
+  // Save current page state
   saveRedirectAttempt();
   
   const deepLinks = getMetaMaskDeepLink();
+  console.log("Opening MetaMask with:", deepLinks);
   
-  // First try the primary deep link
-  window.location.href = deepLinks.primary;
+  // For iOS, window.location tends to work better than window.open
+  const isIOS = isIOSDevice();
   
-  // Set a timer to try the fallback if primary fails
-  const fallbackTimer = setTimeout(() => {
-    window.location.href = deepLinks.fallback;
+  if (isIOS) {
+    // iOS needs direct location change
+    window.location.href = deepLinks.primary;
     
-    // Final fallback: if nothing works, redirect to MetaMask download page
-    const downloadTimer = setTimeout(() => {
-      window.open('https://metamask.io/download/', '_blank');
+    // Fallback timer for iOS
+    setTimeout(() => {
+      window.location.href = deepLinks.fallback;
+      
+      // Final iOS fallback to app store
+      setTimeout(() => {
+        window.location.href = 'https://apps.apple.com/us/app/metamask/id1438144202';
+      }, 2000);
     }, 1500);
+  } else {
+    // For Android, try opening in new window first
+    const opened = window.open(deepLinks.primary, '_blank');
     
-    return () => clearTimeout(downloadTimer);
-  }, 1500);
-  
-  return () => clearTimeout(fallbackTimer);
+    // If window.open fails or is blocked, try direct location
+    if (!opened || opened.closed || typeof opened.closed === 'undefined') {
+      window.location.href = deepLinks.primary;
+      
+      // Android fallback
+      setTimeout(() => {
+        window.location.href = deepLinks.fallback;
+        
+        // Final Android fallback to Play Store
+        setTimeout(() => {
+          window.location.href = 'https://play.google.com/store/apps/details?id=io.metamask';
+        }, 2000);
+      }, 1500);
+    }
+  }
 };
 
 // Detect if a wallet provider is available

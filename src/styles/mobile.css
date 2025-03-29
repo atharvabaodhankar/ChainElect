@@ -313,4 +313,127 @@
   .mobile-device .mobile-wallet-connect {
     margin-bottom: 15px;
   }
+}
+
+/* Mobile Wallet Guide Styles */
+.mobile-wallet-guide {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-wallet-guide h3 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 18px;
+}
+
+.guide-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.guide-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #3498db;
+  color: white;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.step-content {
+  flex-grow: 1;
+}
+
+.step-content h4 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.step-content p {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: #555;
+  line-height: 1.4;
+}
+
+.download-button, .metamask-button {
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.download-button {
+  background-color: #28a745;
+  color: white;
+  text-decoration: none;
+  display: block;
+}
+
+.metamask-button {
+  background-color: #ff9e00;
+  color: white;
+}
+
+.guide-troubleshooting {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #ddd;
+}
+
+.guide-troubleshooting h4 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.guide-troubleshooting ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.guide-troubleshooting li {
+  margin-bottom: 5px;
+  font-size: 13px;
+  color: #555;
+}
+
+.connect-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.show-guide-button {
+  background-color: transparent;
+  border: 1px solid #3498db;
+  color: #3498db;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
 } 

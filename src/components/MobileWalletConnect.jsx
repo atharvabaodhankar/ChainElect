@@ -7,6 +7,7 @@ import {
   wasRedirectAttempted,
   clearRedirectAttempt
 } from '../utils/walletUtils';
+import MobileWalletGuide from './MobileWalletGuide';
 
 /**
  * A component specifically designed for handling mobile wallet connections
@@ -18,6 +19,7 @@ const MobileWalletConnect = ({ onConnect, buttonText, className }) => {
   const [walletConnected, setWalletConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [redirectedFromMetaMask, setRedirectedFromMetaMask] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
 
   useEffect(() => {
     // Check if on mobile device
@@ -93,6 +95,11 @@ const MobileWalletConnect = ({ onConnect, buttonText, className }) => {
     }
   };
 
+  // Toggle showing the detailed guide
+  const toggleGuide = () => {
+    setShowGuide(!showGuide);
+  };
+
   // If not on mobile, don't render this component
   if (!isMobile) {
     return null;
@@ -117,17 +124,29 @@ const MobileWalletConnect = ({ onConnect, buttonText, className }) => {
         )
       ) : (
         <>
-          <button
-            onClick={() => openMetaMaskMobile()}
-            className="open-metamask-button"
-          >
-            Open in MetaMask
-          </button>
+          <div className="connect-options">
+            <button
+              onClick={() => openMetaMaskMobile()}
+              className="open-metamask-button"
+            >
+              Open in MetaMask
+            </button>
+            
+            <button 
+              onClick={toggleGuide}
+              className="show-guide-button"
+            >
+              {showGuide ? 'Hide Guide' : 'Need Help?'}
+            </button>
+          </div>
+          
           {redirectedFromMetaMask && (
             <p className="redirect-note">
               If MetaMask didn't open, please install it first or try again.
             </p>
           )}
+          
+          {showGuide && <MobileWalletGuide />}
         </>
       )}
     </div>
