@@ -1,6 +1,7 @@
 services:
+  # Frontend service (static site)
   - type: web
-    name: chainelect
+    name: chainelect-frontend
     env: static
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
@@ -13,7 +14,30 @@ services:
         sync: false
       - key: VITE_NETWORK_ID
         sync: false
+      - key: VITE_API_URL
+        value: https://chainelect-backend.onrender.com
     routes:
       - type: rewrite
         source: /*
-        destination: /index.html 
+        destination: /index.html
+
+  # Backend service (Node.js API)
+  - type: web
+    name: chainelect-backend
+    env: node
+    rootDir: ChainElectBackend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: FRONTEND_URL
+        value: https://chainelect-frontend.onrender.com
+      - key: SESSION_SECRET
+        generateValue: true 

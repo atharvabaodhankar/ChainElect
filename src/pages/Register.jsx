@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import FaceRegister from '../components/FaceRegister';
 import RegisterInstructions from '../components/RegisterInstructions';
 import contractConfig from '../utils/contractConfig';
+import { API_ENDPOINTS } from '../utils/api';
 
 const Register = () => {
   const [voterId, setVoterId] = useState('');
@@ -239,7 +240,7 @@ const Register = () => {
       formData.append('image', image);
       formData.append('face_descriptor', JSON.stringify(faceDescriptor));
 
-      const response = await fetch('http://localhost:3000/auth/register', {
+      const response = await fetch(API_ENDPOINTS.register, {
         method: 'POST',
         body: formData,
       });

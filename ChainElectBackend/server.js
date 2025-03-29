@@ -8,11 +8,13 @@ const multer = require('multer');
 const path = require('path');
 
 const app = express();
-const secretKey = 'your_secret_key';
+const secretKey = process.env.SESSION_SECRET || 'your_secret_key';
+const PORT = process.env.PORT || 3000;
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 
 // Supabase configuration
-const supabaseUrl = 'https://hanlwbbbniiujtzutpbv.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhhbmx3YmJibmlpdWp0enV0cGJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5NzM3MjgsImV4cCI6MjA1NTU0OTcyOH0.WG-NlQ4atZdiQVPPqPNefAQJS00ObgV-73tGrWgHEgY';
+const supabaseUrl = process.env.SUPABASE_URL || 'https://hanlwbbbniiujtzutpbv.supabase.co';
+const supabaseKey = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhhbmx3YmJibmlpdWp0enV0cGJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5NzM3MjgsImV4cCI6MjA1NTU0OTcyOH0.WG-NlQ4atZdiQVPPqPNefAQJS00ObgV-73tGrWgHEgY';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Configure multer for image upload
@@ -35,11 +37,14 @@ const upload = multer({
 });
 
 // Middleware
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(cors({ 
+    origin: FRONTEND_URL, 
+    credentials: true 
+}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(session({
-    secret: 'your_session_secret',
+    secret: secretKey,
     resave: false,
     saveUninitialized: true,
 }));
@@ -238,6 +243,8 @@ app.get('/voters/:voter_id', async (req, res) => {
     }
 });
 
-// Start server
-const PORT = 3000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+    console.log(`Accepting requests from ${FRONTEND_URL}`);
+});

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import contractConfig from '../utils/contractConfig';
+import { API_ENDPOINTS, apiRequest } from '../utils/api';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -84,11 +85,8 @@ const Login = () => {
       const accounts = await window.ethereum.request({ method: 'eth_accounts' });
       const currentAccount = accounts[0];
 
-      const response = await fetch('http://localhost:3000/auth/login', {
+      const { success, data } = await apiRequest(API_ENDPOINTS.login, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ 
           email, 
           password,
@@ -96,14 +94,12 @@ const Login = () => {
         }),
       });
 
-      const result = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem('voter_id', result.voter.voter_id);
-        localStorage.setItem('voter_data', JSON.stringify(result.voter));
+      if (success) {
+        localStorage.setItem('voter_id', data.voter.voter_id);
+        localStorage.setItem('voter_data', JSON.stringify(data.voter));
         navigate('/voters');
       } else {
-        setErrorMessage(result.message || 'Login failed. Please try again.');
+        setErrorMessage(data.message || 'Login failed. Please try again.');
       }
     } catch (error) {
       console.error('Error:', error);

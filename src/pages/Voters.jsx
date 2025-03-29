@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import Conn_web from "../components/Conn_web";
+import Conn_web from "../components/web3";
 import Web3 from "web3";
 import MyContract from "../../artifacts/contracts/MyContract.sol/MyContract.json";
 import tickGif from "../assets/tick.gif";
 import FaceAuth from "../components/FaceAuth";
 import contractConfig from "../utils/contractConfig";
+import { API_ENDPOINTS, apiRequest } from '../utils/api';
 
 // Helper function to check if error is an RPC error
 const isRpcError = (error) => {
@@ -331,12 +332,11 @@ const Voters = () => {
   // Function to handle logout
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:3000/auth/logout", {
+      const { success } = await apiRequest(API_ENDPOINTS.logout, {
         method: "POST",
-        credentials: "include",
       });
 
-      if (response.ok) {
+      if (success) {
         localStorage.removeItem("voter_id");
         navigate("/login");
       } else {
@@ -359,14 +359,15 @@ const Voters = () => {
         }
 
         // Then fetch user info and compare with current Metamask ID
-        const response = await fetch(`http://localhost:3000/voters/${voterId}`);
-        const data = await response.json();
-        setUserInfo(data);
-        console.log("Fetched user info:", data);
-        // Compare with current Metamask ID
-        if (currentMetamaskId && currentMetamaskId !== data.metamask_id.toLowerCase()) {
-          alert('Metamask ID does not match');
-          handleLogout();
+        const { success, data } = await apiRequest(API_ENDPOINTS.getVoter(voterId));
+        if (success) {
+          setUserInfo(data);
+          console.log("Fetched user info:", data);
+          // Compare with current Metamask ID
+          if (currentMetamaskId && currentMetamaskId !== data.metamask_id.toLowerCase()) {
+            alert('Metamask ID does not match');
+            handleLogout();
+          }
         }
       } catch (error) {
         console.error("Error fetching user info:", error);
