@@ -6,14 +6,14 @@
 const config = {
   // Polygon Amoy Testnet Configuration
   polygonAmoy: {
-    networkId: 80002,
-    chainName: "Polygon Amoy Testnet",
-    rpcUrl: "https://rpc-amoy.polygon.technology",
-    contractAddress: "0x1b2603c6AB4e4328b1F0143e3B1721bB582Ce64b",
-    blockExplorer: "https://www.oklink.com/amoy",
-    currencySymbol: "MATIC",
-    currencyName: "Polygon",
-    chainHexId: "0x13882", // Hex of 80002
+    chainId: 80002, // Decimal format
+    chainHexId: '0x13882', // Hex format with 0x prefix needed for MetaMask
+    chainName: 'Polygon Amoy Testnet',
+    currencyName: 'MATIC',
+    currencySymbol: 'MATIC',
+    rpcUrl: 'https://polygon-amoy.infura.io/v3/f8512e13316b4cc3a525b05ecd142444',
+    blockExplorer: 'https://www.oklink.com/amoy',
+    contractAddress: process.env.VITE_CONTRACT_ADDRESS || '0xDb051b2df4109aD75a9436E99E5D89b94FC4f634',
     // Transaction configuration to avoid RPC errors
     transactionConfig: {
       gasPrice: '40000000000', // 40 gwei

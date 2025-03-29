@@ -436,4 +436,121 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
+}
+
+/* Network switching styles */
+.wallet-connected-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 12px;
+}
+
+.wallet-connect-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 8px;
+}
+
+.connect-note {
+  font-size: 13px;
+  color: #666;
+  text-align: center;
+  margin: 0;
+}
+
+.network-switch-button {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  background-color: #6e45e2;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.network-switch-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.network-switch-button.success {
+  background-color: #28a745;
+}
+
+.network-switch-button.error {
+  background-color: #dc3545;
+}
+
+.network-switch-button.switching {
+  background-color: #ffc107;
+  color: #333;
+}
+
+/* Add a custom animation for the switching state */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.network-switch-button.switching {
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* Network details styles */
+.network-steps {
+  padding-left: 18px;
+  margin: 8px 0;
+  font-size: 13px;
+}
+
+.network-steps li {
+  margin-bottom: 6px;
+}
+
+.network-details {
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: 6px;
+  padding: 8px;
+  margin: 8px 0;
+  font-size: 12px;
+  border-left: 3px solid #6e45e2;
+}
+
+.detail-row {
+  display: flex;
+  margin-bottom: 5px;
+  align-items: flex-start;
+  word-break: break-all;
+}
+
+.detail-label {
+  font-weight: bold;
+  min-width: 80px;
+  flex-shrink: 0;
+  margin-right: 8px;
+}
+
+.detail-value {
+  color: #444;
+  font-family: monospace;
+  font-size: 11px;
+}
+
+.copy-details-button {
+  background-color: #6e45e2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 8px;
+  cursor: pointer;
+  width: 100%;
 } 

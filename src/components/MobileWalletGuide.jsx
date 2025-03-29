@@ -1,5 +1,6 @@
 import React from 'react';
 import { isIOSDevice, isAndroidDevice, openMetaMaskMobile } from '../utils/walletUtils';
+import contractConfig from '../utils/contractConfig';
 
 /**
  * A component that provides clear, step-by-step guidance for connecting 
@@ -8,6 +9,24 @@ import { isIOSDevice, isAndroidDevice, openMetaMaskMobile } from '../utils/walle
 const MobileWalletGuide = () => {
   const isIOS = isIOSDevice();
   const isAndroid = isAndroidDevice();
+  
+  // Create a ready-to-copy RPC URL
+  const polygonAmoyRpc = contractConfig.polygonAmoy.rpcUrl;
+  
+  // Function to copy network details to clipboard
+  const copyNetworkDetails = () => {
+    const details = `
+Network Name: ${contractConfig.polygonAmoy.chainName}
+RPC URL: ${contractConfig.polygonAmoy.rpcUrl}
+Chain ID: ${contractConfig.polygonAmoy.chainId}
+Symbol: ${contractConfig.polygonAmoy.currencySymbol}
+Block Explorer: ${contractConfig.polygonAmoy.blockExplorer}
+    `.trim();
+    
+    navigator.clipboard.writeText(details)
+      .then(() => alert('Network details copied to clipboard!'))
+      .catch(err => console.error('Could not copy text: ', err));
+  };
   
   return (
     <div className="mobile-wallet-guide">
@@ -64,8 +83,47 @@ const MobileWalletGuide = () => {
         <div className="guide-step">
           <div className="step-number">4</div>
           <div className="step-content">
+            <h4>Add Polygon Amoy Network</h4>
+            <p>You'll need to add the Polygon Amoy network to vote:</p>
+            <ol className="network-steps">
+              <li>In MetaMask, tap the network selector at the top</li>
+              <li>Scroll down and tap "Add network"</li>
+              <li>Tap "Add a network manually"</li>
+              <li>Enter these details:
+                <div className="network-details">
+                  <div className="detail-row">
+                    <span className="detail-label">Network Name:</span>
+                    <span className="detail-value">{contractConfig.polygonAmoy.chainName}</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">RPC URL:</span>
+                    <span className="detail-value">{polygonAmoyRpc}</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">Chain ID:</span>
+                    <span className="detail-value">{contractConfig.polygonAmoy.chainId}</span>
+                  </div>
+                  <div className="detail-row">
+                    <span className="detail-label">Currency Symbol:</span>
+                    <span className="detail-value">{contractConfig.polygonAmoy.currencySymbol}</span>
+                  </div>
+                </div>
+                <button 
+                  onClick={copyNetworkDetails} 
+                  className="copy-details-button"
+                >
+                  Copy All Details
+                </button>
+              </li>
+            </ol>
+          </div>
+        </div>
+        
+        <div className="guide-step">
+          <div className="step-number">5</div>
+          <div className="step-content">
             <h4>Vote Securely</h4>
-            <p>After connecting, you'll be able to cast your vote securely</p>
+            <p>After connecting and adding the network, you'll be able to cast your vote securely</p>
           </div>
         </div>
       </div>
@@ -77,6 +135,7 @@ const MobileWalletGuide = () => {
           <li>If MetaMask doesn't open, try copying the URL and pasting it in MetaMask's browser</li>
           <li>Make sure you have an account set up in MetaMask</li>
           <li>If you're already in the MetaMask browser, simply tap "Connect" instead</li>
+          <li>If adding the network fails, try adding it manually using the details above</li>
         </ul>
       </div>
     </div>

@@ -5,9 +5,11 @@ import {
   checkWalletConnection,
   isMetaMaskBrowser,
   wasRedirectAttempted,
-  clearRedirectAttempt
+  clearRedirectAttempt,
+  switchToNetwork
 } from '../utils/walletUtils';
 import MobileWalletGuide from './MobileWalletGuide';
+import contractConfig from '../utils/contractConfig';
 
 /**
  * A component specifically designed for handling mobile wallet connections
@@ -20,6 +22,7 @@ const MobileWalletConnect = ({ onConnect, buttonText, className }) => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [redirectedFromMetaMask, setRedirectedFromMetaMask] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
+  const [networkSwitchStatus, setNetworkSwitchStatus] = useState('');
 
   useEffect(() => {
     // Check if on mobile device
@@ -95,6 +98,43 @@ const MobileWalletConnect = ({ onConnect, buttonText, className }) => {
     }
   };
 
+  // Handle Polygon Amoy network switching
+  const addPolygonAmoyNetwork = async () => {
+    setNetworkSwitchStatus('switching');
+    try {
+      const networkDetails = {
+        chainName: contractConfig.polygonAmoy.chainName,
+        nativeCurrency: {
+          name: contractConfig.polygonAmoy.currencyName,
+          symbol: contractConfig.polygonAmoy.currencySymbol,
+          decimals: 18
+        },
+        rpcUrls: [contractConfig.polygonAmoy.rpcUrl],
+        blockExplorerUrls: [contractConfig.polygonAmoy.blockExplorer]
+      };
+      
+      const result = await switchToNetwork(
+        contractConfig.polygonAmoy.chainHexId, 
+        networkDetails
+      );
+      
+      if (result.success) {
+        setNetworkSwitchStatus('success');
+      } else {
+        setNetworkSwitchStatus('error');
+        console.error('Network switch failed:', result.error);
+      }
+    } catch (error) {
+      setNetworkSwitchStatus('error');
+      console.error('Error switching network:', error);
+    }
+    
+    // Clear status after 3 seconds
+    setTimeout(() => {
+      setNetworkSwitchStatus('');
+    }, 3000);
+  };
+
   // Toggle showing the detailed guide
   const toggleGuide = () => {
     setShowGuide(!showGuide);
@@ -109,18 +149,37 @@ const MobileWalletConnect = ({ onConnect, buttonText, className }) => {
     <div className={`mobile-wallet-connect ${className || ''}`}>
       {inMetaMaskBrowser ? (
         walletConnected ? (
-          <div className="wallet-connected-status">
-            <span className="connected-indicator">✓</span>
-            <span>Wallet Connected</span>
+          <div className="wallet-connected-section">
+            <div className="wallet-connected-status">
+              <span className="connected-indicator">✓</span>
+              <span>Wallet Connected</span>
+            </div>
+            
+            <button 
+              onClick={addPolygonAmoyNetwork}
+              disabled={networkSwitchStatus === 'switching'}
+              className={`network-switch-button ${networkSwitchStatus}`}
+            >
+              {networkSwitchStatus === 'switching' ? 'Switching...' : 
+               networkSwitchStatus === 'success' ? 'Network Added ✓' :
+               networkSwitchStatus === 'error' ? 'Failed - Try Again' :
+               'Switch to Polygon Amoy'}
+            </button>
           </div>
         ) : (
-          <button
-            onClick={handleConnectWallet}
-            disabled={isConnecting}
-            className="connect-wallet-button"
-          >
-            {isConnecting ? 'Connecting...' : buttonText || 'Connect Wallet'}
-          </button>
+          <div className="wallet-connect-section">
+            <button
+              onClick={handleConnectWallet}
+              disabled={isConnecting}
+              className="connect-wallet-button"
+            >
+              {isConnecting ? 'Connecting...' : buttonText || 'Connect Wallet'}
+            </button>
+            
+            <p className="connect-note">
+              Connect your wallet to continue
+            </p>
+          </div>
         )
       ) : (
         <>

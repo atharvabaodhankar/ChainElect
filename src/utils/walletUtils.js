@@ -240,26 +240,46 @@ export const switchToNetwork = async (chainId, networkDetails) => {
     });
     return { success: true };
   } catch (switchError) {
+    console.log("Switch error:", switchError);
+    
     // Handle specific error codes differently on mobile
-    if (switchError.code === 4902) {
+    if (switchError.code === 4902 || switchError.message?.includes("Unrecognized chain ID")) {
       try {
-        // For mobile devices, we may need different parameters
-        const params = isIOSDevice() 
-          ? [{ 
-              chainId,
-              ...networkDetails,
-              // iOS sometimes needs rpcUrls as a string not array
-              rpcUrls: typeof networkDetails.rpcUrls === 'object' ? networkDetails.rpcUrls[0] : networkDetails.rpcUrls
-            }]
-          : [{ 
-              chainId,
-              ...networkDetails
-            }];
-            
+        // For mobile, simplify the RPC URLs format to avoid errors
+        let rpcUrls = networkDetails.rpcUrls;
+        if (Array.isArray(rpcUrls) && rpcUrls.length > 0) {
+          rpcUrls = rpcUrls[0];
+        }
+        
+        // Format network params to be more mobile-friendly
+        const params = [{
+          chainId: chainId,
+          chainName: networkDetails.chainName,
+          nativeCurrency: networkDetails.nativeCurrency,
+          rpcUrls: isIOSDevice() ? [rpcUrls] : networkDetails.rpcUrls,
+          blockExplorerUrls: networkDetails.blockExplorerUrls
+        }];
+        
+        console.log("Adding network with params:", JSON.stringify(params, null, 2));
+        
+        // Add the Ethereum chain
         await window.ethereum.request({
           method: 'wallet_addEthereumChain',
           params
         });
+        
+        // After adding, try switching again after a short delay
+        setTimeout(async () => {
+          try {
+            await window.ethereum.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId }],
+            });
+          } catch (err) {
+            console.log("Second switch attempt failed:", err);
+          }
+        }, 1000);
+        
         return { success: true };
       } catch (addError) {
         console.error("Error adding chain:", addError);

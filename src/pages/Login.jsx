@@ -9,7 +9,9 @@ import {
   checkWalletConnection, 
   isMobileDevice, 
   openMetaMaskMobile,
-  switchToNetwork
+  switchToNetwork,
+  wasRedirectAttempted,
+  clearRedirectAttempt
 } from "../utils/walletUtils";
 
 const Login = () => {
@@ -22,6 +24,29 @@ const Login = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [currentAccount, setCurrentAccount] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if we're returning from a MetaMask redirect
+    if (wasRedirectAttempted()) {
+      // Try to connect automatically after redirect
+      const autoConnect = async () => {
+        try {
+          const walletStatus = await checkWalletConnection();
+          if (walletStatus.connected) {
+            setIsMetamaskConnected(true);
+            setCurrentAccount(walletStatus.accounts[0]);
+            
+            // Try to add network
+            await addPolygonAmoyNetwork();
+          }
+        } finally {
+          clearRedirectAttempt();
+        }
+      };
+      
+      autoConnect();
+    }
+  }, []);
 
   // Function to add Polygon Amoy Testnet network
   const addPolygonAmoyNetwork = async () => {
@@ -45,7 +70,7 @@ const Login = () => {
       if (!result.success) {
         // Handle the error based on the device type
         if (result.isMobile) {
-          setErrorMessage('To add Polygon Amoy network on mobile, please use the MetaMask app settings.');
+          setErrorMessage('To add Polygon Amoy network on mobile, please use the MetaMask app settings or try again.');
         } else {
           setErrorMessage('Failed to add Polygon Amoy Testnet network. Please try again.');
         }
