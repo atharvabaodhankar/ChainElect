@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import Conn_web from "../components/web3";
+import Conn_web from "../components/Conn_web";
 import Web3 from "web3";
 import MyContract from "../../artifacts/contracts/MyContract.sol/MyContract.json";
 import tickGif from "../assets/tick.gif";

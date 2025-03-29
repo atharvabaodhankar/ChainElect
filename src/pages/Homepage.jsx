@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Button from "../components/button";
+import Button from "../components/Button";
 import Sample from "../components/Sample";
 import Aboutus from "./Aboutus";
 import Features from "./Features";
@@ -14,7 +14,7 @@ const Homepage = () => {
   return (
     <>
       <section id="hero">
-        <video src="/src/images/hero.mp4" autoPlay loop muted></video>
+        <video src="./images/hero.mp4" autoPlay loop muted></video>
         <Navbar home="/" features="/#features" aboutus="/#aboutus" contactus="/#contactus" />
 
         <div className="hero">
