@@ -6,7 +6,7 @@ const Aboutus = () => {
       <h1 className="h1">About Us</h1>
       <div className="aboutus">
         <div className="aboutus-box">
-          <video autoPlay loop muted src="./src/images/hero.mp4"></video>
+          <video autoPlay loop muted src="/images/hero.mp4"></video>
         </div>
         <div className="aboutus-desc">
           <div className="aboutus-box-inner">
