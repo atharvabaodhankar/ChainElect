@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import Web3 from 'web3';
-import MyContract from '/contracts/MyContract.json';
 import contractConfig from '../utils/contractConfig';
+import { loadContractArtifacts } from '../utils/contractLoader';
 
 const VotingStatusRoute = ({ children }) => {
   const [votingActive, setVotingActive] = useState(null);
@@ -31,6 +31,9 @@ const VotingStatusRoute = ({ children }) => {
         }
 
         const web3 = new Web3(window.ethereum);
+        
+        // Load contract artifacts dynamically
+        const MyContract = await loadContractArtifacts();
         
         const contract = new web3.eth.Contract(
           MyContract.abi,

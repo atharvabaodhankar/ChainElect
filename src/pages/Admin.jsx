@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Web3 from "web3";
-import MyContract from "/contracts/MyContract.json";
 import { supabase } from "../utils/supabaseClient";
 import contractConfig from "../utils/contractConfig";
+import { loadContractArtifacts } from '../utils/contractLoader';
 
 // Helper function to check if error is an RPC error
 const isRpcError = (error) => {
@@ -96,6 +96,9 @@ const Admin = () => {
             return;
           }
         }
+        
+        // Load contract artifacts dynamically
+        const MyContract = await loadContractArtifacts();
         
         // Create Web3 instance with MetaMask provider
         const web3 = new Web3(window.ethereum);

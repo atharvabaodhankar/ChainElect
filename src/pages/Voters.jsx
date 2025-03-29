@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Conn_web from "../components/Conn_web";
 import Web3 from "web3";
-import MyContract from "/contracts/MyContract.json";
 import tickGif from "/assets/tick.gif";
 import FaceAuth from "../components/FaceAuth";
 import contractConfig from "../utils/contractConfig";
 import { API_ENDPOINTS, apiRequest } from '../utils/api';
+import { loadContractArtifacts } from '../utils/contractLoader';
 
 // Helper function to check if error is an RPC error
 const isRpcError = (error) => {
@@ -113,6 +113,9 @@ const Voters = () => {
           return;
         }
 
+        // Load contract artifacts dynamically
+        const MyContract = await loadContractArtifacts();
+
         // Using our deployed contract address from config
         const contractInstance = new web3.eth.Contract(
           MyContract.abi,
@@ -149,6 +152,9 @@ const Voters = () => {
         if (hasVoted) return; // Don't fetch candidates if user has already voted
 
         const web3 = new Web3(window.ethereum);
+        
+        // Load contract artifacts dynamically
+        const MyContract = await loadContractArtifacts();
         
         // Using our deployed contract address from config
         const contract = new web3.eth.Contract(
@@ -271,6 +277,9 @@ const Voters = () => {
 
       // Reinitialize Web3 and contract
       const web3 = new Web3(window.ethereum);
+      
+      // Load contract artifacts dynamically
+      const MyContract = await loadContractArtifacts();
       
       // Using our deployed contract address from config
       const contractInstance = new web3.eth.Contract(

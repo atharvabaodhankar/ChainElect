@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Web3 from "web3";
-import MyContract from "/contracts/MyContract.json";
 import Navbar from "../components/Navbar";
 import { supabase } from "../utils/supabaseClient";
 import { useNavigate } from 'react-router-dom';
 import contractConfig from "../utils/contractConfig";
+import { loadContractArtifacts } from '../utils/contractLoader';
 
 const Results = () => {
   const [candidates, setCandidates] = useState([]);
@@ -63,6 +63,9 @@ const Results = () => {
           }
         }
 
+        // Load contract artifacts dynamically
+        const MyContract = await loadContractArtifacts();
+        
         const web3 = new Web3(window.ethereum);
         const newContract = new web3.eth.Contract(
           MyContract.abi,
