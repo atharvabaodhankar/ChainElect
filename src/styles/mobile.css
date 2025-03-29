@@ -1,0 +1,316 @@
+/* Mobile-specific styles for the ChainElect application */
+
+/* General mobile optimizations */
+.mobile-device * {
+  touch-action: manipulation; /* Better touch response */
+}
+
+/* Larger touch targets for buttons */
+.mobile-device button,
+.mobile-device a.button,
+.mobile-device input[type="submit"],
+.mobile-device input[type="button"] {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 12px 16px;
+  font-size: 16px;
+}
+
+/* Improved form inputs for mobile */
+.mobile-device input[type="text"],
+.mobile-device input[type="email"],
+.mobile-device input[type="password"],
+.mobile-device input[type="number"],
+.mobile-device select,
+.mobile-device textarea {
+  font-size: 16px; /* Prevents iOS zoom on focus */
+  padding: 12px 8px;
+  margin-bottom: 16px;
+}
+
+/* Wallet connection styling for mobile */
+.mobile-device .metamask-status {
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.mobile-device .metamask-warning,
+.mobile-device .metamask-connect,
+.mobile-device .metamask-connected {
+  gap: 16px;
+}
+
+.mobile-device .metamask-warning p,
+.mobile-device .metamask-connect p,
+.mobile-device .metamask-connected p {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.mobile-device .metamask-install-button,
+.mobile-device .metamask-connect-button,
+.mobile-device .metamask-network-button {
+  width: 100%;
+  padding: 14px 20px;
+  font-size: 16px;
+}
+
+/* Login/Register page mobile styles */
+.mobile-device .login-wrapper,
+.mobile-device .register-wrapper {
+  padding: 16px;
+}
+
+.mobile-device .login-content,
+.mobile-device .register-content {
+  width: 100%;
+  max-width: none;
+  padding: 16px;
+}
+
+.mobile-device .login-header h1,
+.mobile-device .register-header h1 {
+  font-size: 24px;
+}
+
+.mobile-device .login-form,
+.mobile-device .register-form {
+  gap: 16px;
+}
+
+/* Voting page mobile styles */
+.mobile-device .vote-section {
+  padding: 16px;
+}
+
+.mobile-device .candidate-card {
+  flex: 0 0 100%;
+  margin-bottom: 16px;
+}
+
+/* Navbar mobile styling */
+@media (max-width: 768px) {
+  .mobile-device .navbar {
+    padding: 12px 16px;
+  }
+  
+  .mobile-device .navbar-logo {
+    font-size: 20px;
+  }
+  
+  .mobile-device .navbar-links {
+    display: none;
+  }
+  
+  /* Mobile menu toggle */
+  .mobile-device .navbar-menu-toggle {
+    display: block;
+  }
+  
+  /* Mobile menu (initially hidden) */
+  .mobile-device .mobile-menu {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 80%;
+    height: 100vh;
+    background: #fff;
+    z-index: 1000;
+    padding: 24px;
+    transition: left 0.3s ease;
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .mobile-device .mobile-menu.active {
+    left: 0;
+  }
+  
+  .mobile-device .mobile-menu-close {
+    align-self: flex-end;
+    background: none;
+    border: none;
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+  
+  .mobile-device .mobile-menu-links {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .mobile-device .mobile-menu-links a {
+    padding: 12px 0;
+    font-size: 18px;
+    border-bottom: 1px solid #eee;
+  }
+}
+
+/* Results page mobile styles */
+.mobile-device .results-container {
+  padding: 16px;
+}
+
+.mobile-device .results-content {
+  width: 100%;
+}
+
+.mobile-device .result-card {
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+/* Better scrollbars for mobile */
+.mobile-device ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.mobile-device ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+}
+
+/* Mobile-specific animations */
+@media (prefers-reduced-motion: reduce), (max-width: 768px) {
+  .mobile-device * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Mobile Wallet Connect Component Styles */
+.mobile-wallet-connect {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 16px;
+  margin-bottom: 24px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+.mobile-wallet-connect .connect-wallet-button,
+.mobile-wallet-connect .open-metamask-button {
+  width: 100%;
+  padding: 14px 20px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.mobile-wallet-connect .connect-wallet-button {
+  background-color: #3498db;
+  color: white;
+}
+
+.mobile-wallet-connect .open-metamask-button {
+  background-color: #ff9e00;
+  color: white;
+}
+
+.mobile-wallet-connect .connect-wallet-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.mobile-wallet-connect .wallet-connected-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #28a745;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.mobile-wallet-connect .connected-indicator {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #28a745;
+  color: white;
+  font-size: 12px;
+}
+
+.mobile-wallet-connect .redirect-note {
+  font-size: 12px;
+  color: #666;
+  margin-top: 8px;
+  text-align: center;
+  padding: 0 10px;
+}
+
+/* Login/Register specific mobile wallet styling */
+.login-mobile-wallet,
+.register-mobile-wallet {
+  margin-top: 8px;
+}
+
+/* Additional mobile optimizations */
+@media (max-width: 480px) {
+  .mobile-device .login-content,
+  .mobile-device .register-content {
+    padding: 16px 12px;
+  }
+  
+  .mobile-device .login-header h1,
+  .mobile-device .register-header h1 {
+    font-size: 22px;
+  }
+  
+  .mobile-device .mobile-wallet-connect {
+    padding: 12px;
+  }
+}
+
+/* Orientation-specific optimizations */
+@media screen and (orientation: portrait) {
+  .mobile-device .login-wrapper,
+  .mobile-device .register-wrapper {
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+  
+  .mobile-device .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+}
+
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  .mobile-device .login-content,
+  .mobile-device .register-content {
+    max-height: 85vh;
+    overflow-y: auto;
+    padding-bottom: 20px;
+  }
+  
+  .mobile-device .form-group {
+    margin-bottom: 10px;
+  }
+  
+  .mobile-device input[type="text"],
+  .mobile-device input[type="email"],
+  .mobile-device input[type="password"],
+  .mobile-device input[type="number"],
+  .mobile-device select,
+  .mobile-device textarea {
+    margin-bottom: 10px;
+  }
+  
+  .mobile-device .mobile-wallet-connect {
+    margin-bottom: 15px;
+  }
+} 

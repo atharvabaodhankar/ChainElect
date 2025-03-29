@@ -6,6 +6,7 @@ import FaceRegister from '../components/FaceRegister';
 import RegisterInstructions from '../components/RegisterInstructions';
 import contractConfig from '../utils/contractConfig';
 import { API_ENDPOINTS } from '../utils/api';
+import MobileWalletConnect from '../components/MobileWalletConnect';
 
 const Register = () => {
   const [voterId, setVoterId] = useState('');
@@ -31,6 +32,7 @@ const Register = () => {
     email: '',
     password: ''
   });
+  const [isMobile, setIsMobile] = useState(false);
 
   // Function to add Polygon Amoy Testnet network
   const addPolygonAmoyNetwork = async () => {
@@ -272,6 +274,16 @@ const Register = () => {
     }
   };
 
+  // Handle wallet connection from the MobileWalletConnect component
+  const handleWalletConnect = (account) => {
+    setIsMetamaskConnected(true);
+    setMetamaskId(account);
+    setValidationErrors(prev => ({
+      ...prev,
+      metamaskId: validateField('metamaskId', account)
+    }));
+  };
+
   if (showInstructions) {
     return (
       <div className="register-page">
@@ -329,51 +341,61 @@ const Register = () => {
             <p>Join the secure voting platform</p>
           </div>
           
-          {/* Metamask Connection Status */}
-          <div className="metamask-status">
-            {!isMetamaskInstalled ? (
-              <div className="metamask-warning">
-                <p>MetaMask is not installed. Please install MetaMask to proceed with registration.</p>
-                <a 
-                  href="https://metamask.io/download/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="metamask-install-button"
-                >
-                  Install MetaMask
-                </a>
-              </div>
-            ) : !isMetamaskConnected ? (
-              <div className="metamask-connect">
-                <p>Please connect your MetaMask wallet to proceed with registration.</p>
-                <button 
-                  type="button"
-                  onClick={connectMetamask} 
-                  className="metamask-connect-button"
-                >
-                  Connect MetaMask
-                </button>
-                <button 
-                  type="button"
-                  onClick={addPolygonAmoyNetwork} 
-                  className="metamask-network-button"
-                >
-                  Add Polygon Amoy Testnet
-                </button>
-              </div>
-            ) : (
-              <div className="metamask-connected">
-                <p className="connected-status">✓ MetaMask Connected</p>
-                <button 
-                  type="button"
-                  onClick={addPolygonAmoyNetwork} 
-                  className="metamask-network-button"
-                >
-                  Add Polygon Amoy Testnet
-                </button>
-              </div>
-            )}
-          </div>
+          {/* Metamask Connection Status - Show for desktop or when no mobile component exists */}
+          {!isMobile ? (
+            <div className="metamask-status">
+              {!isMetamaskInstalled ? (
+                <div className="metamask-warning">
+                  <p>MetaMask is not installed. Please install MetaMask to proceed with registration.</p>
+                  <a 
+                    href="https://metamask.io/download/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="metamask-install-button"
+                  >
+                    Install MetaMask
+                  </a>
+                </div>
+              ) : !isMetamaskConnected ? (
+                <div className="metamask-connect">
+                  <p>Please connect your MetaMask wallet to proceed with registration.</p>
+                  <button 
+                    type="button"
+                    onClick={connectMetamask} 
+                    className="metamask-connect-button"
+                  >
+                    Connect MetaMask
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={addPolygonAmoyNetwork} 
+                    className="metamask-network-button"
+                  >
+                    Add Polygon Amoy Testnet
+                  </button>
+                </div>
+              ) : (
+                <div className="metamask-connected">
+                  <p className="connected-status">✓ MetaMask Connected</p>
+                  <p className="wallet-address">Address: {metamaskId.substring(0, 6)}...{metamaskId.substring(metamaskId.length - 4)}</p>
+                  <button 
+                    type="button"
+                    onClick={addPolygonAmoyNetwork} 
+                    className="metamask-network-button"
+                  >
+                    Add Polygon Amoy Testnet
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            // Mobile-specific wallet connection component
+            <MobileWalletConnect 
+              onConnect={handleWalletConnect} 
+              buttonText="Connect Wallet to Register"
+              className="register-mobile-wallet"
+            />
+          )}
           
           <form onSubmit={handleSubmit} className="register-form">
             <div className="form-group">
