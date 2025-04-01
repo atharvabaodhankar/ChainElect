@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { QRCode } from 'qrcode.react';
+import QRCode from 'react-qr-code';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import './Conn_web.css';
 
@@ -192,7 +192,12 @@ const Web3Connection = ({ onConnect }) => {
             <h3>Connect Your Mobile Wallet</h3>
             <p>Scan this QR code with your mobile wallet to connect</p>
             <div className="qr-code-container">
-              <QRCode value={window.location.href} size={200} />
+              <QRCode 
+                value={window.location.href} 
+                size={200}
+                level="H"
+                includeMargin={true}
+              />
             </div>
             <div className="supported-wallets">
               <p>Supported Wallets:</p>
