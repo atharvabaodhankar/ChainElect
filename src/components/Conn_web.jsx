@@ -1,134 +1,246 @@
-import React, { useEffect, useState } from "react";
-import Web3 from "web3";
-import contractConfig from "../utils/contractConfig";
+import React, { useState, useEffect } from 'react';
+import { QRCode } from 'qrcode.react';
+import WalletConnectProvider from '@walletconnect/web3-provider';
+import './Conn_web.css';
 
-// Component for Web3 connection
-const Web3Connection = ({ updateMetamaskId }) => {
-  const [web3, setWeb3] = useState(null);
-  const [account, setAccount] = useState(null);
-  const [balance, setBalance] = useState(null);
-  const [error, setError] = useState(null);
+const Web3Connection = ({ onConnect }) => {
+  const [account, setAccount] = useState('');
+  const [balance, setBalance] = useState('');
+  const [error, setError] = useState('');
+  const [showWalletConnect, setShowWalletConnect] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
 
   useEffect(() => {
-    // Check if MetaMask is installed
-    if (window.ethereum) {
-      const web3Instance = new Web3(window.ethereum);
-      setWeb3(web3Instance);
+    // Check if user is on mobile
+    const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    setIsMobile(mobile);
+  }, []);
 
-      // Request connection to Polygon Amoy testnet
-      const connectToPolygonAmoy = async () => {
+  const connectWithWalletConnect = async () => {
+    try {
+      const provider = new WalletConnectProvider({
+        rpc: {
+          80001: "https://rpc-mumbai.maticvigil.com"
+        },
+        qrcode: true,
+        qrcodeModalOptions: {
+          mobileWallets: [
+            {
+              id: 'metamask',
+              name: 'MetaMask',
+              links: {
+                native: 'metamask://',
+                universal: 'https://metamask.app.link'
+              }
+            },
+            {
+              id: 'trust',
+              name: 'Trust Wallet',
+              links: {
+                native: 'trust://',
+                universal: 'https://trustwallet.com'
+              }
+            },
+            {
+              id: 'rainbow',
+              name: 'Rainbow',
+              links: {
+                native: 'rainbow://',
+                universal: 'https://rainbow.me'
+              }
+            }
+          ]
+        }
+      });
+
+      await provider.enable();
+      const accounts = await provider.request({ method: 'eth_requestAccounts' });
+      setAccount(accounts[0]);
+      
+      const balance = await provider.request({
+        method: 'eth_getBalance',
+        params: [accounts[0], 'latest']
+      });
+      setBalance(ethers.utils.formatEther(balance));
+      
+      onConnect(provider);
+    } catch (err) {
+      setError('Failed to connect with WalletConnect: ' + err.message);
+    }
+  };
+
+  const connectWithMetaMask = async () => {
+    try {
+      if (!window.ethereum) {
+        if (isMobile) {
+          setShowInstructions(true);
+          return;
+        }
+        setError('Please install MetaMask to use this feature');
+        return;
+      }
+
+      // Request account access
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      setAccount(accounts[0]);
+
+      // Check if we're on the correct network
+      const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+      if (chainId !== '0x13881') { // Mumbai testnet
         try {
-          // First try to switch to the network
           await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: contractConfig.polygonAmoy.chainHexId }],
+            params: [{ chainId: '0x13881' }],
           });
         } catch (switchError) {
-          // If the chain hasn't been added to MetaMask
+          // If the network doesn't exist, add it
           if (switchError.code === 4902) {
-            try {
-              await window.ethereum.request({
-                method: 'wallet_addEthereumChain',
-                params: [{
-                  chainId: contractConfig.polygonAmoy.chainHexId,
-                  chainName: contractConfig.polygonAmoy.chainName,
-                  rpcUrls: [contractConfig.polygonAmoy.rpcUrl],
-                  nativeCurrency: {
-                    name: contractConfig.polygonAmoy.currencyName,
-                    symbol: contractConfig.polygonAmoy.currencySymbol,
-                    decimals: 18
-                  },
-                  blockExplorerUrls: [contractConfig.polygonAmoy.blockExplorer]
-                }],
-              });
-            } catch (addError) {
-              console.error("Error adding Polygon Amoy network:", addError);
-              setError("Failed to add Polygon Amoy network");
-            }
-          } else {
-            console.error("Error switching to Polygon Amoy network:", switchError);
-            setError("Failed to switch to Polygon Amoy network");
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: '0x13881',
+                chainName: 'Mumbai Testnet',
+                nativeCurrency: {
+                  name: 'MATIC',
+                  symbol: 'MATIC',
+                  decimals: 18
+                },
+                rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
+                blockExplorerUrls: ['https://mumbai.polygonscan.com/']
+              }]
+            });
           }
+          throw switchError;
         }
+      }
 
-        // After network setup, connect account
-        try {
-          const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-          setAccount(accounts[0]);
-          await getBalance(accounts[0], web3Instance);
-          
-          // If updateMetamaskId callback is provided, update the parent component
-          if (updateMetamaskId && typeof updateMetamaskId === 'function') {
-            try {
-              const balanceInWei = await web3Instance.eth.getBalance(accounts[0]);
-              const balanceInEther = web3Instance.utils.fromWei(balanceInWei, "ether");
-              updateMetamaskId(accounts[0], balanceInEther);
-            } catch (balanceError) {
-              console.error("Error getting balance:", balanceError);
-              // Still update the metamask ID even if balance fails
-              updateMetamaskId(accounts[0], "0");
-            }
-          }
-        } catch (err) {
-          console.error("User denied account access", err);
-          setError("MetaMask connection denied");
-        }
-      };
+      // Get balance
+      const balance = await window.ethereum.request({
+        method: 'eth_getBalance',
+        params: [accounts[0], 'latest']
+      });
+      setBalance(ethers.utils.formatEther(balance));
 
-      connectToPolygonAmoy();
-    } else {
-      console.error("MetaMask is not installed.");
-      setError("MetaMask is not installed");
+      onConnect(window.ethereum);
+    } catch (err) {
+      setError('Failed to connect with MetaMask: ' + err.message);
     }
-  }, [updateMetamaskId]);
+  };
 
-  // Function to get the balance of the account
-  const getBalance = async (account, web3Instance) => {
+  const openMetaMaskMobile = () => {
+    window.location.href = 'metamask://';
+  };
+
+  const getBalance = async (provider, address) => {
     try {
-      // Configure the request with higher gas settings to avoid RPC errors
-      const balanceInWei = await web3Instance.eth.getBalance(account, "latest");
-      const balanceInEther = web3Instance.utils.fromWei(balanceInWei, "ether");
-      setBalance(balanceInEther);
-      return balanceInEther;
-    } catch (error) {
-      console.error("Error getting balance:", error);
-      setError("Failed to fetch balance");
-      setBalance("0");
-      return "0";
+      const balance = await provider.request({
+        method: 'eth_getBalance',
+        params: [address, 'latest']
+      });
+      setBalance(ethers.utils.formatEther(balance));
+    } catch (err) {
+      console.error('Error getting balance:', err);
     }
   };
 
   useEffect(() => {
-    // Network change handler
     if (window.ethereum) {
-      const handleNetworkChange = (chainId) => {
-        console.log("Network changed to:", chainId);
-        // Check if it's the right network
-        if (chainId !== contractConfig.polygonAmoy.chainHexId) {
-          setError("Please switch to Polygon Amoy network");
-        } else {
-          setError(null);
+      window.ethereum.on('accountsChanged', (accounts) => {
+        setAccount(accounts[0]);
+        if (accounts[0]) {
+          getBalance(window.ethereum, accounts[0]);
         }
-        // Refresh the page when network changes to update all components
+      });
+
+      window.ethereum.on('chainChanged', () => {
         window.location.reload();
-      };
-
-      window.ethereum.on("chainChanged", handleNetworkChange);
-
-      return () => {
-        window.ethereum.removeListener("chainChanged", handleNetworkChange);
-      };
+      });
     }
   }, []);
 
   return (
-    <div>
-      {error ? (
-        <span title={error}>Error</span>
-      ) : account ? (
-        <span>{balance}</span>
+    <div className="wallet-connect-container">
+      {!account ? (
+        <div className="wallet-connect-options">
+          <button 
+            className="wallet-option-button metamask-button"
+            onClick={connectWithMetaMask}
+          >
+            {isMobile ? 'Open in MetaMask Mobile' : 'Connect with MetaMask'}
+          </button>
+          
+          <button 
+            className="wallet-option-button walletconnect-button"
+            onClick={() => setShowWalletConnect(true)}
+          >
+            Connect with Mobile Wallet
+          </button>
+        </div>
       ) : (
-        <span>0</span>
+        <div className="wallet-connected">
+          <p>Connected Account: {account.slice(0, 6)}...{account.slice(-4)}</p>
+          <p>Balance: {parseFloat(balance).toFixed(4)} MATIC</p>
+        </div>
+      )}
+
+      {error && <div className="wallet-error">{error}</div>}
+
+      {showWalletConnect && (
+        <div className="wallet-connect-modal">
+          <div className="modal-content">
+            <h3>Connect Your Mobile Wallet</h3>
+            <p>Scan this QR code with your mobile wallet to connect</p>
+            <div className="qr-code-container">
+              <QRCode value={window.location.href} size={200} />
+            </div>
+            <div className="supported-wallets">
+              <p>Supported Wallets:</p>
+              <ul>
+                <li>MetaMask Mobile</li>
+                <li>Trust Wallet</li>
+                <li>Rainbow</li>
+              </ul>
+            </div>
+            <button 
+              className="close-modal-button"
+              onClick={() => setShowWalletConnect(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showInstructions && (
+        <div className="wallet-connect-modal">
+          <div className="modal-content">
+            <h3>How to Connect on Mobile</h3>
+            <div className="mobile-instructions">
+              <ol>
+                <li>Install MetaMask Mobile from your app store</li>
+                <li>Open MetaMask Mobile</li>
+                <li>Go to Settings → Browser</li>
+                <li>Enter our website URL</li>
+                <li>Connect your wallet when prompted</li>
+              </ol>
+            </div>
+            <div className="instruction-buttons">
+              <button 
+                className="wallet-option-button metamask-button"
+                onClick={openMetaMaskMobile}
+              >
+                Open MetaMask Mobile
+              </button>
+              <button 
+                className="close-modal-button"
+                onClick={() => setShowInstructions(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
