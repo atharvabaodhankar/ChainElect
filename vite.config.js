@@ -31,6 +31,10 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
       },
+      external: [
+        '@walletconnect/web3-provider',
+        'qrcode.react'
+      ]
     },
   },
   publicDir: 'public',
