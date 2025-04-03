@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../utils/supabaseClient';
+import { MdOutlineEmail } from 'react-icons/md';
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -67,7 +68,9 @@ const ContactUs = () => {
           
           <div className="contact-details">
             <div className="contact-item">
-              <div className="contact-icon">📧</div>
+              <div className="contact-icon">
+                <MdOutlineEmail />
+              </div>
               <div className="contact-text">
                 <h3>Email</h3>
                 <p>chainelect@gmail.com</p>

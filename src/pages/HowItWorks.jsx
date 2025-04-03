@@ -2,90 +2,10 @@ import React, { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/HowItWorks.css";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { FaReact, FaNodeJs, FaUserShield, FaLaptopCode, FaLink, FaServer, FaShieldAlt, FaLock, FaSearch, FaUsers, FaDatabase, FaWallet, FaChartLine } from "react-icons/fa";
+import { SiSolidity, SiPolygon } from "react-icons/si";
 
 const HowItWorks = () => {
-  useEffect(() => {
-    // Animation for hero section
-    gsap.from(".how-it-works-hero h1", {
-      y: 50,
-      opacity: 0,
-      duration: 0.8,
-      ease: "power3.out"
-    });
-
-    gsap.from(".how-it-works-hero p", {
-      y: 30,
-      opacity: 0,
-      duration: 0.8,
-      delay: 0.2,
-      ease: "power3.out"
-    });
-
-    gsap.from(".shape", {
-      scale: 0.8,
-      opacity: 0,
-      duration: 1,
-      stagger: 0.1,
-      ease: "power2.out"
-    });
-
-    // Animation for tech stack cards
-    gsap.from(".tech-card", {
-      y: 60,
-      opacity: 0,
-      stagger: 0.1,
-      duration: 0.7,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: ".tech-grid",
-        start: "top 80%",
-      }
-    });
-
-    // Animation for architecture sections
-    gsap.from(".architecture-section", {
-      x: -50,
-      opacity: 0,
-      stagger: 0.2,
-      duration: 0.8,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: ".architecture",
-        start: "top 75%",
-      }
-    });
-
-    // Animation for workflow steps
-    gsap.from(".workflow-step", {
-      y: 40,
-      opacity: 0,
-      stagger: 0.15,
-      duration: 0.7,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: ".workflow",
-        start: "top 75%",
-      }
-    });
-
-    // Animation for benefits
-    gsap.from(".benefit-card", {
-      y: 50,
-      opacity: 0,
-      stagger: 0.1,
-      duration: 0.7,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: ".benefits",
-        start: "top 80%",
-      }
-    });
-  }, []);
-
   return (
     <>
       <section className="how-it-works-page">
@@ -112,7 +32,7 @@ const HowItWorks = () => {
             <div className="tech-grid">
               <div className="tech-card">
                 <div className="tech-icon">
-                  <i className="fab fa-react"></i>
+                  <FaReact />
                 </div>
                 <h3>React</h3>
                 <p>Frontend UI library for building interactive components</p>
@@ -120,15 +40,15 @@ const HowItWorks = () => {
               
               <div className="tech-card">
                 <div className="tech-icon">
-                  <i className="fab fa-ethereum"></i>
+                  <SiPolygon />
                 </div>
-                <h3>Ethereum</h3>
+                <h3>Polygon</h3>
                 <p>Blockchain network for secure, transparent voting</p>
               </div>
               
               <div className="tech-card">
                 <div className="tech-icon">
-                  <i className="fas fa-code"></i>
+                  <SiSolidity />
                 </div>
                 <h3>Solidity</h3>
                 <p>Smart contract language for vote logic and security</p>
@@ -136,7 +56,7 @@ const HowItWorks = () => {
               
               <div className="tech-card">
                 <div className="tech-icon">
-                  <i className="fab fa-node-js"></i>
+                  <FaNodeJs />
                 </div>
                 <h3>Node.js</h3>
                 <p>Backend runtime environment for API services</p>
@@ -144,7 +64,7 @@ const HowItWorks = () => {
               
               <div className="tech-card">
                 <div className="tech-icon">
-                  <i className="fas fa-database"></i>
+                  <FaDatabase />
                 </div>
                 <h3>Supabase</h3>
                 <p>Database and authentication services</p>
@@ -152,15 +72,15 @@ const HowItWorks = () => {
               
               <div className="tech-card">
                 <div className="tech-icon">
-                  <i className="fas fa-wallet"></i>
+                  <FaWallet />
                 </div>
                 <h3>Web3.js</h3>
-                <p>Library for Ethereum blockchain interactions</p>
+                <p>Library for Polygon blockchain interactions</p>
               </div>
               
               <div className="tech-card">
                 <div className="tech-icon">
-                  <i className="fas fa-chart-line"></i>
+                  <FaChartLine />
                 </div>
                 <h3>Chart.js</h3>
                 <p>Data visualization for election results</p>
@@ -168,7 +88,7 @@ const HowItWorks = () => {
               
               <div className="tech-card">
                 <div className="tech-icon">
-                  <i className="fas fa-user-shield"></i>
+                  <FaUserShield />
                 </div>
                 <h3>Face API</h3>
                 <p>Facial recognition for voter verification</p>
@@ -182,7 +102,7 @@ const HowItWorks = () => {
             
             <div className="architecture-section">
               <div className="arch-icon">
-                <i className="fas fa-laptop-code"></i>
+                <FaLaptopCode />
               </div>
               <div className="arch-content">
                 <h3>Frontend Layer</h3>
@@ -192,17 +112,17 @@ const HowItWorks = () => {
             
             <div className="architecture-section">
               <div className="arch-icon">
-                <i className="fas fa-link"></i>
+                <FaLink />
               </div>
               <div className="arch-content">
                 <h3>Blockchain Layer</h3>
-                <p>Our smart contracts are written in Solidity and deployed on the Ethereum network. The contracts handle the core voting logic, ensuring each vote is securely recorded, cannot be tampered with, and is transparent for verification.</p>
+                <p>Our smart contracts are written in Solidity and deployed on the Polygon network. The contracts handle the core voting logic, ensuring each vote is securely recorded, cannot be tampered with, and is transparent for verification.</p>
               </div>
             </div>
             
             <div className="architecture-section">
               <div className="arch-icon">
-                <i className="fas fa-server"></i>
+                <FaServer />
               </div>
               <div className="arch-content">
                 <h3>Backend Layer</h3>
@@ -212,7 +132,7 @@ const HowItWorks = () => {
             
             <div className="architecture-section">
               <div className="arch-icon">
-                <i className="fas fa-shield-alt"></i>
+                <FaShieldAlt />
               </div>
               <div className="arch-content">
                 <h3>Security Layer</h3>
@@ -254,7 +174,7 @@ const HowItWorks = () => {
                 <div className="step-number">4</div>
                 <div className="step-content">
                   <h3>Blockchain Verification</h3>
-                  <p>The vote is verified and recorded on the Ethereum blockchain, requiring confirmation via MetaMask.</p>
+                  <p>The vote is verified and recorded on the Polygon blockchain, requiring confirmation via MetaMask.</p>
                 </div>
               </div>
               
@@ -283,7 +203,7 @@ const HowItWorks = () => {
             <div className="benefits-grid">
               <div className="benefit-card">
                 <div className="benefit-icon">
-                  <i className="fas fa-lock"></i>
+                  <FaLock />
                 </div>
                 <h3>Immutability</h3>
                 <p>Once recorded on the blockchain, votes cannot be altered or deleted.</p>
@@ -291,7 +211,7 @@ const HowItWorks = () => {
               
               <div className="benefit-card">
                 <div className="benefit-icon">
-                  <i className="fas fa-search"></i>
+                  <FaSearch />
                 </div>
                 <h3>Transparency</h3>
                 <p>All transactions are publicly verifiable while maintaining voter privacy.</p>
@@ -299,7 +219,7 @@ const HowItWorks = () => {
               
               <div className="benefit-card">
                 <div className="benefit-icon">
-                  <i className="fas fa-shield-alt"></i>
+                  <FaShieldAlt />
                 </div>
                 <h3>Security</h3>
                 <p>Multi-layer security with cryptographic voting mechanisms.</p>
@@ -307,7 +227,7 @@ const HowItWorks = () => {
               
               <div className="benefit-card">
                 <div className="benefit-icon">
-                  <i className="fas fa-users"></i>
+                  <FaUsers />
                 </div>
                 <h3>Accessibility</h3>
                 <p>Vote from anywhere with internet access and a supported browser.</p>

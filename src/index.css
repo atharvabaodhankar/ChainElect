@@ -3824,12 +3824,13 @@ z-index: 55;
   width: 50px;
   height: 50px;
   background: linear-gradient(135deg, #2c3e50, #34495e);
-  border-radius: 12px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 2rem;
+  font-size: 2.4rem;
+  margin-right: 15px;
 }
 
 .contact-text h3 {
@@ -3926,6 +3927,12 @@ z-index: 55;
   .contact-item {
     padding: 1.5rem;
   }
+
+  .contact-icon {
+    width: 45px;
+    height: 45px;
+    font-size: 2.2rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -3936,6 +3943,12 @@ z-index: 55;
 
   .contact-info h2 {
     font-size: 2.4rem;
+  }
+
+  .contact-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 2rem;
   }
 }
 

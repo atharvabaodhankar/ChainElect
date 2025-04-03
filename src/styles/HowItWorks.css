@@ -115,9 +115,7 @@
 }
 
 /* Section styling */
-section {
-  margin-bottom: 120px;
-}
+
 
 section h2 {
   font-size: 3.2rem;
@@ -156,6 +154,7 @@ section h2::after {
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 40px;
   margin-top: 50px;
+  margin-bottom: 10rem;
 }
 
 .tech-card {
@@ -192,10 +191,18 @@ section h2::after {
 }
 
 .tech-icon {
-  font-size: 3.5rem;
-  margin-bottom: 25px;
-  color: #2c3e50;
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 25px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
+  color: white;
+  font-size: 2.8rem;
 }
 
 .tech-card:hover .tech-icon {
@@ -216,6 +223,9 @@ section h2::after {
 }
 
 /* Architecture Sections */
+.architecture{
+  margin-bottom: 10rem;
+}
 .architecture-section {
   background: white;
   border-radius: 16px;
@@ -227,6 +237,7 @@ section h2::after {
   transition: transform 0.4s ease, box-shadow 0.4s ease;
   display: flex;
   align-items: flex-start;
+  
 }
 
 .architecture-section:hover {
@@ -242,7 +253,7 @@ section h2::after {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.8rem;
+  font-size: 2.2rem;
   color: white;
   margin-right: 25px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
@@ -271,6 +282,9 @@ section h2::after {
 }
 
 /* Workflow */
+.workflow{
+  margin-bottom: 10rem;
+}
 .workflow-steps {
   position: relative;
   max-width: 900px;
@@ -345,6 +359,9 @@ section h2::after {
 }
 
 /* Benefits */
+.benefits{
+  margin-bottom: 10rem;
+}
 .benefits-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -368,9 +385,9 @@ section h2::after {
 }
 
 .benefit-icon {
-  width: 100px;
-  height: 100px;
-  margin: 0 auto 30px;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 25px;
   background: linear-gradient(135deg, #2c3e50, #34495e);
   border-radius: 50%;
   display: flex;
@@ -378,7 +395,7 @@ section h2::after {
   justify-content: center;
   font-size: 2.5rem;
   color: white;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
 }
 
@@ -400,6 +417,17 @@ section h2::after {
 }
 
 /* Responsive styling */
+@media (max-width: 1200px) {
+  .tech-grid, .benefits-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 30px;
+  }
+  
+  .container {
+    padding: 0 25px;
+  }
+}
+
 @media (max-width: 992px) {
   .how-it-works-hero h1 {
     font-size: 4rem;
@@ -432,10 +460,38 @@ section h2::after {
     flex: 0 0 60px;
     height: 60px;
     margin-right: 20px;
+    font-size: 1.8rem;
+  }
+  
+  .tech-icon {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 20px;
+    font-size: 2.4rem;
+  }
+  
+  .benefit-icon {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 20px;
+    font-size: 2.2rem;
+  }
+  
+  .tech-card, .benefit-card {
+    padding: 30px 20px;
+  }
+  
+  .tech-card h3, .benefit-card h3 {
+    font-size: 1.7rem;
   }
 }
 
 @media (max-width: 768px) {
+  .tech-grid, .benefits-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px;
+  }
+  
   .workflow-steps::before {
     left: 40px;
   }
@@ -481,11 +537,20 @@ section h2::after {
     width: 120px;
     height: 120px;
   }
+  
+  .container {
+    padding: 0 20px;
+  }
+  
+  section {
+    margin-bottom: 80px;
+  }
 }
 
 @media (max-width: 576px) {
   .tech-grid, .benefits-grid {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
   
   .workflow-steps::before {
@@ -526,5 +591,72 @@ section h2::after {
   
   .architecture-section {
     padding: 25px;
+  }
+  
+  .tech-icon, .benefit-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+    margin-bottom: 15px;
+  }
+  
+  .tech-card, .benefit-card {
+    padding: 25px 15px;
+  }
+  
+  .workflow-step {
+    margin-bottom: 30px;
+  }
+  
+  .container {
+    padding: 0 15px;
+  }
+  
+  section {
+    margin-bottom: 60px;
+  }
+}
+
+@media (max-width: 450px) {
+  .how-it-works-hero h1 {
+    font-size: 2.5rem;
+  }
+  
+  .how-it-works-hero p {
+    font-size: 1.4rem;
+  }
+  
+  section h2 {
+    font-size: 2rem;
+  }
+  
+  .section-intro {
+    font-size: 1.4rem;
+  }
+  
+  .tech-card h3, .benefit-card h3, .architecture-section h3 {
+    font-size: 1.6rem;
+  }
+  
+  .tech-card p, .benefit-card p, .architecture-section p, .step-content p {
+    font-size: 1.4rem;
+  }
+  
+  .tech-icon, .benefit-icon {
+    width: 55px;
+    height: 55px;
+    font-size: 1.8rem;
+  }
+  
+  .arch-icon {
+    width: 55px;
+    height: 55px;
+    font-size: 1.6rem;
+  }
+  
+  .step-number {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
   }
 } 
