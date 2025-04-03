@@ -39,7 +39,9 @@ const Admin = () => {
   const [candidateName, setCandidateName] = useState("");
   const [votingDuration, setVotingDuration] = useState(60); // default 60 minutes
   const [newAdminAddress, setNewAdminAddress] = useState(""); // New state for admin address
+  const [voterAddressToReset, setVoterAddressToReset] = useState(""); // New state for voter reset
   const [adminList, setAdminList] = useState([]); // State for storing admins list
+  const [candidatesList, setCandidatesList] = useState([]); // State for storing candidates list
   const [votingStatus, setVotingStatus] = useState({
     started: false,
     ended: false
@@ -152,6 +154,9 @@ const Admin = () => {
 
         // Load admin list
         await loadAdminList(contractInstance);
+        
+        // Load candidates list
+        await loadCandidatesList(contractInstance);
 
       } catch (error) {
         console.error("Initialization error:", error);
@@ -178,6 +183,32 @@ const Admin = () => {
     } catch (error) {
       console.error("Error loading admin list:", error);
       setMessage("Failed to load admin list: " + error.message);
+    }
+  };
+
+  // Function to load candidates list
+  const loadCandidatesList = async (contractInstance) => {
+    try {
+      // Use the current contract instance if one isn't provided
+      const contractToUse = contractInstance || contract;
+      if (!contractToUse) return;
+      
+      const candidatesCount = await contractToUse.methods.getCandidatesCount().call();
+      const candidatesArray = [];
+
+      for (let i = 1; i <= candidatesCount; i++) {
+        const candidate = await contractToUse.methods.getCandidate(i).call();
+        candidatesArray.push({
+          id: i,
+          name: candidate[0],
+          votes: Number(candidate[1])
+        });
+      }
+      
+      setCandidatesList(candidatesArray);
+    } catch (error) {
+      console.error("Error loading candidates list:", error);
+      setMessage("Failed to load candidates list: " + error.message);
     }
   };
 
@@ -228,6 +259,9 @@ const Admin = () => {
       });
       setMessage(`Candidate "${candidateName}" added successfully!`);
       setCandidateName("");
+      
+      // Refresh candidates list
+      await loadCandidatesList(contract);
     } catch (error) {
       console.error("Error adding candidate:", error);
       if (isRpcError(error)) {
@@ -412,6 +446,65 @@ const Admin = () => {
     }
   };
 
+  // Function to reset a specific voter
+  const resetVoter = async () => {
+    if (!voterAddressToReset.trim()) {
+      setMessage("Please enter a voter address to reset");
+      return;
+    }
+
+    if (!Web3.utils.isAddress(voterAddressToReset)) {
+      setMessage("Please enter a valid Ethereum address");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      await contract.methods.resetVoter(voterAddressToReset).send({ 
+        from: accounts[0],
+        gasPrice: contractConfig.polygonAmoy.transactionConfig.gasPrice,
+        gas: contractConfig.polygonAmoy.transactionConfig.gasLimit
+      });
+      setMessage(`Voter "${voterAddressToReset}" reset successfully!`);
+      setVoterAddressToReset("");
+    } catch (error) {
+      console.error("Error resetting voter:", error);
+      if (isRpcError(error)) {
+        setMessage("Failed to reset voter: " + getRpcErrorMessage(error));
+      } else {
+        setMessage("Failed to reset voter: " + error.message);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const removeCandidate = async (candidateId) => {
+    try {
+      setIsLoading(true);
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      await contract.methods.removeCandidate(candidateId).send({ 
+        from: accounts[0],
+        gasPrice: contractConfig.polygonAmoy.transactionConfig.gasPrice,
+        gas: contractConfig.polygonAmoy.transactionConfig.gasLimit
+      });
+      setMessage(`Candidate #${candidateId} removed successfully!`);
+      
+      // Refresh candidates list
+      await loadCandidatesList(contract);
+    } catch (error) {
+      console.error("Error removing candidate:", error);
+      if (isRpcError(error)) {
+        setMessage("Failed to remove candidate: " + getRpcErrorMessage(error));
+      } else {
+        setMessage("Failed to remove candidate: " + error.message);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const formatTime = (seconds) => {
     if (seconds <= 0) return "0:00";
     const minutes = Math.floor(seconds / 60);
@@ -498,6 +591,39 @@ const Admin = () => {
             >
               Add Candidate
             </button>
+
+            {/* Candidates Management Section */}
+            {candidatesList.length > 0 && (
+              <div className="candidates-management">
+                <h3>Current Candidates:
+                  <button 
+                    className="refresh-button" 
+                    onClick={() => loadCandidatesList()} 
+                    title="Refresh Candidates List"
+                    disabled={isLoading}
+                  >
+                    ↻
+                  </button>
+                </h3>
+                <ul className="candidates-list">
+                  {candidatesList.map((candidate) => (
+                    <li key={candidate.id} className="candidate-item">
+                      <div className="candidate-info">
+                        <span className="candidate-name">{candidate.name}</span>
+                        <span className="candidate-id">ID: {candidate.id}</span>
+                      </div>
+                      <button 
+                        onClick={() => removeCandidate(candidate.id)} 
+                        disabled={votingStatus.started || isLoading}
+                        className="remove-button"
+                      >
+                        Remove
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
           <div>
@@ -534,6 +660,25 @@ const Admin = () => {
               className={isLoading ? 'loading' : ''}
             >
               Add Admin
+            </button>
+          </div>
+
+          <div>
+            <h2>Voter Management</h2>
+            <p className="helper-text">Reset a voter who has already cast their vote to allow them to vote again.</p>
+            <input
+              type="text"
+              value={voterAddressToReset}
+              onChange={(e) => setVoterAddressToReset(e.target.value)}
+              placeholder="Enter voter wallet address to reset"
+              disabled={isLoading}
+            />
+            <button 
+              onClick={resetVoter} 
+              disabled={isLoading}
+              className={isLoading ? 'loading' : ''}
+            >
+              Reset Voter
             </button>
           </div>
 

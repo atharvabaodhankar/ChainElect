@@ -44,6 +44,7 @@ contract MyContract {
     // Events
     event VoterRegistered(address voter);
     event CandidateAdded(string name);
+    event CandidateRemoved(uint256 candidateId);
     event VotingStarted(uint256 endTime);
     event VotingEnded();
     event Voted(address voter, uint256 candidateId);
@@ -116,6 +117,29 @@ contract MyContract {
         emit CandidateAdded(name);
     }
 
+    // Function to remove a candidate
+    function removeCandidate(uint256 candidateId) public onlyAdmin {
+        require(!votingStarted, "Cannot remove candidate after voting has started");
+        require(candidateId > 0 && candidateId <= candidatesCount, "Invalid candidate ID");
+        
+        // If this is the last candidate, simply decrement the count
+        if (candidateId == candidatesCount) {
+            delete candidates[candidateId];
+            candidatesCount--;
+            emit CandidateRemoved(candidateId);
+            return;
+        }
+        
+        // Move the last candidate to the deleted position
+        candidates[candidateId] = candidates[candidatesCount];
+        candidates[candidateId].id = candidateId; // Update the moved candidate's ID
+        
+        // Delete the last candidate
+        delete candidates[candidatesCount];
+        candidatesCount--;
+        emit CandidateRemoved(candidateId);
+    }
+
     // Function to register a voter
     function registerVoter(address _voter) public onlyAdmin {
         require(!voters[_voter].isRegistered, "Voter is already registered");
@@ -180,7 +204,12 @@ contract MyContract {
             candidates[i].voteCount = 0;
         }
 
-        // Reset voter's status
+        // The current implementation only resets the admin's own status
+        // We need to track all voters' addresses to reset them all
+        // This is a limitation of the current design
+        // For now, we'll handle individual voter resets using resetVoter function
+        
+        // Reset this admin's status at minimum
         if (voters[msg.sender].hasVoted) {
             voters[msg.sender].hasVoted = false;
             voters[msg.sender].votedFor = 0;

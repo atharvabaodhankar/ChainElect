@@ -4014,3 +4014,86 @@ z-index: 55;
     color: var(--black);
   }
 }
+
+.helper-text {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 12px;
+  font-style: italic;
+}
+
+/* Candidates Management Styles */
+.candidates-management {
+  margin-top: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.candidates-management h3 {
+  margin-top: 0;
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #444;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.candidates-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.candidate-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  margin-bottom: 5px;
+  background-color: #fff;
+  border-radius: 4px;
+  border-left: 3px solid #4caf50;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.candidate-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.candidate-info .candidate-name {
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+}
+
+.candidate-info .candidate-id {
+  font-size: 12px;
+  color: #666;
+  margin-top: 2px;
+}
+
+.remove-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s;
+}
+
+.remove-button:hover {
+  background-color: #d32f2f;
+}
+
+.remove-button:disabled {
+  background-color: #ffcdd2;
+  cursor: not-allowed;
+}

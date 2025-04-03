@@ -9,7 +9,7 @@ const config = {
     networkId: 80002,
     chainName: "Polygon Amoy Testnet",
     rpcUrl: "https://rpc-amoy.polygon.technology",
-    contractAddress: "0x1b2603c6AB4e4328b1F0143e3B1721bB582Ce64b",
+    contractAddress: "0x794Dda5D8235c45CC1C0501902f03E93F2513c94",
     blockExplorer: "https://www.oklink.com/amoy",
     currencySymbol: "MATIC",
     currencyName: "Polygon",
