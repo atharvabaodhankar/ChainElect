@@ -54,6 +54,9 @@ const Navbar = (props) => {
                     <a href={props.features}>Features</a>
                 </li>
                 <li>
+                    <Link to="/voting-revolution">Voting Revolution</Link>
+                </li>
+                <li>
                     <a href={props.aboutus}>About Us</a>
                 </li>
                 <li>

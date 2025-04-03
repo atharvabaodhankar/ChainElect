@@ -10,6 +10,7 @@ import Admin from './pages/Admin';
 import Preloader from './components/Preloader';
 import DeclaredResults from './pages/DeclaredResults';
 import VotingStatusRoute from './components/VotingStatusRoute';
+import VotingRevolution from './pages/VotingRevolution';
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -28,6 +29,7 @@ const App = () => {
         <Route path="/" element={<Homepage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/voting-revolution" element={<VotingRevolution />} />
         <Route
           path="/results"
           element={
