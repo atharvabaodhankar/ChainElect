@@ -522,7 +522,7 @@ const Voters = () => {
               </div>
               <div className="detail-item">
                 <span className="detail-label">{t('voter.profile.balance')}</span>
-                <span className="detail-value">{<Conn_web updateMetamaskId={updateWalletInfo} />}&nbsp;ETH</span>
+                <span className="detail-value">{<Conn_web updateMetamaskId={updateWalletInfo} />}&nbsp;POL</span>
               </div>
             </div>
           </div>
