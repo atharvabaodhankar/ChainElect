@@ -270,6 +270,10 @@ line-height: 2.5rem;
     align-items: center;
     margin-top: 20rem;
 }
+.waves {
+  position: relative;
+  width: 100%;
+}
 .wave {
     position: absolute;
     bottom: 0;
