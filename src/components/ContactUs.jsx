@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import { MdOutlineEmail } from 'react-icons/md';
+import { useTranslation } from 'react-i18next';
 
 const ContactUs = () => {
+  const { t } = useTranslation();
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -54,7 +57,7 @@ const ContactUs = () => {
       setSubmitStatus({ 
         loading: false, 
         success: false, 
-        error: 'Failed to send message. Please try again later.'
+        error: t('contactus.errors.submitFailed')
       });
     }
   };
@@ -63,8 +66,8 @@ const ContactUs = () => {
     <section id="contactus">
       <div className="contact-container">
         <div className="contact-info">
-          <h2>Get in Touch</h2>
-          <p>Have questions about our blockchain-based voting system? We're here to help. Reach out to us through email or fill out the contact form below.</p>
+          <h2>{t('contactus.getInTouch')}</h2>
+          <p>{t('contactus.helpText')}</p>
           
           <div className="contact-details">
             <div className="contact-item">
@@ -72,7 +75,7 @@ const ContactUs = () => {
                 <MdOutlineEmail />
               </div>
               <div className="contact-text">
-                <h3>Email</h3>
+                <h3>{t('contactus.email')}</h3>
                 <p>chainelect@gmail.com</p>
               </div>
             </div>
@@ -82,55 +85,55 @@ const ContactUs = () => {
         <div className="contact-form">
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="name">Name</label>
+              <label htmlFor="name">{t('contactus.form.name')}</label>
               <input
                 type="text"
                 id="name"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="Your name"
+                placeholder={t('contactus.form.namePlaceholder')}
                 required
                 disabled={submitStatus.loading}
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">{t('contactus.form.email')}</label>
               <input
                 type="email"
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="your@email.com"
+                placeholder={t('contactus.form.emailPlaceholder')}
                 required
                 disabled={submitStatus.loading}
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="subject">Subject</label>
+              <label htmlFor="subject">{t('contactus.form.subject')}</label>
               <input
                 type="text"
                 id="subject"
                 name="subject"
                 value={formData.subject}
                 onChange={handleChange}
-                placeholder="How can we help?"
+                placeholder={t('contactus.form.subjectPlaceholder')}
                 required
                 disabled={submitStatus.loading}
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="message">Message</label>
+              <label htmlFor="message">{t('contactus.form.message')}</label>
               <textarea
                 id="message"
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
-                placeholder="Your message..."
+                placeholder={t('contactus.form.messagePlaceholder')}
                 required
                 disabled={submitStatus.loading}
               />
@@ -158,7 +161,7 @@ const ContactUs = () => {
                 marginBottom: '1rem',
                 fontSize: '1.4rem'
               }}>
-                Message sent successfully! We'll get back to you soon.
+                {t('contactus.successMessage')}
               </div>
             )}
 
@@ -167,7 +170,7 @@ const ContactUs = () => {
               className="submit-button"
               disabled={submitStatus.loading}
             >
-              {submitStatus.loading ? 'Sending...' : 'Send Message'}
+              {submitStatus.loading ? t('contactus.form.sending') : t('contactus.form.sendMessage')}
             </button>
           </form>
         </div>

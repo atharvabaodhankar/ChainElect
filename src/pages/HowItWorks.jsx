@@ -1,11 +1,14 @@
 import React, { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { useTranslation } from 'react-i18next';
 import "../styles/HowItWorks.css";
 import { FaReact, FaNodeJs, FaUserShield, FaLaptopCode, FaLink, FaServer, FaShieldAlt, FaLock, FaSearch, FaUsers, FaDatabase, FaWallet, FaChartLine } from "react-icons/fa";
 import { SiSolidity, SiPolygon } from "react-icons/si";
 
 const HowItWorks = () => {
+  const { t } = useTranslation();
+
   return (
     <>
       <section className="how-it-works-page">
@@ -20,93 +23,93 @@ const HowItWorks = () => {
         
         <div className="how-it-works-hero">
           <div className="hero-content">
-            <h1>How It Works</h1>
-            <p>Explore the technology stack and architecture behind ChainElect</p>
+            <h1>{t('howItWorks.title')}</h1>
+            <p>{t('howItWorks.subtitle')}</p>
           </div>
         </div>
 
         <div className="container">
           <section className="tech-stack">
-            <h2>Technology Stack</h2>
-            <p className="section-intro">Our system leverages industry-leading technologies to deliver a secure, transparent, and user-friendly voting experience.</p>
+            <h2>{t('howItWorks.techStack.title')}</h2>
+            <p className="section-intro">{t('howItWorks.techStack.intro')}</p>
             <div className="tech-grid">
               <div className="tech-card">
                 <div className="tech-icon">
                   <FaReact />
                 </div>
-                <h3>React</h3>
-                <p>Frontend UI library for building interactive components</p>
+                <h3>{t('howItWorks.techStack.react.title')}</h3>
+                <p>{t('howItWorks.techStack.react.description')}</p>
               </div>
               
               <div className="tech-card">
                 <div className="tech-icon">
                   <SiPolygon />
                 </div>
-                <h3>Polygon</h3>
-                <p>Blockchain network for secure, transparent voting</p>
+                <h3>{t('howItWorks.techStack.polygon.title')}</h3>
+                <p>{t('howItWorks.techStack.polygon.description')}</p>
               </div>
               
               <div className="tech-card">
                 <div className="tech-icon">
                   <SiSolidity />
                 </div>
-                <h3>Solidity</h3>
-                <p>Smart contract language for vote logic and security</p>
+                <h3>{t('howItWorks.techStack.solidity.title')}</h3>
+                <p>{t('howItWorks.techStack.solidity.description')}</p>
               </div>
               
               <div className="tech-card">
                 <div className="tech-icon">
                   <FaNodeJs />
                 </div>
-                <h3>Node.js</h3>
-                <p>Backend runtime environment for API services</p>
+                <h3>{t('howItWorks.techStack.nodejs.title')}</h3>
+                <p>{t('howItWorks.techStack.nodejs.description')}</p>
               </div>
               
               <div className="tech-card">
                 <div className="tech-icon">
                   <FaDatabase />
                 </div>
-                <h3>Supabase</h3>
-                <p>Database and authentication services</p>
+                <h3>{t('howItWorks.techStack.supabase.title')}</h3>
+                <p>{t('howItWorks.techStack.supabase.description')}</p>
               </div>
               
               <div className="tech-card">
                 <div className="tech-icon">
                   <FaWallet />
                 </div>
-                <h3>Web3.js</h3>
-                <p>Library for Polygon blockchain interactions</p>
+                <h3>{t('howItWorks.techStack.web3js.title')}</h3>
+                <p>{t('howItWorks.techStack.web3js.description')}</p>
               </div>
               
               <div className="tech-card">
                 <div className="tech-icon">
                   <FaChartLine />
                 </div>
-                <h3>Chart.js</h3>
-                <p>Data visualization for election results</p>
+                <h3>{t('howItWorks.techStack.chartjs.title')}</h3>
+                <p>{t('howItWorks.techStack.chartjs.description')}</p>
               </div>
               
               <div className="tech-card">
                 <div className="tech-icon">
                   <FaUserShield />
                 </div>
-                <h3>Face API</h3>
-                <p>Facial recognition for voter verification</p>
+                <h3>{t('howItWorks.techStack.faceapi.title')}</h3>
+                <p>{t('howItWorks.techStack.faceapi.description')}</p>
               </div>
             </div>
           </section>
 
           <section className="architecture">
-            <h2>System Architecture</h2>
-            <p className="section-intro">Our multi-layered architecture ensures security, performance, and reliability.</p>
+            <h2>{t('howItWorks.architecture.title')}</h2>
+            <p className="section-intro">{t('howItWorks.architecture.intro')}</p>
             
             <div className="architecture-section">
               <div className="arch-icon">
                 <FaLaptopCode />
               </div>
               <div className="arch-content">
-                <h3>Frontend Layer</h3>
-                <p>The user interface is built with React and Vite for fast performance. We use modern React patterns including hooks and context API for state management. The UI communicates with both the backend server and directly with the blockchain via Web3.js.</p>
+                <h3>{t('howItWorks.architecture.frontend.title')}</h3>
+                <p>{t('howItWorks.architecture.frontend.description')}</p>
               </div>
             </div>
             
@@ -115,8 +118,8 @@ const HowItWorks = () => {
                 <FaLink />
               </div>
               <div className="arch-content">
-                <h3>Blockchain Layer</h3>
-                <p>Our smart contracts are written in Solidity and deployed on the Polygon network. The contracts handle the core voting logic, ensuring each vote is securely recorded, cannot be tampered with, and is transparent for verification.</p>
+                <h3>{t('howItWorks.architecture.blockchain.title')}</h3>
+                <p>{t('howItWorks.architecture.blockchain.description')}</p>
               </div>
             </div>
             
@@ -125,8 +128,8 @@ const HowItWorks = () => {
                 <FaServer />
               </div>
               <div className="arch-content">
-                <h3>Backend Layer</h3>
-                <p>A Node.js server handles user authentication, profile management, and serves as a bridge between the frontend and database. Supabase provides database capabilities and file storage for voter profile images.</p>
+                <h3>{t('howItWorks.architecture.backend.title')}</h3>
+                <p>{t('howItWorks.architecture.backend.description')}</p>
               </div>
             </div>
             
@@ -135,102 +138,102 @@ const HowItWorks = () => {
                 <FaShieldAlt />
               </div>
               <div className="arch-content">
-                <h3>Security Layer</h3>
-                <p>Multiple security mechanisms are in place: MetaMask wallet verification ensures one-vote-per-person, email verification confirms user identity, and Face API provides an additional layer of verification during the voting process.</p>
+                <h3>{t('howItWorks.architecture.security.title')}</h3>
+                <p>{t('howItWorks.architecture.security.description')}</p>
               </div>
             </div>
           </section>
 
           <section className="workflow">
-            <h2>Voting Workflow</h2>
-            <p className="section-intro">From registration to results, our streamlined process ensures a smooth voting experience.</p>
+            <h2>{t('howItWorks.workflow.title')}</h2>
+            <p className="section-intro">{t('howItWorks.workflow.intro')}</p>
             
             <div className="workflow-steps">
               <div className="workflow-step">
                 <div className="step-number">1</div>
                 <div className="step-content">
-                  <h3>Registration</h3>
-                  <p>Users register with their email, create a password, and connect their MetaMask wallet. Profile images are stored securely in Supabase.</p>
+                  <h3>{t('howItWorks.workflow.step1.title')}</h3>
+                  <p>{t('howItWorks.workflow.step1.description')}</p>
                 </div>
               </div>
               
               <div className="workflow-step">
                 <div className="step-number">2</div>
                 <div className="step-content">
-                  <h3>Authentication</h3>
-                  <p>Secure login using email/password, with MetaMask wallet verification to prevent duplicate voting.</p>
+                  <h3>{t('howItWorks.workflow.step2.title')}</h3>
+                  <p>{t('howItWorks.workflow.step2.description')}</p>
                 </div>
               </div>
               
               <div className="workflow-step">
                 <div className="step-number">3</div>
                 <div className="step-content">
-                  <h3>Candidate Selection</h3>
-                  <p>Users see available candidates with information and select their preferred choice.</p>
+                  <h3>{t('howItWorks.workflow.step3.title')}</h3>
+                  <p>{t('howItWorks.workflow.step3.description')}</p>
                 </div>
               </div>
               
               <div className="workflow-step">
                 <div className="step-number">4</div>
                 <div className="step-content">
-                  <h3>Blockchain Verification</h3>
-                  <p>The vote is verified and recorded on the Polygon blockchain, requiring confirmation via MetaMask.</p>
+                  <h3>{t('howItWorks.workflow.step4.title')}</h3>
+                  <p>{t('howItWorks.workflow.step4.description')}</p>
                 </div>
               </div>
               
               <div className="workflow-step">
                 <div className="step-number">5</div>
                 <div className="step-content">
-                  <h3>Vote Confirmation</h3>
-                  <p>Users receive confirmation of their vote with a transaction hash for verification.</p>
+                  <h3>{t('howItWorks.workflow.step5.title')}</h3>
+                  <p>{t('howItWorks.workflow.step5.description')}</p>
                 </div>
               </div>
               
               <div className="workflow-step">
                 <div className="step-number">6</div>
                 <div className="step-content">
-                  <h3>Results Viewing</h3>
-                  <p>Once the election ends, results are tallied from the blockchain and displayed with interactive charts.</p>
+                  <h3>{t('howItWorks.workflow.step6.title')}</h3>
+                  <p>{t('howItWorks.workflow.step6.description')}</p>
                 </div>
               </div>
             </div>
           </section>
 
           <section className="benefits">
-            <h2>Key Benefits</h2>
-            <p className="section-intro">ChainElect offers numerous advantages over traditional voting systems.</p>
+            <h2>{t('howItWorks.benefits.title')}</h2>
+            <p className="section-intro">{t('howItWorks.benefits.intro')}</p>
             
             <div className="benefits-grid">
               <div className="benefit-card">
                 <div className="benefit-icon">
                   <FaLock />
                 </div>
-                <h3>Immutability</h3>
-                <p>Once recorded on the blockchain, votes cannot be altered or deleted.</p>
+                <h3>{t('howItWorks.benefits.immutability.title')}</h3>
+                <p>{t('howItWorks.benefits.immutability.description')}</p>
               </div>
               
               <div className="benefit-card">
                 <div className="benefit-icon">
                   <FaSearch />
                 </div>
-                <h3>Transparency</h3>
-                <p>All transactions are publicly verifiable while maintaining voter privacy.</p>
+                <h3>{t('howItWorks.benefits.transparency.title')}</h3>
+                <p>{t('howItWorks.benefits.transparency.description')}</p>
               </div>
               
               <div className="benefit-card">
                 <div className="benefit-icon">
                   <FaShieldAlt />
                 </div>
-                <h3>Security</h3>
-                <p>Multi-layer security with cryptographic voting mechanisms.</p>
+                <h3>{t('howItWorks.benefits.security.title')}</h3>
+                <p>{t('howItWorks.benefits.security.description')}</p>
               </div>
               
               <div className="benefit-card">
                 <div className="benefit-icon">
                   <FaUsers />
                 </div>
-                <h3>Accessibility</h3>
-                <p>Vote from anywhere with internet access and a supported browser.</p>
+                <h3>{t('howItWorks.benefits.accessibility.title')}</h3>
+                <p>{t('howItWorks.benefits.accessibility.description')}</p>
               </div>
             </div>
           </section>

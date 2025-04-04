@@ -1,7 +1,10 @@
 import React from "react";
 import Button from "./Button";
+import { useTranslation } from 'react-i18next';
 
 const Footer = () => {
+  const { t } = useTranslation();
+  
   return (
     <section className="footer" id="footer">
       <div className="waves">
@@ -12,40 +15,39 @@ const Footer = () => {
       </div>
       <div className="footer-main">
         <div className="footer-content">
-          <h3>ChainElect</h3>
+          <h3>{t('app.title')}</h3>
           <p>
-            ChainElect is a blockchain-based voting platform that ensures
-            secure, transparent, and efficient elections.
+            {t('footer.description')}
           </p>
         </div>
         <div className="footer-links">
-          <h4>Quick Links</h4>
+          <h4>{t('footer.quickLinks')}</h4>
           <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/register">Register</a></li>
-            <li><a href="/login">Login</a></li>
-            <li><a href="/voters">Vote</a></li>
+            <li><a href="/">{t('nav.home')}</a></li>
+            <li><a href="/register">{t('nav.register')}</a></li>
+            <li><a href="/login">{t('nav.login')}</a></li>
+            <li><a href="/voters">{t('footer.vote')}</a></li>
           </ul>
         </div>
         <div className="footer-resources">
-          <h4>Resources</h4>
+          <h4>{t('footer.resources')}</h4>
           <ul>
-            <li><a href="/#features">Features</a></li>
-            <li><a href="/#aboutus">About Us</a></li>
-            <li><a href="/#contactus">Contact Us</a></li>
-            <li><a href="/results">Results</a></li>
+            <li><a href="/#features">{t('nav.features')}</a></li>
+            <li><a href="/#aboutus">{t('nav.about')}</a></li>
+            <li><a href="/#contactus">{t('nav.contact')}</a></li>
+            <li><a href="/results">{t('nav.results')}</a></li>
           </ul>
         </div>
         <div className="footer-contact">
-          <h4>Contact Info</h4>
+          <h4>{t('footer.contactInfo')}</h4>
           <ul>
             <li><a href="mailto:support@chainelect.com">support@chainelect.com</a></li>
-            <li>Solapur, Maharashtra, India</li>
+            <li>{t('footer.location')}</li>
           </ul>
         </div>
       </div>
       <div className="footer-bottom">
-        <p>Copyright &copy; 2024-2025 ChainElect. All rights reserved.</p>
+        <p>{t('footer.copyright')} &copy; 2024-2025 {t('app.title')}. {t('footer.allRightsReserved')}</p>
       </div>
     </section>
   );

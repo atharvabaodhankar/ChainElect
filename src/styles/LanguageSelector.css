@@ -1,0 +1,149 @@
+.language-selector {
+  position: relative;
+  display: inline-block;
+  margin-left: 1rem;
+  z-index: 100;
+}
+
+.language-selector-button {
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  font-size: 1.7rem;
+  transition: all 0.3s ease;
+}
+
+.language-selector-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.language-icon {
+  margin-right: 0.5rem;
+  font-size: 1.7rem;
+}
+
+.current-language {
+  margin-right: 0.5rem;
+}
+
+.dropdown-arrow {
+  font-size: 0.7rem;
+  transition: transform 0.3s ease;
+}
+
+.language-selector-button[aria-expanded="true"] .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+
+.language-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  list-style-type: none;
+  padding: 0.5rem 0;
+  margin: 0;
+  min-width: 160px;
+  opacity: 0;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.language-option {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+  font-size: 1.7rem;
+  transition: background-color 0.2s ease;
+}
+
+.language-option:hover {
+  background-color: #f5f5f5;
+}
+
+.language-option.active {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+/* Dark mode version for sites with dark background */
+.dark-mode .language-selector-button {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .language-dropdown {
+  background-color: #333;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .language-option {
+  color: #f0f0f0;
+}
+
+.dark-mode .language-option:hover {
+  background-color: #444;
+}
+
+.dark-mode .language-option.active {
+  background-color: #555;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .language-selector {
+    margin-left: 0.5rem;
+  }
+  
+  .language-selector-button {
+    padding: 0.4rem 0.8rem;
+  }
+  
+  
+  .language-icon {
+    margin-right: 0.3rem;
+  }
+}
+
+/* Support for right-to-left languages */
+[dir="rtl"] .language-icon {
+  margin-right: 0;
+  margin-left: 0.5rem;
+}
+
+[dir="rtl"] .current-language {
+  margin-right: 0;
+  margin-left: 0.5rem;
+}
+
+[dir="rtl"] .language-dropdown {
+  right: auto;
+  left: 0;
+}
+
+[dir="rtl"] .language-option {
+  text-align: right;
+} 

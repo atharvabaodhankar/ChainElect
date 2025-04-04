@@ -1,54 +1,51 @@
 import React from "react";
+import { useTranslation } from 'react-i18next';
 
 const Aboutus = () => {
+  const { t } = useTranslation();
+
   return (
     <section id="aboutus">
-      <h1 className="h1">About Us</h1>
+      <h1 className="h1">{t('aboutus.title')}</h1>
       <div className="aboutus">
         <div className="aboutus-box">
           <video autoPlay loop muted src="/images/hero.mp4"></video>
         </div>
         <div className="aboutus-desc">
           <div className="aboutus-box-inner">
-            <h1>Our Mission</h1>
+            <h1>{t('aboutus.mission.title')}</h1>
             <p>
-              To revolutionise voting by providing a secure, transparent, and
-              accessible decentralized platform using blockchain technology.
+              {t('aboutus.mission.description')}
             </p>
           </div>
           <div className="aboutus-box-inner">
-            <h1>Core Values</h1>
+            <h1>{t('aboutus.values.title')}</h1>
             <p>
-              Trust, transparency, and integrity in every vote, ensuring
-              accuracy and protection against tampering.
+              {t('aboutus.values.description')}
             </p>
           </div>
           <div className="aboutus-box-inner">
-            <h1>Expert Team</h1>
+            <h1>{t('aboutus.team.title')}</h1>
             <p>
-              Blockchain specialists, security experts, and UX designers
-              dedicated to advancing democratic processes.
+              {t('aboutus.team.description')}
             </p>
           </div>
           <div className="aboutus-box-inner">
-            <h1>Technology-Driven</h1>
+            <h1>{t('aboutus.technology.title')}</h1>
             <p>
-              Utilising blockchain, cryptographic security, and intuitive design
-              to create a reliable voting experience.
+              {t('aboutus.technology.description')}
             </p>
           </div>
           <div className="aboutus-box-inner">
-            <h1>Commitment to Fairness</h1>
+            <h1>{t('aboutus.fairness.title')}</h1>
             <p>
-              ChainElect is designed to make voting easy, fair, and verifiable
-              for everyone.
+              {t('aboutus.fairness.description')}
             </p>
           </div>
           <div className="aboutus-box-inner">
-            <h1>Empowering Democracy</h1>
+            <h1>{t('aboutus.democracy.title')}</h1>
             <p>
-              Aiming to reinforce public trust in elections, whether local or
-              global, for a more democratic future.
+              {t('aboutus.democracy.description')}
             </p>
           </div>
         </div>

@@ -1,0 +1,537 @@
+{
+  "app": {
+    "title": "ChainElect",
+    "slogan": "Secure Voting Platform"
+  },
+  "candidates": {
+    "Rahul Sharma": "Rahul Sharma",
+    "Priya Patel": "Priya Patel",
+    "Vikram Singh": "Vikram Singh",
+    "Ananya Mehta": "Ananya Mehta", 
+    "Arjun Kapoor": "Arjun Kapoor"
+  },
+  "nav": {
+    "home": "Home",
+    "login": "Login",
+    "register": "Register",
+    "results": "Results",
+    "about": "About Us",
+    "contact": "Contact Us",
+    "logout": "Logout",
+    "features": "Features",
+    "votingRevolution": "Voting Revolution",
+    "howItWorks": "How It Works"
+  },
+  "home": {
+    "welcome": "Welcome to ChainElect",
+    "description": "A secure and transparent blockchain-based voting system",
+    "getStarted": "Get Started"
+  },
+  "login": {
+    "title": "Login",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Login",
+    "noAccount": "Don't have an account?",
+    "register": "Register here",
+    "welcomeBack": "Welcome Back",
+    "enterCredentials": "Enter your credentials to access your account",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "loggingIn": "Logging in...",
+    "loginFailed": "Login failed. Please try again.",
+    "metamaskNotInstalled": "MetaMask is not installed. Please install MetaMask to proceed.",
+    "metamaskNotConnected": "Please connect your MetaMask wallet to proceed with login.",
+    "metamaskConnected": "✓ MetaMask Connected",
+    "connectMetamask": "Connect MetaMask",
+    "installMetamask": "Install MetaMask",
+    "switchToAmoy": "Add Polygon Amoy Testnet",
+    "networkError": "Failed to add Polygon Amoy Testnet network. Please try again.",
+    "metamaskConnectionError": "Failed to connect to Metamask. Please try again.",
+    "connectMetamaskFirst": "Please connect your Metamask wallet before logging in."
+  },
+  "register": {
+    "title": "Register",
+    "name": "Full Name",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "submit": "Register",
+    "haveAccount": "Already have an account?",
+    "login": "Login here",
+    "createAccount": "Create Account",
+    "joinPlatform": "Join the secure voting platform",
+    "successful": "Registration Successful!",
+    "emailSent": "We've sent a confirmation email to:",
+    "checkEmail": "Please check your email and click the confirmation link to activate your account.",
+    "nextSteps": "Next steps:",
+    "openInbox": "Open your email inbox",
+    "lookForEmail": "Look for an email from ChainElect",
+    "clickLink": "Click the confirmation link in the email",
+    "afterConfirmation": "Once confirmed, you can log in to your account",
+    "spamNote": "Note: If you don't see the email, please check your spam folder.",
+    "goToLogin": "Go to Login Page",
+    "metamaskNotInstalled": "MetaMask is not installed. Please install MetaMask to proceed with registration.",
+    "metamaskNotConnected": "Please connect your MetaMask wallet to proceed with registration.",
+    "metamaskConnected": "✓ MetaMask Connected",
+    "connectMetamask": "Connect MetaMask",
+    "installMetamask": "Install MetaMask",
+    "addPolygonNetwork": "Add Polygon Amoy Testnet",
+    "voterId": "Voter ID",
+    "voterIdPlaceholder": "Enter your Voter ID (e.g., ABC1234567)",
+    "voterIdFormat": "Format: 3 uppercase letters followed by 7 digits",
+    "metamaskId": "MetaMask ID",
+    "metamaskIdPlaceholder": "Enter your MetaMask ID (0x...)",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Create a strong password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "profileImage": "Profile Image",
+    "captureFace": "Capture Face Image",
+    "preview": "Preview",
+    "creatingAccount": "Creating Account...",
+    "createAccountButton": "Create Account"
+  },
+  "registerInstructions": {
+    "welcome": "Welcome to ChainElect",
+    "followSteps": "Follow these steps to complete your registration and secure your voting identity",
+    "prepareEnvironment": {
+      "title": "Prepare Your Environment",
+      "description": "Find a well-lit area and ensure your face is clearly visible to your camera. Remove any face coverings or accessories that might obstruct your features."
+    },
+    "metamaskSetup": {
+      "title": "MetaMask Setup",
+      "description": "Install and set up MetaMask in your browser:",
+      "step1": "Install MetaMask from",
+      "step2": "Create a new wallet or import an existing one",
+      "step3": "Keep your recovery phrase safe and secure",
+      "step4": "Copy your MetaMask wallet address (it starts with 0x)"
+    },
+    "faceCapture": {
+      "title": "Face Capture",
+      "description": "Position your face within the frame and maintain a neutral expression. The system will capture your facial features for secure authentication."
+    },
+    "verification": {
+      "title": "Verification",
+      "description": "Your facial features will be securely stored and used for future authentication when you participate in elections."
+    },
+    "requirements": {
+      "title": "Requirements",
+      "lighting": "Good lighting conditions",
+      "clearView": "Clear view of your face",
+      "neutralExpression": "Neutral expression",
+      "noFaceCoverings": "No face coverings or accessories",
+      "stableInternet": "Stable internet connection",
+      "metamaskWallet": "MetaMask wallet installed and configured"
+    },
+    "importantNotes": {
+      "title": "⚠️ Important Notes",
+      "warning1": "Do NOT upload any photos of friends, relatives, or other people",
+      "warning2": "Do NOT upload a pre-existing photo of yourself",
+      "warning3": "Only use the live face capture feature for registration",
+      "note1": "Your face data is encrypted and stored securely",
+      "note2": "Keep your MetaMask recovery phrase and private keys safe"
+    },
+    "startButton": "Start Registration"
+  },
+  "features": {
+    "title": "Features",
+    "decentralized": {
+      "title": "Decentralised & Secure Voting",
+      "description": "Blockchain-backed security prevents vote tampering."
+    },
+    "transparency": {
+      "title": "Transparency & Auditability",
+      "description": "Immutable ledger allows audits without compromising privacy."
+    },
+    "realtime": {
+      "title": "Real-Time Results",
+      "description": "Immediate vote tallies ensure instant transparency."
+    },
+    "verification": {
+      "title": "Voter Verification",
+      "description": "Multi-factor authentication secures voter access."
+    },
+    "privacy": {
+      "title": "Privacy Protection",
+      "description": "Cryptographic measures ensure anonymous voting."
+    },
+    "scalable": {
+      "title": "Scalable System",
+      "description": "Adapts to local, national, or global elections."
+    }
+  },
+  "aboutus": {
+    "title": "About Us",
+    "mission": {
+      "title": "Our Mission",
+      "description": "To revolutionise voting by providing a secure, transparent, and accessible decentralized platform using blockchain technology."
+    },
+    "values": {
+      "title": "Core Values",
+      "description": "Trust, transparency, and integrity in every vote, ensuring accuracy and protection against tampering."
+    },
+    "team": {
+      "title": "Expert Team",
+      "description": "Blockchain specialists, security experts, and UX designers dedicated to advancing democratic processes."
+    },
+    "technology": {
+      "title": "Technology-Driven",
+      "description": "Utilising blockchain, cryptographic security, and intuitive design to create a reliable voting experience."
+    },
+    "fairness": {
+      "title": "Commitment to Fairness",
+      "description": "ChainElect is designed to make voting easy, fair, and verifiable for everyone."
+    },
+    "democracy": {
+      "title": "Empowering Democracy",
+      "description": "Aiming to reinforce public trust in elections, whether local or global, for a more democratic future."
+    }
+  },
+  "contactus": {
+    "getInTouch": "Get in Touch",
+    "helpText": "Have questions about our blockchain-based voting system? We're here to help. Reach out to us through email or fill out the contact form below.",
+    "email": "Email",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "subject": "Subject",
+      "message": "Message",
+      "namePlaceholder": "Your name",
+      "emailPlaceholder": "your@email.com",
+      "subjectPlaceholder": "How can we help?",
+      "messagePlaceholder": "Your message...",
+      "sending": "Sending...",
+      "sendMessage": "Send Message"
+    },
+    "successMessage": "Message sent successfully! We'll get back to you soon.",
+    "errors": {
+      "submitFailed": "Failed to send message. Please try again later."
+    }
+  },
+  "votingRevolution": {
+    "hero": {
+      "title": "Blockchain Voting vs. Traditional Voting",
+      "subtitle": "A Revolutionary Approach to Democracy",
+      "description": "Discover how blockchain technology using Polygon PoS is transforming the voting landscape with up to 98.4% cost reduction."
+    },
+    "comparison": {
+      "title": "Key Comparison Metrics",
+      "feature": "Feature",
+      "traditional": "Traditional Voting System",
+      "blockchain": "Blockchain Voting (Polygon PoS)",
+      "costPerVote": "Cost per vote",
+      "traditionalCostRange": "INR 100-150",
+      "blockchainCostRange": "INR 1-3",
+      "totalCost1M": "Total cost for 1M voters",
+      "traditional1MCost": "INR 12.5 crore",
+      "blockchain1MCost": "INR 20.18 lakh",
+      "totalCost900M": "Total cost for 900M voters",
+      "traditional900MCost": "INR 112,500 crore",
+      "blockchain900MCost": "INR 1,816 crore",
+      "transparency": "Transparency",
+      "traditionalTransparency": "Moderate (prone to fraud)",
+      "blockchainTransparency": "High (immutable ledger)",
+      "tamperproof": "Tamper-proof",
+      "traditionalTamperproof": "No (can be rigged)",
+      "blockchainTamperproof": "Yes (blockchain security)",
+      "verification": "Vote verification",
+      "traditionalVerification": "Manual & error-prone",
+      "blockchainVerification": "Cryptographically verifiable",
+      "speed": "Speed of vote counting",
+      "traditionalSpeed": "Days",
+      "blockchainSpeed": "Instantaneous",
+      "remote": "Remote voting",
+      "traditionalRemote": "No",
+      "blockchainRemote": "Yes (internet access required)",
+      "scalability": "Scalability",
+      "traditionalScalability": "Low",
+      "blockchainScalability": "High"
+    },
+    "charts": {
+      "traditional": "Traditional Voting",
+      "blockchain": "Blockchain Voting (Polygon PoS)",
+      "costPerVote": "Cost per Vote (INR)",
+      "totalCostFor900M": "Total Cost for 900M Voters (INR Crore)",
+      "costPerVoteTitle": "Cost Per Vote Comparison",
+      "costPerVoteAxisTitle": "Cost Per Vote (INR)",
+      "totalCostTitle": "Total Election Cost for 900M Voters",
+      "totalCostAxisTitle": "Total Cost (INR Crore)",
+      "costReductionNote": "Blockchain voting offers a <strong>98.4% cost reduction</strong> compared to traditional voting methods.",
+      "advantagesTitle": "Blockchain Voting System Advantages",
+      "projectionTitle": "Cost Projection Over Time (2024-2028)",
+      "projectionAxisTitle": "Cost Projection Over Time",
+      "costInCrore": "Cost in Crore INR",
+      "projectionNote": "While traditional voting costs continue to rise, blockchain voting costs are projected to decrease over time due to technological advancements.",
+      "traditionalCostProjection": "Traditional Voting Cost Projection (Crore INR)",
+      "blockchainCostProjection": "Blockchain Voting Cost Projection (Crore INR)"
+    },
+    "features": {
+      "transparency": "Transparency",
+      "security": "Security",
+      "speed": "Speed",
+      "accessibility": "Accessibility",
+      "costEfficiency": "Cost-Efficiency",
+      "blockchainAdvantages": "Blockchain Advantages (%)"
+    },
+    "polygon": {
+      "title": "Why Use Polygon PoS for Voting?",
+      "costEfficiency": {
+        "title": "Cost Efficiency",
+        "description": "Up to <strong>98.4% cost reduction</strong> compared to traditional elections."
+      },
+      "scalability": {
+        "title": "Scalability",
+        "description": "Polygon PoS can handle <strong>millions of transactions per second</strong>."
+      },
+      "security": {
+        "title": "Security",
+        "description": "Blockchain prevents fraud and vote tampering."
+      },
+      "transparency": {
+        "title": "Transparency",
+        "description": "Every vote is recorded on an immutable ledger, ensuring <strong>zero manipulation</strong>."
+      },
+      "fasterResults": {
+        "title": "Faster Results",
+        "description": "Vote counting is <strong>instant</strong>, eliminating long delays in election results."
+      },
+      "remoteParticipation": {
+        "title": "Remote Participation",
+        "description": "Enables voting from <strong>anywhere in the world</strong> with internet access."
+      }
+    },
+    "costBreakdown": {
+      "title": "Cost Breakdown Analysis",
+      "traditional": {
+        "title": "Traditional Voting: Cost Breakdown",
+        "commission": "Election Commission Expenses",
+        "commissionCost": "INR 100-150 per voter for polling booths, manpower, paper ballots, and logistics.",
+        "security": "Security Arrangements",
+        "securityCost": "High cost due to police and monitoring needs.",
+        "counting": "Manual Vote Counting",
+        "countingCost": "Slow and expensive process with high labor costs.",
+        "total": "Total Cost for National Elections (900M voters)",
+        "totalAmount": "INR 112,500 crore"
+      },
+      "blockchain": {
+        "title": "Blockchain Voting: Cost Breakdown (Using Polygon PoS)",
+        "smartContract": "Smart Contract Deployment",
+        "smartContractCost": "One-time cost of ~INR 12,000.",
+        "transaction": "Per Vote Transaction Fee",
+        "transactionCost": "INR 1-3 per vote.",
+        "hosting": "Hosting & Database Costs",
+        "hostingCost": "Approx. INR 6,000 per month (for web infrastructure).",
+        "total": "Total Cost for National Elections (900M voters)",
+        "totalAmount": "INR 1,816 crore",
+        "savings": "Savings of <strong>98.4%</strong> compared to traditional voting"
+      }
+    },
+    "future": {
+      "title": "The Future of Voting",
+      "description": "Adopting blockchain-based voting systems can revolutionize the democratic process by making it <strong>faster, cheaper, and more secure</strong>. With platforms like <strong>Polygon PoS</strong>, countries can save <strong>thousands of crores</strong> while ensuring <strong>100% transparency and security</strong> in elections.",
+      "quote": "\"The future of elections is digital, decentralized, and secure. Let's embrace blockchain voting for a better democracy!\""
+    }
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "subtitle": "Explore the technology stack and architecture behind ChainElect",
+    "techStack": {
+      "title": "Technology Stack",
+      "intro": "Our system leverages industry-leading technologies to deliver a secure, transparent, and user-friendly voting experience.",
+      "react": {
+        "title": "React",
+        "description": "Frontend UI library for building interactive components"
+      },
+      "polygon": {
+        "title": "Polygon",
+        "description": "Blockchain network for secure, transparent voting"
+      },
+      "solidity": {
+        "title": "Solidity",
+        "description": "Smart contract language for vote logic and security"
+      },
+      "nodejs": {
+        "title": "Node.js",
+        "description": "Backend runtime environment for API services"
+      },
+      "supabase": {
+        "title": "Supabase",
+        "description": "Database and authentication services"
+      },
+      "web3js": {
+        "title": "Web3.js",
+        "description": "Library for Polygon blockchain interactions"
+      },
+      "chartjs": {
+        "title": "Chart.js",
+        "description": "Data visualization for election results"
+      },
+      "faceapi": {
+        "title": "Face API",
+        "description": "Facial recognition for voter verification"
+      }
+    },
+    "architecture": {
+      "title": "System Architecture",
+      "intro": "Our multi-layered architecture ensures security, performance, and reliability.",
+      "frontend": {
+        "title": "Frontend Layer",
+        "description": "The user interface is built with React and Vite for fast performance. We use modern React patterns including hooks and context API for state management. The UI communicates with both the backend server and directly with the blockchain via Web3.js."
+      },
+      "blockchain": {
+        "title": "Blockchain Layer",
+        "description": "Our smart contracts are written in Solidity and deployed on the Polygon network. The contracts handle the core voting logic, ensuring each vote is securely recorded, cannot be tampered with, and is transparent for verification."
+      },
+      "backend": {
+        "title": "Backend Layer",
+        "description": "A Node.js server handles user authentication, profile management, and serves as a bridge between the frontend and database. Supabase provides database capabilities and file storage for voter profile images."
+      },
+      "security": {
+        "title": "Security Layer",
+        "description": "Multiple security mechanisms are in place: MetaMask wallet verification ensures one-vote-per-person, email verification confirms user identity, and Face API provides an additional layer of verification during the voting process."
+      }
+    },
+    "workflow": {
+      "title": "Voting Workflow",
+      "intro": "From registration to results, our streamlined process ensures a smooth voting experience.",
+      "step1": {
+        "title": "Registration",
+        "description": "Users register with their email, create a password, and connect their MetaMask wallet. Profile images are stored securely in Supabase."
+      },
+      "step2": {
+        "title": "Authentication",
+        "description": "Secure login using email/password, with MetaMask wallet verification to prevent duplicate voting."
+      },
+      "step3": {
+        "title": "Candidate Selection",
+        "description": "Users see available candidates with information and select their preferred choice."
+      },
+      "step4": {
+        "title": "Blockchain Verification",
+        "description": "The vote is verified and recorded on the Polygon blockchain, requiring confirmation via MetaMask."
+      },
+      "step5": {
+        "title": "Vote Confirmation",
+        "description": "Users receive confirmation of their vote with a transaction hash for verification."
+      },
+      "step6": {
+        "title": "Results Viewing",
+        "description": "Once the election ends, results are tallied from the blockchain and displayed with interactive charts."
+      }
+    },
+    "benefits": {
+      "title": "Key Benefits",
+      "intro": "ChainElect offers numerous advantages over traditional voting systems.",
+      "immutability": {
+        "title": "Immutability",
+        "description": "Once recorded on the blockchain, votes cannot be altered or deleted."
+      },
+      "transparency": {
+        "title": "Transparency",
+        "description": "All transactions are publicly verifiable while maintaining voter privacy."
+      },
+      "security": {
+        "title": "Security",
+        "description": "Multi-layer security with cryptographic voting mechanisms."
+      },
+      "accessibility": {
+        "title": "Accessibility",
+        "description": "Vote from anywhere with internet access and a supported browser."
+      }
+    }
+  },
+  "voter": {
+    "welcome": "Welcome",
+    "votingStatus": "Voting Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "ended": "Ended",
+    "timeRemaining": "Time Remaining",
+    "voteNow": "Vote Now",
+    "selectCandidate": "Select a candidate to vote",
+    "castVote": "Cast Vote",
+    "voteSuccess": "Vote successfully cast",
+    "activeElectionSession": "Active Election Session",
+    "alreadyVotedTitle": "Already Voted",
+    "alreadyVotedRedirecting": "You have already cast your vote. Redirecting to results page...",
+    "candidateNumber": "Candidate #{{id}}",
+    "logout": "Logout",
+    "profile": {
+      "title": "Voter Profile",
+      "image": "Profile",
+      "voterId": "Voter ID",
+      "metamaskId": "Metamask ID",
+      "email": "Email",
+      "balance": "Balance"
+    },
+    "messages": {
+      "installMetamask": "Please install MetaMask",
+      "addPolygonNetwork": "Please add Polygon Amoy network to MetaMask manually",
+      "switchPolygonNetwork": "Please switch to Polygon Amoy network in MetaMask",
+      "connectMetamask": "Please connect your MetaMask account",
+      "alreadyVoted": "You have already cast your vote!",
+      "votingStatusError": "Failed to check voting status: {{error}}",
+      "votingNotStarted": "Voting has not started yet. Redirecting to declared results page.",
+      "votingEnded": "Voting has ended. Redirecting to declared results page.",
+      "fetchCandidatesError": "Failed to fetch candidates.",
+      "votingEndedCheckResults": "Voting has ended. Please check the results page.",
+      "enterCandidateId": "Please enter a candidate ID.",
+      "noMetamaskAccount": "Error: No Metamask account connected.",
+      "voteSuccess": "Vote cast successfully!",
+      "votingNotActive": "Voting is not currently active",
+      "invalidCandidate": "Invalid candidate selection",
+      "votingError": "Voting error:",
+      "failedToVote": "Failed to cast vote. Please try again",
+      "faceVerificationFailed": "Face verification failed. Please try again or login again.",
+      "metamaskIdMismatch": "Metamask ID does not match"
+    }
+  },
+  "results": {
+    "title": "Election Results",
+    "winner": "Winner",
+    "position": "Position",
+    "votes": "Votes",
+    "percentage": "Percentage",
+    "noResults": "No results available yet",
+    "historical": "Historical Results"
+  },
+  "about": {
+    "title": "About Us",
+    "description": "We are committed to providing a secure and transparent voting platform using blockchain technology."
+  },
+  "contact": {
+    "title": "Contact Us",
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "send": "Send Message"
+  },
+  "footer": {
+    "description": "ChainElect is a blockchain-based voting platform that ensures secure, transparent, and efficient elections.",
+    "quickLinks": "Quick Links",
+    "vote": "Vote",
+    "resources": "Resources",
+    "contactInfo": "Contact Info",
+    "location": "Solapur, Maharashtra, India",
+    "copyright": "Copyright",
+    "allRightsReserved": "All rights reserved."
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success!",
+    "close": "Close",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "yes": "Yes",
+    "no": "No",
+    "back": "Back",
+    "next": "Next"
+  },
+  "languageSelector": {
+    "language": "Language",
+    "english": "English",
+    "hindi": "Hindi",
+    "marathi": "Marathi"
+  }
+} 

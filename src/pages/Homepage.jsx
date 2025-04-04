@@ -8,8 +8,10 @@ import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
 import Register from "./Register";
 import Navbar from "../components/Navbar";
 import ContactUs from "../components/ContactUs";
+import { useTranslation } from 'react-i18next';
 
 const Homepage = () => {
+  const { t } = useTranslation();
 
   return (
     <>
@@ -18,18 +20,16 @@ const Homepage = () => {
         <Navbar home="/" features="/#features" aboutus="/#aboutus" contactus="/#contactus" />
 
         <div className="hero">
-          <h1>Chain Elect <br /><span>Secure Voting System</span></h1>
+          <h1>{t('app.title')} <br /><span>{t('app.slogan')}</span></h1>
           <p>
-            Welcome to Chain Elect, a blockchain-based voting system that ensures
-            secure, transparent, and tamper-proof elections. Your vote matters, and
-            we make sure it counts.
+            {t('home.welcome')}, {t('home.description')}
           </p>
           <div className="hero-buttons">
-            <Link to="/login" className="button">Login to Vote</Link>
-            <Link to="/register" className="button">Register Now</Link>
-            <Link to="/results" className="button">View Results</Link>
-            <Link to="/how-it-works" className="button">How It Works</Link>
-            <Link to="/declared-results" className="button">Historical Results</Link>
+            <Link to="/login" className="button">{t('nav.login')}</Link>
+            <Link to="/register" className="button">{t('nav.register')}</Link>
+            <Link to="/results" className="button">{t('nav.results')}</Link>
+            <Link to="/how-it-works" className="button">{t('nav.howItWorks')}</Link>
+            <Link to="/declared-results" className="button">{t('results.historical')}</Link>
           </div>
         </div>
       </section>

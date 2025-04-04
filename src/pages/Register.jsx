@@ -6,8 +6,10 @@ import FaceRegister from '../components/FaceRegister';
 import RegisterInstructions from '../components/RegisterInstructions';
 import contractConfig from '../utils/contractConfig';
 import { API_ENDPOINTS } from '../utils/api';
+import { useTranslation } from 'react-i18next';
 
 const Register = () => {
+  const { t } = useTranslation();
   const [voterId, setVoterId] = useState('');
   const [metamaskId, setMetamaskId] = useState('');
   const [email, setEmail] = useState('');
@@ -315,26 +317,26 @@ const Register = () => {
         <div className="register-wrapper">
           <div className="register-content">
             <div className="registration-success">
-              <h2>Registration Successful!</h2>
+              <h2>{t('register.successful')}</h2>
               <div className="success-message">
-                <p>We've sent a confirmation email to:</p>
+                <p>{t('register.emailSent')}</p>
                 <p className="email-highlight">{registeredEmail}</p>
-                <p>Please check your email and click the confirmation link to activate your account.</p>
+                <p>{t('register.checkEmail')}</p>
                 <div className="email-instructions">
-                  <h3>Next steps:</h3>
+                  <h3>{t('register.nextSteps')}</h3>
                   <ol>
-                    <li>Open your email inbox</li>
-                    <li>Look for an email from ChainElect</li>
-                    <li>Click the confirmation link in the email</li>
-                    <li>Once confirmed, you can log in to your account</li>
+                    <li>{t('register.openInbox')}</li>
+                    <li>{t('register.lookForEmail')}</li>
+                    <li>{t('register.clickLink')}</li>
+                    <li>{t('register.afterConfirmation')}</li>
                   </ol>
                 </div>
-                <p className="note">Note: If you don't see the email, please check your spam folder.</p>
+                <p className="note">{t('register.spamNote')}</p>
                 <button 
                   className="login-redirect-button"
                   onClick={() => navigate('/login')}
                 >
-                  Go to Login Page
+                  {t('register.goToLogin')}
                 </button>
               </div>
             </div>
@@ -351,51 +353,51 @@ const Register = () => {
       <div className="register-wrapper">
         <div className="register-content">
           <div className="register-header">
-            <h1>Create Account</h1>
-            <p>Join the secure voting platform</p>
+            <h1>{t('register.createAccount')}</h1>
+            <p>{t('register.joinPlatform')}</p>
           </div>
           
           {/* Metamask Connection Status */}
           <div className="metamask-status">
             {!isMetamaskInstalled ? (
               <div className="metamask-warning">
-                <p>MetaMask is not installed. Please install MetaMask to proceed with registration.</p>
+                <p>{t('register.metamaskNotInstalled')}</p>
                 <a 
                   href="https://metamask.io/download/" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="metamask-install-button"
                 >
-                  Install MetaMask
+                  {t('register.installMetamask')}
                 </a>
               </div>
             ) : !isMetamaskConnected ? (
               <div className="metamask-connect">
-                <p>Please connect your MetaMask wallet to proceed with registration.</p>
+                <p>{t('register.metamaskNotConnected')}</p>
                 <button 
                   type="button"
                   onClick={connectMetamask} 
                   className="metamask-connect-button"
                 >
-                  Connect MetaMask
+                  {t('register.connectMetamask')}
                 </button>
                 <button 
                   type="button"
                   onClick={addPolygonAmoyNetwork} 
                   className="metamask-network-button"
                 >
-                  Add Polygon Amoy Testnet
+                  {t('register.addPolygonNetwork')}
                 </button>
               </div>
             ) : (
               <div className="metamask-connected">
-                <p className="connected-status">✓ MetaMask Connected</p>
+                <p className="connected-status">{t('register.metamaskConnected')}</p>
                 <button 
                   type="button"
                   onClick={addPolygonAmoyNetwork} 
                   className="metamask-network-button"
                 >
-                  Add Polygon Amoy Testnet
+                  {t('register.addPolygonNetwork')}
                 </button>
               </div>
             )}
@@ -403,7 +405,7 @@ const Register = () => {
           
           <form onSubmit={handleSubmit} className="register-form">
             <div className="form-group">
-              <label htmlFor="voterId">Voter ID</label>
+              <label htmlFor="voterId">{t('register.voterId')}</label>
               <div className="input-wrapper">
                 <input
                   type="text"
@@ -411,17 +413,20 @@ const Register = () => {
                   name="voterId"
                   value={voterId}
                   onChange={handleInputChange}
-                  placeholder="Enter your Voter ID (e.g., ABC1234567)"
+                  placeholder={t('register.voterIdPlaceholder')}
                   required
                 />
                 {validationErrors.voterId && (
                   <div className="validation-error">{validationErrors.voterId}</div>
                 )}
+                {!validationErrors.voterId && (
+                  <p className="input-helper">{t('register.voterIdFormat')}</p>
+                )}
               </div>
             </div>
 
             <div className="form-group">
-              <label htmlFor="metamaskId">MetaMask ID</label>
+              <label htmlFor="metamaskId">{t('register.metamaskId')}</label>
               <div className="input-wrapper">
                 <input
                   type="text"
@@ -429,9 +434,9 @@ const Register = () => {
                   name="metamaskId"
                   value={metamaskId}
                   onChange={handleInputChange}
-                  placeholder="Enter your MetaMask ID (0x...)"
+                  placeholder={t('register.metamaskIdPlaceholder')}
+                  disabled={isMetamaskConnected}
                   required
-                  disabled={isMetamaskConnected} // Disable when connected through Metamask
                 />
                 {validationErrors.metamaskId && (
                   <div className="validation-error">{validationErrors.metamaskId}</div>
@@ -440,7 +445,7 @@ const Register = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">{t('register.email')}</label>
               <div className="input-wrapper">
                 <input
                   type="email"
@@ -448,7 +453,7 @@ const Register = () => {
                   name="email"
                   value={email}
                   onChange={handleInputChange}
-                  placeholder="Enter your email"
+                  placeholder={t('register.emailPlaceholder')}
                   required
                 />
                 {validationErrors.email && (
@@ -458,7 +463,7 @@ const Register = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">{t('register.password')}</label>
               <div className="input-wrapper">
                 <input
                   type="password"
@@ -466,7 +471,7 @@ const Register = () => {
                   name="password"
                   value={password}
                   onChange={handleInputChange}
-                  placeholder="Create a strong password"
+                  placeholder={t('register.passwordPlaceholder')}
                   required
                 />
                 {validationErrors.password && (
@@ -476,7 +481,7 @@ const Register = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="confirmPassword">Confirm Password</label>
+              <label htmlFor="confirmPassword">{t('register.confirmPassword')}</label>
               <div className="input-wrapper">
                 <input
                   type="password"
@@ -484,7 +489,7 @@ const Register = () => {
                   name="confirmPassword"
                   value={confirmPassword}
                   onChange={handleInputChange}
-                  placeholder="Confirm your password"
+                  placeholder={t('register.confirmPasswordPlaceholder')}
                   required
                 />
                 {validationErrors.confirmPassword && (
@@ -494,19 +499,19 @@ const Register = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="image">Profile Image</label>
+              <label htmlFor="image">{t('register.profileImage')}</label>
               <div className="input-wrapper">
                 <button
                   type="button"
                   className="capture-face-button"
                   onClick={() => setShowFaceCapture(true)}
                 >
-                  Capture Face Image
+                  {t('register.captureFace')}
                 </button>
               </div>
               {imagePreview && (
                 <div className="image-preview">
-                  <img src={imagePreview} alt="Preview" style={{ maxWidth: '200px', marginTop: '10px' }} />
+                  <img src={imagePreview} alt={t('register.preview')} style={{ maxWidth: '200px', marginTop: '10px' }} />
                 </div>
               )}
             </div>
@@ -533,11 +538,11 @@ const Register = () => {
               className={`register-button ${isLoading ? 'loading' : ''}`}
               disabled={isLoading}
             >
-              {isLoading ? 'Creating Account...' : 'Create Account'}
+              {isLoading ? t('register.creatingAccount') : t('register.createAccountButton')}
             </button>
 
             <div className="register-footer">
-              <p>Already have an account? <a href="/login">Login here</a></p>
+              <p>{t('register.haveAccount')} <a href="/login">{t('register.login')}</a></p>
             </div>
           </form>
         </div>

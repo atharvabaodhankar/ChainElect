@@ -247,6 +247,9 @@ line-height: 2.5rem;
 .box-desc{ 
     padding: 0 2rem; 
 } 
+.features .box h2::after{
+  display: none;
+}
  
 .features p,h2 { 
     color:#100d0dcc; 

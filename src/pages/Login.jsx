@@ -4,8 +4,10 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import contractConfig from '../utils/contractConfig';
 import { API_ENDPOINTS, apiRequest } from '../utils/api';
+import { useTranslation } from 'react-i18next';
 
 const Login = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -33,7 +35,7 @@ const Login = () => {
       });
     } catch (error) {
       console.error('Error adding network:', error);
-      setErrorMessage('Failed to add Polygon Amoy Testnet network. Please try again.');
+      setErrorMessage(t('login.networkError'));
     }
   };
 
@@ -64,7 +66,7 @@ const Login = () => {
       setIsMetamaskConnected(true);
     } catch (error) {
       console.error('Error connecting to Metamask:', error);
-      setErrorMessage('Failed to connect to Metamask. Please try again.');
+      setErrorMessage(t('login.metamaskConnectionError'));
     }
   };
 
@@ -73,7 +75,7 @@ const Login = () => {
     
     // Check if Metamask is connected before proceeding
     if (!isMetamaskConnected) {
-      setErrorMessage('Please connect your Metamask wallet before logging in.');
+      setErrorMessage(t('login.connectMetamaskFirst'));
       return;
     }
     
@@ -99,11 +101,11 @@ const Login = () => {
         localStorage.setItem('voter_data', JSON.stringify(data.voter));
         navigate('/voters');
       } else {
-        setErrorMessage(data.message || 'Login failed. Please try again.');
+        setErrorMessage(data.message || t('login.loginFailed'));
       }
     } catch (error) {
       console.error('Error:', error);
-      setErrorMessage('An error occurred. Please try again.');
+      setErrorMessage(t('common.error'));
     } finally {
       setIsLoading(false);
     }
@@ -115,77 +117,71 @@ const Login = () => {
       <div className="login-wrapper">
         <div className="login-content">
           <div className="login-header">
-            <h1>Welcome Back</h1>
-            <p>Enter your credentials to access your account</p>
+            <h1>{t('login.welcomeBack')}</h1>
+            <p>{t('login.enterCredentials')}</p>
           </div>
           
           {/* Metamask Connection Status */}
           <div className="metamask-status">
             {!isMetamaskInstalled ? (
               <div className="metamask-warning">
-                <p>MetaMask is not installed. Please install MetaMask to proceed.</p>
+                <p>{t('login.metamaskNotInstalled')}</p>
                 <a 
                   href="https://metamask.io/download/" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="metamask-install-button"
                 >
-                  Install MetaMask
+                  {t('login.installMetamask')}
                 </a>
               </div>
             ) : !isMetamaskConnected ? (
-              <div className="metamask-connect">
-                <p>Please connect your MetaMask wallet to proceed with login.</p>
+              <div className="metamask-warning">
+                <p>{t('login.metamaskNotConnected')}</p>
                 <button 
-                  onClick={connectMetamask} 
+                  onClick={connectMetamask}
                   className="metamask-connect-button"
                 >
-                  Connect MetaMask
-                </button>
-                <button 
-                  onClick={addPolygonAmoyNetwork} 
-                  className="metamask-network-button"
-                >
-                  Add Polygon Amoy Testnet
+                  {t('login.connectMetamask')}
                 </button>
               </div>
             ) : (
               <div className="metamask-connected">
-                <p className="connected-status">✓ MetaMask Connected</p>
+                <p>{t('login.metamaskConnected')}</p>
                 <button 
-                  onClick={addPolygonAmoyNetwork} 
+                  onClick={addPolygonAmoyNetwork}
                   className="metamask-network-button"
                 >
-                  Add Polygon Amoy Testnet
+                  {t('login.switchToAmoy')}
                 </button>
               </div>
             )}
           </div>
-          
+
           <form onSubmit={handleSubmit} className="login-form">
             <div className="form-group">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">{t('login.email')}</label>
               <div className="input-wrapper">
                 <input
                   type="email"
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
+                  placeholder={t('login.emailPlaceholder')}
                   required
                 />
               </div>
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">{t('login.password')}</label>
               <div className="input-wrapper">
                 <input
                   type="password"
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
+                  placeholder={t('login.passwordPlaceholder')}
                   required
                 />
               </div>
@@ -202,11 +198,11 @@ const Login = () => {
               className={`login-button ${isLoading ? 'loading' : ''}`}
               disabled={isLoading || !isMetamaskConnected}
             >
-              {isLoading ? 'Logging in...' : 'Login'}
+              {isLoading ? t('login.loggingIn') : t('login.submit')}
             </button>
 
             <div className="login-footer">
-              <p>Don't have an account? <a href="/register">Register here</a></p>
+              <p>{t('login.noAccount')} <a href="/register">{t('login.register')}</a></p>
             </div>
           </form>
         </div>

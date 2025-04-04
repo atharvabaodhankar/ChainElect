@@ -1,6 +1,9 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const RegisterInstructions = ({ onStart }) => {
+  const { t } = useTranslation();
+  
   const handleStartClick = () => {
     // Scroll to top before starting registration
     window.scrollTo({
@@ -17,29 +20,29 @@ const RegisterInstructions = ({ onStart }) => {
     <div className="register-instructions">
       <div className="instructions-content">
         <div className="instructions-header">
-          <h2>Welcome to ChainElect</h2>
-          <p>Follow these steps to complete your registration and secure your voting identity</p>
+          <h2>{t('registerInstructions.welcome')}</h2>
+          <p>{t('registerInstructions.followSteps')}</p>
         </div>
 
         <div className="instructions-steps">
           <div className="instruction-step">
             <div className="step-number">1</div>
             <div className="step-content">
-              <h3>Prepare Your Environment</h3>
-              <p>Find a well-lit area and ensure your face is clearly visible to your camera. Remove any face coverings or accessories that might obstruct your features.</p>
+              <h3>{t('registerInstructions.prepareEnvironment.title')}</h3>
+              <p>{t('registerInstructions.prepareEnvironment.description')}</p>
             </div>
           </div>
 
           <div className="instruction-step">
             <div className="step-number">2</div>
             <div className="step-content">
-              <h3>MetaMask Setup</h3>
-              <p>Install and set up MetaMask in your browser:</p>
+              <h3>{t('registerInstructions.metamaskSetup.title')}</h3>
+              <p>{t('registerInstructions.metamaskSetup.description')}</p>
               <ul className="metamask-steps">
-                <li>Install MetaMask from <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer" className="metamask-link">metamask.io/download</a></li>
-                <li>Create a new wallet or import an existing one</li>
-                <li>Keep your recovery phrase safe and secure</li>
-                <li>Copy your MetaMask wallet address (it starts with 0x)</li>
+                <li>{t('registerInstructions.metamaskSetup.step1')} <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer" className="metamask-link">metamask.io/download</a></li>
+                <li>{t('registerInstructions.metamaskSetup.step2')}</li>
+                <li>{t('registerInstructions.metamaskSetup.step3')}</li>
+                <li>{t('registerInstructions.metamaskSetup.step4')}</li>
               </ul>
             </div>
           </div>
@@ -47,45 +50,45 @@ const RegisterInstructions = ({ onStart }) => {
           <div className="instruction-step">
             <div className="step-number">3</div>
             <div className="step-content">
-              <h3>Face Capture</h3>
-              <p>Position your face within the frame and maintain a neutral expression. The system will capture your facial features for secure authentication.</p>
+              <h3>{t('registerInstructions.faceCapture.title')}</h3>
+              <p>{t('registerInstructions.faceCapture.description')}</p>
             </div>
           </div>
 
           <div className="instruction-step">
             <div className="step-number">4</div>
             <div className="step-content">
-              <h3>Verification</h3>
-              <p>Your facial features will be securely stored and used for future authentication when you participate in elections.</p>
+              <h3>{t('registerInstructions.verification.title')}</h3>
+              <p>{t('registerInstructions.verification.description')}</p>
             </div>
           </div>
         </div>
 
         <div className="requirements-list">
-          <h3>Requirements</h3>
+          <h3>{t('registerInstructions.requirements.title')}</h3>
           <ul>
-            <li>Good lighting conditions</li>
-            <li>Clear view of your face</li>
-            <li>Neutral expression</li>
-            <li>No face coverings or accessories</li>
-            <li>Stable internet connection</li>
-            <li>MetaMask wallet installed and configured</li>
+            <li>{t('registerInstructions.requirements.lighting')}</li>
+            <li>{t('registerInstructions.requirements.clearView')}</li>
+            <li>{t('registerInstructions.requirements.neutralExpression')}</li>
+            <li>{t('registerInstructions.requirements.noFaceCoverings')}</li>
+            <li>{t('registerInstructions.requirements.stableInternet')}</li>
+            <li>{t('registerInstructions.requirements.metamaskWallet')}</li>
           </ul>
         </div>
 
         <div className="important-notes">
-          <h3>⚠️ Important Notes</h3>
+          <h3>{t('registerInstructions.importantNotes.title')}</h3>
           <ul>
-            <li className="warning">Do NOT upload any photos of friends, relatives, or other people</li>
-            <li className="warning">Do NOT upload a pre-existing photo of yourself</li>
-            <li className="warning">Only use the live face capture feature for registration</li>
-            <li>Your face data is encrypted and stored securely</li>
-            <li>Keep your MetaMask recovery phrase and private keys safe</li>
+            <li className="warning">{t('registerInstructions.importantNotes.warning1')}</li>
+            <li className="warning">{t('registerInstructions.importantNotes.warning2')}</li>
+            <li className="warning">{t('registerInstructions.importantNotes.warning3')}</li>
+            <li>{t('registerInstructions.importantNotes.note1')}</li>
+            <li>{t('registerInstructions.importantNotes.note2')}</li>
           </ul>
         </div>
 
         <button className="start-registration-button" onClick={handleStartClick}>
-          Start Registration
+          {t('registerInstructions.startButton')}
         </button>
       </div>
     </div>

@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import LanguageSelector from './LanguageSelector';
 
 const Navbar = (props) => {
+    const { t } = useTranslation();
     const [navbarState, setNavbarState] = useState(false);
     const navbarRef = useRef(null);  // Use useRef to reference the navbar DOM element
 
@@ -43,45 +46,37 @@ const Navbar = (props) => {
         <nav id="navbar" ref={navbarRef}>
             <div className="logo">
                 <Link to="/">
-                    <h1>ChainElect</h1>
+                    <h1>{t('app.title')}</h1>
                 </Link>
             </div>
             <ul className={navbarState ? "nav active" : "nav"}>
                 <li>
-                    <Link to="/">Home</Link>
+                    <Link to="/">{t('nav.home')}</Link>
                 </li>
                 <li>
-                    <a href={props.features}>Features</a>
+                <Link to="/register">{t('nav.register')}</Link>
                 </li>
                 <li>
-                    <Link to="/voting-revolution">Voting Revolution</Link>
+                    <Link to="/voting-revolution">{t('nav.votingRevolution')}</Link>
                 </li>
                 <li>
-                    <Link to="/how-it-works">How It Works</Link>
+                    <Link to="/how-it-works">{t('nav.howItWorks')}</Link>
                 </li>
+
                 <li>
-                    <a href={props.aboutus}>About Us</a>
-                </li>
-                <li>
-                    <a href={props.contactus}>Contact Us</a>
+                    <a href={props.contactus}>{t('nav.contact')}</a>
                 </li>
                 <li className="auth-links">
-                    <Link to="/login" className="nav-button login">Login</Link>
+                    <Link to="/login" className="nav-button login">{t('nav.login')}</Link>
                 </li>
-                <li className="auth-links">
-                    <Link to="/register" className="nav-button register">Register</Link>
-                </li>
-                <li className="auth-links">
-                    <Link to="/results" className="nav-button results">Results</Link>
+                <li>
+                    <LanguageSelector />
                 </li>
             </ul>
-            <div
-                className="hamburger"
-                onClick={() => setNavbarState(!navbarState)}
-            >
-                <div className="line"></div>
-                <div className="line"></div>
-                <div className="line"></div>
+            <div className="hamburger" onClick={() => {setNavbarState(!navbarState)}}>
+                <span className="line"></span>
+                <span className="line"></span>
+                <span className="line"></span>
             </div>
         </nav>
     );

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import Navbar from "../components/Navbar";
 import Conn_web from "../components/Conn_web";
 import Web3 from "web3";
@@ -38,6 +39,7 @@ const getRpcErrorMessage = (error) => {
 };
 
 const Voters = () => {
+  const { t } = useTranslation();
   const [candidates, setCandidates] = useState([]);
   const [userInfo, setUserInfo] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
@@ -65,7 +67,7 @@ const Voters = () => {
     const checkVotingStatus = async () => {
       try {
         if (!window.ethereum) {
-          setMessage("Please install MetaMask");
+          setMessage(t('voter.messages.installMetamask'));
           return;
         }
 
@@ -95,12 +97,12 @@ const Voters = () => {
               });
             } catch (addError) {
               console.error("Error adding Polygon Amoy network:", addError);
-              setMessage("Please add Polygon Amoy network to MetaMask manually");
+              setMessage(t('voter.messages.addPolygonNetwork'));
               return;
             }
           } else {
             console.error("Error switching to Polygon Amoy network:", switchError);
-            setMessage("Please switch to Polygon Amoy network in MetaMask");
+            setMessage(t('voter.messages.switchPolygonNetwork'));
             return;
           }
         }
@@ -109,7 +111,7 @@ const Voters = () => {
         const accounts = await web3.eth.getAccounts();
         
         if (!accounts || accounts.length === 0) {
-          setMessage("Please connect your MetaMask account");
+          setMessage(t('voter.messages.connectMetamask'));
           return;
         }
 
@@ -126,7 +128,7 @@ const Voters = () => {
         const voter = await contractInstance.methods.voters(accounts[0]).call();
         
         if (voter.hasVoted) {
-          setMessage("You have already cast your vote!");
+          setMessage(t('voter.messages.alreadyVoted'));
           setHasVoted(true);
           // Redirect to results page after a short delay
           setTimeout(() => {
@@ -139,12 +141,12 @@ const Voters = () => {
         setAccounts(accounts);
       } catch (error) {
         console.error("Error checking voting status:", error);
-        setMessage("Failed to check voting status: " + error.message);
+        setMessage(t('voter.messages.votingStatusError', { error: error.message }));
       }
     };
 
     checkVotingStatus();
-  }, [navigate]);
+  }, [navigate, t]);
 
   useEffect(() => {
     const fetchCandidates = async () => {
@@ -174,7 +176,7 @@ const Voters = () => {
         setRemainingTime(remainingSeconds);
 
         if (!votingStarted) {
-          setMessage("Voting has not started yet. Redirecting to declared results page.");
+          setMessage(t('voter.messages.votingNotStarted'));
           setTimeout(() => {
             navigate("/declared-results");
           }, 2000);
@@ -182,7 +184,7 @@ const Voters = () => {
         }
 
         if (votingEnded || remainingSeconds <= 0) {
-          setMessage("Voting has ended. Redirecting to declared results page.");
+          setMessage(t('voter.messages.votingEnded'));
           setTimeout(() => {
             navigate("/declared-results");
           }, 2000);
@@ -203,12 +205,12 @@ const Voters = () => {
         setContract(contract);
       } catch (error) {
         console.error("Error fetching candidates: ", error);
-        setErrorMessage("Failed to fetch candidates.");
+        setErrorMessage(t('voter.messages.fetchCandidatesError'));
       }
     };
 
     fetchCandidates();
-  }, [navigate, hasVoted]);
+  }, [navigate, hasVoted, t]);
 
   // Update timer effect
   useEffect(() => {
@@ -229,7 +231,7 @@ const Voters = () => {
           if (votingEnded || remainingSeconds <= 0) {
             clearInterval(interval);
             clearInterval(contractSync);
-            setMessage("Voting has ended. Please check the results page.");
+            setMessage(t('voter.messages.votingEndedCheckResults'));
             setRemainingTime(0);
             navigate("/results");
             return;
@@ -252,12 +254,12 @@ const Voters = () => {
         if (contractSync) clearInterval(contractSync);
       };
     }
-  }, [contract, remainingTime, navigate]);
+  }, [contract, remainingTime, navigate, t]);
 
   // Modified handleVote function
   const handleVote = async (id) => {
     if (!id) {
-      setMessage("Please enter a candidate ID.");
+      setMessage(t('voter.messages.enterCandidateId'));
       return;
     }
 
@@ -270,7 +272,7 @@ const Voters = () => {
       // Request account access and reinitialize Web3
       const currentAccounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       if (!currentAccounts || currentAccounts.length === 0) {
-        setMessage("Error: No Metamask account connected.");
+        setMessage(t('voter.messages.noMetamaskAccount'));
         return;
       }
       const currentAccount = currentAccounts[0];
@@ -290,7 +292,7 @@ const Voters = () => {
       // Check if user has already voted
       const voter = await contractInstance.methods.voters(currentAccount).call();
       if (voter.hasVoted) {
-        setMessage("You have already cast your vote!");
+        setMessage(t('voter.messages.alreadyVoted'));
         setShowErrorPopup(true);
         return;
       }
@@ -302,7 +304,7 @@ const Voters = () => {
         gas: contractConfig.polygonAmoy.transactionConfig.gasLimit
       });
       
-      setMessage("Vote cast successfully!");
+      setMessage(t('voter.messages.voteSuccess'));
       setShowPopup(true);
       setCandidates((prevCandidates) =>
         prevCandidates.map((candidate) =>
@@ -313,15 +315,15 @@ const Voters = () => {
       );
     } catch (error) {
       if (error.message.includes('You have already voted')) {
-        setMessage("You have already cast your vote!");
+        setMessage(t('voter.messages.alreadyVoted'));
       } else if (error.message.includes('Voting is not active')) {
-        setMessage("Voting is not currently active");
+        setMessage(t('voter.messages.votingNotActive'));
       } else if (error.message.includes('Invalid candidate')) {
-        setMessage("Invalid candidate selection");
+        setMessage(t('voter.messages.invalidCandidate'));
       } else if (isRpcError(error)) {
-        setMessage("Voting error: " + getRpcErrorMessage(error));
+        setMessage(t('voter.messages.votingError') + " " + getRpcErrorMessage(error));
       } else {
-        setMessage("Failed to cast vote. Please try again");
+        setMessage(t('voter.messages.failedToVote'));
       }
       setShowErrorPopup(true);
       console.error("Error casting vote:", error);
@@ -332,7 +334,7 @@ const Voters = () => {
   };
 
   const handleFaceAuthFailure = () => {
-    setMessage("Face verification failed. Please try again or login again.");
+    setMessage(t('voter.messages.faceVerificationFailed'));
     setShowErrorPopup(true);
     setShowFaceAuth(false);
     setSelectedCandidateId(null);
@@ -374,7 +376,7 @@ const Voters = () => {
           console.log("Fetched user info:", data);
           // Compare with current Metamask ID
           if (currentMetamaskId && currentMetamaskId !== data.metamask_id.toLowerCase()) {
-            alert('Metamask ID does not match');
+            alert(t('voter.messages.metamaskIdMismatch'));
             handleLogout();
           }
         }
@@ -384,7 +386,7 @@ const Voters = () => {
     };
 
     fetchUserInfo();
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (window.ethereum) {
@@ -413,8 +415,8 @@ const Voters = () => {
         <Navbar home="/" features="/#features" aboutus="/#aboutus" contactus="/#contactus" />
         <div className="voters-page">
           <div className="voting-message">
-            <h2>Already Voted</h2>
-            <p>You have already cast your vote. Redirecting to results page...</p>
+            <h2>{t('voter.alreadyVotedTitle')}</h2>
+            <p>{t('voter.alreadyVotedRedirecting')}</p>
           </div>
         </div>
       </div>
@@ -442,10 +444,10 @@ const Voters = () => {
         {showPopup && message && (
           <div className="vote-success-overlay">
             <div className="vote-success-modal">
-              <img src={tickGif} alt="Success" className="success-gif" />
+              <img src={tickGif} alt={t('common.success')} className="success-gif" />
               <h2>{message}</h2>
               <button className="close-button" onClick={() => setShowPopup(false)}>
-                Close
+                {t('common.close')}
               </button>
             </div>
           </div>
@@ -457,7 +459,7 @@ const Voters = () => {
               <div className="error-content">
                 <h2>{message}</h2>
                 <button className="error-close-button" onClick={() => setShowErrorPopup(false)}>
-                  OK
+                  {t('common.ok')}
                 </button>
               </div>
             </div>
@@ -466,10 +468,10 @@ const Voters = () => {
         
         {!message.includes("not started") && (
           <div className="voting-status-section">
-            <h1>Active Election Session</h1>
+            <h1>{t('voter.activeElectionSession')}</h1>
             {remainingTime > 0 && (
               <div className="time-display">
-                <span className="time-label">Time Remaining</span>
+                <span className="time-label">{t('voter.timeRemaining')}</span>
                 <span className="time-value">{formatTime(remainingTime)}</span>
               </div>
             )}
@@ -481,46 +483,45 @@ const Voters = () => {
             <div key={candidate.id} className="candidate-modern-card">
               <div className="candidate-content">
                 <div>
-                  <h2>{candidate.name}</h2>
-                  <p className="candidate-id">Candidate #{candidate.id}</p>
+                  <h2>{t(`candidates.${candidate.name}`, {defaultValue: candidate.name})}</h2>
+                  <p className="candidate-id">{t('voter.candidateNumber', { id: candidate.id })}</p>
                 </div>
                 <button
                   onClick={() => handleVote(candidate.id)}
                   className="modern-vote-button"
                 >
-                  Cast Vote
+                  {t('voter.castVote')}
                 </button>
               </div>
             </div>
           ))}
         </div>
 
-
         {userInfo && (
           <div className="voter-profile-section">
             <div className="profile-header">
-              <h2>Voter Profile</h2>
+              <h2>{t('voter.profile.title')}</h2>
               {userInfo.image_url && (
                 <div className="profile-image-container">
-                  <img src={userInfo.image_url} alt="Profile" className="profile-image" />
+                  <img src={userInfo.image_url} alt={t('voter.profile.image')} className="profile-image" />
                 </div>
               )}
             </div>
             <div className="profile-details">
               <div className="detail-item">
-                <span className="detail-label">Voter ID</span>
+                <span className="detail-label">{t('voter.profile.voterId')}</span>
                 <span className="detail-value">{userInfo.voter_id}</span>
               </div>
               <div className="detail-item">
-                <span className="detail-label">Metamask ID</span>
+                <span className="detail-label">{t('voter.profile.metamaskId')}</span>
                 <span className="detail-value">{userInfo.metamask_id}</span>
               </div>
               <div className="detail-item">
-                <span className="detail-label">Email</span>
+                <span className="detail-label">{t('voter.profile.email')}</span>
                 <span className="detail-value">{userInfo.email}</span>
               </div>
               <div className="detail-item">
-                <span className="detail-label">Balance</span>
+                <span className="detail-label">{t('voter.profile.balance')}</span>
                 <span className="detail-value">{<Conn_web updateMetamaskId={updateWalletInfo} />}&nbsp;ETH</span>
               </div>
             </div>
@@ -528,7 +529,7 @@ const Voters = () => {
         )}
 
         <button onClick={handleLogout} className="modern-logout-button">
-          Logout
+          {t('voter.logout')}
         </button>
       </div>
     </div>
