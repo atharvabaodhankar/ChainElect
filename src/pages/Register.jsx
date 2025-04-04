@@ -12,6 +12,7 @@ const Register = () => {
   const [metamaskId, setMetamaskId] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
@@ -29,7 +30,8 @@ const Register = () => {
     voterId: '',
     metamaskId: '',
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: ''
   });
 
   // Function to add Polygon Amoy Testnet network
@@ -152,6 +154,20 @@ const Register = () => {
         break;
       case 'password':
         setPassword(value);
+        // Validate confirm password when password changes
+        if (confirmPassword) {
+          setValidationErrors(prev => ({
+            ...prev,
+            confirmPassword: value !== confirmPassword ? 'Passwords do not match' : ''
+          }));
+        }
+        break;
+      case 'confirmPassword':
+        setConfirmPassword(value);
+        setValidationErrors(prev => ({
+          ...prev,
+          confirmPassword: value !== password ? 'Passwords do not match' : ''
+        }));
         break;
       default:
         break;
@@ -159,7 +175,9 @@ const Register = () => {
     
     setValidationErrors(prev => ({
       ...prev,
-      [name]: validateField(name, value)
+      [name]: name === 'confirmPassword' ? 
+        (value !== password ? 'Passwords do not match' : '') :
+        validateField(name, value)
     }));
   };
 
@@ -200,12 +218,19 @@ const Register = () => {
       return;
     }
 
+    // Check if passwords match
+    if (password !== confirmPassword) {
+      setErrorMessage('Passwords do not match');
+      return;
+    }
+
     // Validate all fields
     const errors = {
       voterId: validateField('voterId', voterId),
       metamaskId: validateField('metamaskId', metamaskId),
       email: validateField('email', email),
-      password: validateField('password', password)
+      password: validateField('password', password),
+      confirmPassword: password !== confirmPassword ? 'Passwords do not match' : ''
     };
 
     setValidationErrors(errors);
@@ -256,6 +281,7 @@ const Register = () => {
         setMetamaskId('');
         setEmail('');
         setPassword('');
+        setConfirmPassword('');
         setImage(null);
         setImagePreview(null);
       } else {
@@ -445,6 +471,24 @@ const Register = () => {
                 />
                 {validationErrors.password && (
                   <div className="validation-error">{validationErrors.password}</div>
+                )}
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="confirmPassword">Confirm Password</label>
+              <div className="input-wrapper">
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={confirmPassword}
+                  onChange={handleInputChange}
+                  placeholder="Confirm your password"
+                  required
+                />
+                {validationErrors.confirmPassword && (
+                  <div className="validation-error">{validationErrors.confirmPassword}</div>
                 )}
               </div>
             </div>
