@@ -269,6 +269,7 @@ line-height: 2.5rem;
     justify-content: center;
     align-items: center;
     margin-top: 20rem;
+    margin-bottom: 0 !important;
 }
 .waves {
   position: relative;
@@ -895,6 +896,12 @@ line-height: 2.5rem;
     .box{
       height: 23rem;
     }
+    .hero {
+      padding-top: 10rem;
+  }
+  .hero h1 span{
+    font-size: 5vw;
+  }
 }
 
 /* Results Page Styles */
@@ -1110,12 +1117,10 @@ line-height: 2.5rem;
 
 @media screen and (max-width: 768px) {
   .hero-buttons {
-    flex-direction: column;
     width: 100%;
   }
 
   .hero-buttons .button {
-    width: 100%;
     min-width: unset;
   }
 }

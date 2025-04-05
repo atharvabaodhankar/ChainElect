@@ -41,13 +41,13 @@ const Footer = () => {
         <div className="footer-contact">
           <h4>{t('footer.contactInfo')}</h4>
           <ul>
-            <li><a href="mailto:support@chainelect.com">support@chainelect.com</a></li>
+            <li><a href="mailto:chainelect@gmail.com">chainelect@gmail.com</a></li>
             <li>{t('footer.location')}</li>
           </ul>
         </div>
       </div>
       <div className="footer-bottom">
-        <p>{t('footer.copyright')} &copy; 2024-2025 {t('app.title')}. {t('footer.allRightsReserved')}</p>
+        <p>{t('footer.copyright')} &copy; 2025 {t('app.title')}. {t('footer.allRightsReserved')}</p>
       </div>
     </section>
   );

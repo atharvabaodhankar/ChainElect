@@ -28,7 +28,7 @@ const Homepage = () => {
             <Link to="/login" className="button">{t('nav.login')}</Link>
             <Link to="/register" className="button">{t('nav.register')}</Link>
             <Link to="/results" className="button">{t('nav.results')}</Link>
-            <Link to="/how-it-works" className="button">{t('nav.howItWorks')}</Link>
+      
             <Link to="/declared-results" className="button">{t('results.historical')}</Link>
           </div>
         </div>
