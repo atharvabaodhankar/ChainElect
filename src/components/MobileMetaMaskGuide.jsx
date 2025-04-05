@@ -75,6 +75,21 @@ const MobileLanguageSelector = () => {
 
 const MobileMetaMaskGuide = () => {
   const { t } = useTranslation();
+  const videoRef = useRef(null);
+
+  const toggleFullscreen = () => {
+    const video = videoRef.current;
+    
+    if (!video) return;
+    
+    if (video.requestFullscreen) {
+      video.requestFullscreen();
+    } else if (video.webkitRequestFullscreen) { /* Safari */
+      video.webkitRequestFullscreen();
+    } else if (video.msRequestFullscreen) { /* IE11 */
+      video.msRequestFullscreen();
+    }
+  };
 
   return (
     <div className="mobile-metamask-guide">
@@ -142,9 +157,18 @@ const MobileMetaMaskGuide = () => {
             <div className="step-number">3</div>
             <div className="step-content">
               <h3>{t('mobileGuide.step3.title')}</h3>
-              <p>{t('mobileGuide.step3.description')}</p>
-              <div className="step-video-container">
+              <p>{t('mobileGuide.step3.clickDescription')}</p>
+              <div className="step-video-container" onClick={toggleFullscreen}>
+                <div className="video-overlay">
+                  <div className="play-icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M10 8L16 12L10 16V8Z" fill="white" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
                 <video 
+                  ref={videoRef}
                   className="guide-video" 
                   autoPlay 
                   muted 

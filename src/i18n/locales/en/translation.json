@@ -550,6 +550,7 @@
     "step3": {
       "title": "Connect Your Wallet",
       "description": "Follow these easy steps to connect your wallet",
+      "clickDescription": "Click on the video below to view the connection steps in fullscreen",
       "videoFallback": "Your browser does not support the video tag."
     },
     "securityNote": "For security reasons, blockchain interactions on mobile devices require MetaMask."
