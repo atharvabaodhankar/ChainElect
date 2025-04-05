@@ -1,7 +1,81 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { openInMetaMask } from '../utils/mobileDetection';
 
+const MobileLanguageSelector = () => {
+  const { t, i18n } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  
+  // Available languages
+  const languages = [
+    { code: 'en', name: t('languageSelector.english') },
+    { code: 'hi', name: t('languageSelector.hindi') },
+    { code: 'mr', name: t('languageSelector.marathi') }
+  ];
+
+  // Get current language name
+  const getCurrentLanguageName = () => {
+    const currentLang = languages.find(lang => lang.code === i18n.language);
+    return currentLang ? currentLang.name : languages[0].name;
+  };
+
+  // Change language handler
+  const changeLanguage = (code) => {
+    i18n.changeLanguage(code);
+    setIsOpen(false);
+    // Save to localStorage
+    localStorage.setItem('i18nextLng', code);
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  return (
+    <div className="mobile-language-selector" ref={dropdownRef}>
+      <button 
+        className="mobile-language-button" 
+        onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+        aria-label={t('languageSelector.language')}
+      >
+        <span className="language-icon">🌐</span>
+        <span className="current-language">{getCurrentLanguageName()}</span>
+        <span className={`dropdown-arrow ${isOpen ? 'open' : ''}`}>▼</span>
+      </button>
+      
+      {isOpen && (
+        <ul className="mobile-language-dropdown">
+          {languages.map((language) => (
+            <li key={language.code}>
+              <button
+                className={`language-option ${i18n.language === language.code ? 'active' : ''}`}
+                onClick={() => changeLanguage(language.code)}
+              >
+                {language.name}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
 const MobileMetaMaskGuide = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="mobile-metamask-guide">
       <div className="metamask-guide-container">
@@ -17,16 +91,18 @@ const MobileMetaMaskGuide = () => {
               }}
             />
           </div>
-          <h1>Mobile Setup Required</h1>
-          <p>To access all features and connect to the blockchain securely</p>
+          <h1>{t('mobileGuide.title')}</h1>
+          <p>{t('mobileGuide.subtitle')}</p>
         </div>
+        
+        <MobileLanguageSelector />
         
         <div className="guide-steps-container">
           <div className="guide-step-card">
             <div className="step-number">1</div>
             <div className="step-content">
-              <h3>Install MetaMask</h3>
-              <p>Download the official MetaMask mobile app from your app store</p>
+              <h3>{t('mobileGuide.step1.title')}</h3>
+              <p>{t('mobileGuide.step1.description')}</p>
               <a 
                 href="https://metamask.io/download/" 
                 target="_blank" 
@@ -38,7 +114,7 @@ const MobileMetaMaskGuide = () => {
                   <path d="M9 13L12 16L15 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   <path d="M19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                Download MetaMask
+                {t('mobileGuide.step1.button')}
               </a>
             </div>
           </div>
@@ -46,8 +122,8 @@ const MobileMetaMaskGuide = () => {
           <div className="guide-step-card">
             <div className="step-number">2</div>
             <div className="step-content">
-              <h3>Open in MetaMask Browser</h3>
-              <p>Launch this site securely in the MetaMask mobile browser</p>
+              <h3>{t('mobileGuide.step2.title')}</h3>
+              <p>{t('mobileGuide.step2.description')}</p>
               <button 
                 onClick={openInMetaMask}
                 className="metamask-action-button open-button"
@@ -57,24 +133,27 @@ const MobileMetaMaskGuide = () => {
                   <path d="M15 3H21V9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   <path d="M10 14L21 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                Open in MetaMask
+                {t('mobileGuide.step2.button')}
               </button>
             </div>
           </div>
           
-          <div className="guide-step-card">
+          <div className="guide-step-card video-step">
             <div className="step-number">3</div>
             <div className="step-content">
-              <h3>Connect Your Wallet</h3>
-              <p>Once in the MetaMask browser, connect your wallet when prompted</p>
-              <div className="connect-visual">
-                <svg className="connect-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M20 12V22H4V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M22 7H2V12H22V7Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M12 22V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M12 7H16.5C17.163 7 17.7989 6.73661 18.2678 6.26777C18.7366 5.79893 19 5.16304 19 4.5C19 3.83696 18.7366 3.20107 18.2678 2.73223C17.7989 2.26339 17.163 2 16.5 2C13 2 12 7 12 7Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M12 7H7.5C6.83696 7 6.20107 6.73661 5.73223 6.26777C5.26339 5.79893 5 5.16304 5 4.5C5 3.83696 5.26339 3.20107 5.73223 2.73223C6.20107 2.26339 6.83696 2 7.5 2C11 2 12 7 12 7Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+              <h3>{t('mobileGuide.step3.title')}</h3>
+              <p>{t('mobileGuide.step3.description')}</p>
+              <div className="step-video-container">
+                <video 
+                  className="guide-video" 
+                  autoPlay 
+                  muted 
+                  loop 
+                  playsInline
+                >
+                  <source src="/images/hero.mp4" type="video/mp4" />
+                  {t('mobileGuide.step3.videoFallback')}
+                </video>
               </div>
             </div>
           </div>
@@ -86,7 +165,7 @@ const MobileMetaMaskGuide = () => {
             <path d="M12 8V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             <path d="M12 16H12.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
-          <p>For security reasons, blockchain interactions on mobile devices require MetaMask.</p>
+          <p>{t('mobileGuide.securityNote')}</p>
         </div>
       </div>
     </div>

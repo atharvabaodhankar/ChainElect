@@ -533,5 +533,25 @@
     "english": "English",
     "hindi": "Hindi",
     "marathi": "Marathi"
+  },
+  "mobileGuide": {
+    "title": "Mobile Setup Required",
+    "subtitle": "To access all features and connect to the blockchain securely",
+    "step1": {
+      "title": "Install MetaMask",
+      "description": "Download the official MetaMask mobile app from your app store",
+      "button": "Download MetaMask"
+    },
+    "step2": {
+      "title": "Open in MetaMask Browser",
+      "description": "Launch this site securely in the MetaMask mobile browser",
+      "button": "Open in MetaMask"
+    },
+    "step3": {
+      "title": "Connect Your Wallet",
+      "description": "Follow these easy steps to connect your wallet",
+      "videoFallback": "Your browser does not support the video tag."
+    },
+    "securityNote": "For security reasons, blockchain interactions on mobile devices require MetaMask."
   }
 } 
