@@ -4104,3 +4104,246 @@ z-index: 55;
   background-color: #ffcdd2;
   cursor: not-allowed;
 }
+
+/* Mobile MetaMask Guide Styles */
+.mobile-metamask-guide {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f6f9fc 0%, #eef2f6 100%);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  animation: fadeIn 0.3s ease-in-out;
+  overflow-y: auto;
+}
+
+.metamask-guide-container {
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  max-width: 600px;
+  width: 100%;
+  overflow: hidden;
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+.metamask-guide-header {
+  background: linear-gradient(to right, #f6851b, #e2761b);
+  color: white;
+  padding: 30px 20px;
+  text-align: center;
+  position: relative;
+}
+
+.metamask-logo-container {
+  width: 90px;
+  height: 90px;
+  margin: 0 auto 15px;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.metamask-logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+}
+
+.metamask-guide-header h1 {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: white;
+}
+
+.metamask-guide-header p {
+  font-size: 16px;
+  opacity: 0.9;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.guide-steps-container {
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.guide-step-card {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.guide-step-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+}
+
+.step-number {
+  background: linear-gradient(135deg, #f6851b 0%, #e2761b 100%);
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 18px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 8px rgba(230, 118, 27, 0.3);
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-content h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.step-content p {
+  color: #666;
+  margin-bottom: 15px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.metamask-action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #f6851b;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 15px;
+  width: 100%;
+  max-width: 220px;
+  box-shadow: 0 4px 12px rgba(230, 118, 27, 0.2);
+}
+
+.metamask-action-button:hover {
+  background-color: #e2761b;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(230, 118, 27, 0.3);
+}
+
+.download-icon, .open-icon, .connect-icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+}
+
+.connect-visual {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.connect-icon {
+  width: 36px;
+  height: 36px;
+  stroke: #f6851b;
+  opacity: 0.8;
+}
+
+.guide-security-note {
+  border-top: 1px solid #eee;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #f8f9fa;
+}
+
+.security-icon {
+  width: 24px;
+  height: 24px;
+  stroke: #5c636a;
+  flex-shrink: 0;
+}
+
+.guide-security-note p {
+  color: #5c636a;
+  font-size: 14px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+  .mobile-metamask-guide {
+    padding: 0;
+    align-items: flex-start;
+  }
+  
+  .metamask-guide-container {
+    border-radius: 0;
+    max-width: 100%;
+    min-height: 100vh;
+  }
+  
+  .metamask-guide-header {
+    padding: 25px 15px;
+  }
+  
+  .metamask-logo-container {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .metamask-logo {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .metamask-guide-header h1 {
+    font-size: 22px;
+  }
+  
+  .guide-steps-container {
+    padding: 20px 15px;
+  }
+  
+  .guide-step-card {
+    padding: 15px;
+  }
+  
+  .step-number {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+  
+  .step-content h3 {
+    font-size: 16px;
+  }
+  
+  .metamask-action-button {
+    max-width: 100%;
+  }
+}
