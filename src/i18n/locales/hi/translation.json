@@ -294,7 +294,8 @@
     "yes": "हां",
     "no": "नहीं",
     "back": "वापस",
-    "next": "अगला"
+    "next": "अगला",
+    "ok": "ठीक है"
   },
   "languageSelector": {
     "language": "भाषा",
