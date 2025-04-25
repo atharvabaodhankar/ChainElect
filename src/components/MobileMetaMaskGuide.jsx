@@ -175,7 +175,7 @@ const MobileMetaMaskGuide = () => {
                   loop 
                   playsInline
                 >
-                  <source src="/images/hero.mp4" type="video/mp4" />
+                  <source src="/images/mobile.mp4" type="video/mp4" />
                   {t('mobileGuide.step3.videoFallback')}
                 </video>
               </div>
