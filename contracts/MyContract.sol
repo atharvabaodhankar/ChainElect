@@ -11,6 +11,9 @@ contract MyContract {
     // Array to keep track of all admin addresses
     address[] private adminAddresses;
     
+    // Array to keep track of all voters who have participated
+    address[] private voterAddresses;
+    
     // Voting duration in seconds (default 1 hour)
     uint256 public votingDuration = 1 hours;
 
@@ -189,6 +192,12 @@ contract MyContract {
         voters[msg.sender].hasVoted = true;
         voters[msg.sender].votedFor = candidateId;
         candidates[candidateId].voteCount++;
+        
+        // Add voter to the list if not already there
+        if (!voters[msg.sender].isRegistered) {
+            voterAddresses.push(msg.sender);
+            voters[msg.sender].isRegistered = true;
+        }
 
         emit Voted(msg.sender, candidateId);
     }
@@ -204,16 +213,14 @@ contract MyContract {
             candidates[i].voteCount = 0;
         }
 
-        // The current implementation only resets the admin's own status
-        // We need to track all voters' addresses to reset them all
-        // This is a limitation of the current design
-        // For now, we'll handle individual voter resets using resetVoter function
-        
-        // Reset this admin's status at minimum
-        if (voters[msg.sender].hasVoted) {
-            voters[msg.sender].hasVoted = false;
-            voters[msg.sender].votedFor = 0;
-            emit VoterReset(msg.sender);
+        // Reset all voters' status
+        for (uint256 i = 0; i < voterAddresses.length; i++) {
+            address voterAddress = voterAddresses[i];
+            if (voters[voterAddress].hasVoted) {
+                voters[voterAddress].hasVoted = false;
+                voters[voterAddress].votedFor = 0;
+                emit VoterReset(voterAddress);
+            }
         }
 
         emit VotingEnded();
