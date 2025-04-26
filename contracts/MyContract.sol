@@ -216,12 +216,13 @@ contract MyContract {
         // Reset all voters' status
         for (uint256 i = 0; i < voterAddresses.length; i++) {
             address voterAddress = voterAddresses[i];
-            if (voters[voterAddress].hasVoted) {
-                voters[voterAddress].hasVoted = false;
-                voters[voterAddress].votedFor = 0;
-                emit VoterReset(voterAddress);
-            }
+            voters[voterAddress].hasVoted = false;
+            voters[voterAddress].votedFor = 0;
+            emit VoterReset(voterAddress);
         }
+
+        // Clear the voter addresses array
+        delete voterAddresses;
 
         emit VotingEnded();
     }
