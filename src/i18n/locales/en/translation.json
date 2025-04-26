@@ -526,7 +526,8 @@
     "yes": "Yes",
     "no": "No",
     "back": "Back",
-    "next": "Next"
+    "next": "Next",
+    "ok": "OK"
   },
   "languageSelector": {
     "language": "Language",
