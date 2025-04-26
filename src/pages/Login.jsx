@@ -14,7 +14,19 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isMetamaskConnected, setIsMetamaskConnected] = useState(false);
   const [isMetamaskInstalled, setIsMetamaskInstalled] = useState(false);
+  const [isCorrectNetwork, setIsCorrectNetwork] = useState(false);
   const navigate = useNavigate();
+
+  // Function to check if we're on the Polygon Amoy network
+  const checkNetwork = async () => {
+    try {
+      const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+      setIsCorrectNetwork(chainId === contractConfig.polygonAmoy.chainHexId);
+    } catch (error) {
+      console.error('Error checking network:', error);
+      setIsCorrectNetwork(false);
+    }
+  };
 
   // Function to add Polygon Amoy Testnet network
   const addPolygonAmoyNetwork = async () => {
@@ -33,6 +45,7 @@ const Login = () => {
           blockExplorerUrls: [contractConfig.polygonAmoy.blockExplorer]
         }]
       });
+      await checkNetwork();
     } catch (error) {
       console.error('Error adding network:', error);
       setErrorMessage(t('login.networkError'));
@@ -48,6 +61,12 @@ const Login = () => {
           // Check if already connected
           const accounts = await window.ethereum.request({ method: 'eth_accounts' });
           setIsMetamaskConnected(accounts.length > 0);
+          if (accounts.length > 0) {
+            await checkNetwork();
+          }
+
+          // Listen for network changes
+          window.ethereum.on('chainChanged', checkNetwork);
         } catch (error) {
           console.error('Error checking Metamask connection:', error);
         }
@@ -57,6 +76,13 @@ const Login = () => {
     };
 
     checkMetamask();
+
+    // Cleanup listener
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener('chainChanged', checkNetwork);
+      }
+    };
   }, []);
 
   // Function to connect Metamask
@@ -64,6 +90,7 @@ const Login = () => {
     try {
       await window.ethereum.request({ method: 'eth_requestAccounts' });
       setIsMetamaskConnected(true);
+      await checkNetwork();
     } catch (error) {
       console.error('Error connecting to Metamask:', error);
       setErrorMessage(t('login.metamaskConnectionError'));
@@ -148,12 +175,16 @@ const Login = () => {
             ) : (
               <div className="metamask-connected">
                 <p>{t('login.metamaskConnected')}</p>
-                <button 
-                  onClick={addPolygonAmoyNetwork}
-                  className="metamask-network-button"
-                >
-                  {t('login.switchToAmoy')}
-                </button>
+                {!isCorrectNetwork ? (
+                  <button 
+                    onClick={addPolygonAmoyNetwork}
+                    className="metamask-network-button"
+                  >
+                    {t('login.switchToAmoy')}
+                  </button>
+                ) : (
+                  <p className="network-status-success">✓ {t('login.connectedToAmoy')}</p>
+                )}
               </div>
             )}
           </div>
