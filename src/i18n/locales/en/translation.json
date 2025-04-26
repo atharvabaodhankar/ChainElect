@@ -48,7 +48,8 @@
     "switchToAmoy": "Add Polygon Amoy Testnet",
     "networkError": "Failed to add Polygon Amoy Testnet network. Please try again.",
     "metamaskConnectionError": "Failed to connect to Metamask. Please try again.",
-    "connectMetamaskFirst": "Please connect your Metamask wallet before logging in."
+    "connectMetamaskFirst": "Please connect your Metamask wallet before logging in.",
+    "connectedToAmoy": "Connected to Polygon Amoy"
   },
   "register": {
     "title": "Register",
